@@ -76,6 +76,15 @@ Future premium accent themes may extend this design system, but theme
 persistence and premium entitlement are not implemented. All future themes
 must preserve accessible contrast and readable text.
 
+## Reusable UI Foundation
+
+Shared screen composition belongs in `lib/shared/widgets`. `AppPage` provides
+the responsive, scrollable page layout; `AppSection` separates major content;
+`AppCard` applies the centralized card treatment; `SectionTitle` standardizes
+headings; and `EmptyState` communicates unavailable content. Future screens
+must compose these building blocks instead of duplicating page padding,
+constraints, scrolling, card styling, or empty-state layouts.
+
 ## Firebase Boundary
 
 Firebase will be introduced later through data-layer implementations and

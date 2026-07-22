@@ -12,7 +12,8 @@ and progress toward financial freedom through a net-worth-focused journey.
 The architecture foundation and default Dark Purple design system are complete.
 The six-destination navigation shell connects Dashboard, Portfolio, Journey,
 History, Battle, and Settings. Non-Dashboard destinations remain temporary
-placeholders, and finance features are not implemented yet.
+placeholders built from the reusable UI foundation, and finance features are
+not implemented yet.
 
 ## Technology
 
@@ -32,6 +33,12 @@ Fyqen follows a pragmatic feature-first architecture with clear layer
 boundaries. Read the [architecture guide](docs/architecture.md) for details.
 Primary navigation uses Material 3 `NavigationBar`, state-preserving
 `IndexedStack` composition, and Flutter SDK navigation only.
+
+## Reusable UI Foundation
+
+Future screens use the shared `AppPage`, `AppSection`, `AppCard`,
+`SectionTitle`, and `EmptyState` building blocks. They provide consistent page
+layout, spacing, cards, headings, and empty-content messaging.
 
 ## Documentation
 
