@@ -1,0 +1,89 @@
+# Fyqen Coding Standards
+
+## Naming
+
+- Files and directories use `snake_case`.
+- Classes, enums, extensions, and typedefs use `UpperCamelCase`.
+- Variables, methods, and parameters use `lowerCamelCase`.
+- Private identifiers begin with `_`.
+- Constants use meaningful `lowerCamelCase` names.
+- Boolean names should read naturally, such as `isLoading`, `hasError`, and
+  `canEdit`.
+
+## File Organization
+
+Prefer one primary public type per file and keep each file focused on one
+responsibility. Avoid large miscellaneous utility files and barrel files until
+they provide genuine value. Do not create empty architecture folders.
+
+## Imports
+
+Order imports as Dart SDK, Flutter or package, then project imports, with a
+blank line between groups. Prefer package imports across features. Use relative
+imports only for tightly related files within a feature, and do not mix styles
+inconsistently in the same area.
+
+## Widgets
+
+Prefer `StatelessWidget` unless local mutable state is required. Use const
+constructors where possible, keep build methods readable, and extract complex
+UI into focused widgets. Do not make network or database calls in `build()` or
+place business calculations directly in widgets. Avoid deeply nested anonymous
+widget trees.
+
+## State and Business Logic
+
+Keep business rules outside widgets. Do not use mutable global state or static
+service locators. Do not introduce a state-management package without a
+dedicated architectural decision. Future features must model loading, success,
+empty, and error states explicitly.
+
+## Null Safety and Types
+
+Avoid `dynamic`; prefer `Object?` for unknown values. Do not use `!` unless it
+is logically guaranteed and documented. Avoid unnecessary `late`, prefer
+immutable data where practical, and use `final` for variables that are not
+reassigned.
+
+## Functions and Async Code
+
+Keep functions small and descriptive. Avoid Boolean positional parameters and
+prefer named parameters when they improve clarity. Validate inputs at system
+boundaries and return controlled results or throw defined application
+exceptions where appropriate.
+
+Await futures intentionally, handle errors explicitly, check widget lifecycle
+or context validity after asynchronous gaps, and do not block the UI isolate
+with heavy processing.
+
+## Error Handling
+
+Never use empty catch blocks or expose raw backend errors directly to users.
+Do not log secrets. Preserve useful diagnostic context safely and convert
+infrastructure failures into controlled application-level failures.
+
+## Comments and Documentation
+
+Explain why rather than what. Avoid comments that repeat obvious code. Document
+non-obvious public APIs and business rules, and update comments when behavior
+changes.
+
+## Testing
+
+Every business rule needs unit tests. Important widgets need widget tests, and
+critical user flows will later receive integration tests. Tests must be
+deterministic, avoid arbitrary delays, and test behavior rather than private
+implementation details.
+
+## Security
+
+Never commit secrets or hard-code API keys and passwords. Sensitive
+configuration will use an approved environment strategy introduced later.
+Authorization must be validated in backend security rules, not only in the
+client. Treat all user financial data as sensitive.
+
+## Git Responsibility
+
+Codex edits source files. The user performs Git and CLI operations in normal
+PowerShell, without credentials, token-bearing URLs, or personal information in
+project files.

@@ -1,16 +1,50 @@
-# fyqen
+# Fyqen
 
-A new Flutter project.
+Track Your Journey to Financial Freedom.
 
-## Getting Started
+## Overview
 
-This project is a starting point for a Flutter application.
+Fyqen is a Flutter mobile application being built to help people understand
+and progress toward financial freedom through a net-worth-focused journey.
 
-A few resources to get you started if this is your first Flutter project:
+## Current Development Status
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+The project is in the foundation stage. The current application provides a
+minimal shell and temporary Dashboard placeholder while its architecture is
+established.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Technology
+
+- Flutter
+- Dart
+- Android
+- Kotlin for the Android host project
+
+Firebase is planned for a later stage and is not currently integrated.
+
+## Architecture
+
+Fyqen follows a pragmatic feature-first architecture with clear layer
+boundaries. Read the [architecture guide](docs/architecture.md) for details.
+
+## Documentation
+
+- [Architecture](docs/architecture.md)
+- [Coding standards](docs/coding_standards.md)
+
+## Local Validation
+
+Run these commands in a normal PowerShell terminal:
+
+```powershell
+flutter pub get
+dart format --output=none --set-exit-if-changed .
+flutter analyze
+flutter test
+```
+
+## Important Notes
+
+- Do not commit secrets.
+- CLI and Git operations are performed outside the Codex sandbox.
+- Features are implemented incrementally.
