@@ -17,7 +17,10 @@ not implemented yet. The Dashboard now provides a presentation-only layout for
 future net-worth, financial-independence, journey, and quick-action content;
 its business logic is not implemented. Dashboard presentation now includes a
 reusable `NetWorthHeroCard`; it receives display content from future feature
-layers and performs no calculations.
+layers and performs no calculations. The Dashboard also uses a reusable
+`FinancialIndependenceProgressCard` for unavailable and supplied-data
+presentation states. FI calculations, formatting, persistence, and backend
+integration remain unimplemented.
 
 ## Technology
 

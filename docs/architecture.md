@@ -95,6 +95,14 @@ feature layers supply loading and error state, confirmation dialogs return user
 intent only, and snack bars display supplied messages only. Authentication and
 data flows will be designed separately.
 
+## Dashboard Presentation Widgets
+
+`FinancialIndependenceProgressCard` belongs to the Dashboard presentation
+layer. It receives already-prepared display values and does not calculate FI
+progress or format currency or percentages. Future application and domain
+layers will prepare and supply values; Dashboard pages compose the widget but
+do not own financial calculation logic.
+
 ## Firebase Boundary
 
 Firebase will be introduced later through data-layer implementations and
