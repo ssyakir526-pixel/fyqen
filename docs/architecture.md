@@ -55,6 +55,15 @@ state when domain entities are appropriate.
 wiring, startup/bootstrap logic, and routing configuration when those concerns
 have real implementation requirements.
 
+## Design System and Theming
+
+Shared theme code belongs in `lib/core/theme`. Feature widgets consume theme
+values instead of hard-coding visual styles, and semantic colors are preferred
+over widget-specific colors. Dark Purple is the only active theme today.
+Future premium accent themes may extend this design system, but theme
+persistence and premium entitlement are not implemented. All future themes
+must preserve accessible contrast and readable text.
+
 ## Firebase Boundary
 
 Firebase will be introduced later through data-layer implementations and

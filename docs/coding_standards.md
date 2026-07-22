@@ -31,6 +31,17 @@ UI into focused widgets. Do not make network or database calls in `build()` or
 place business calculations directly in widgets. Avoid deeply nested anonymous
 widget trees.
 
+## Theme Usage
+
+Do not hard-code shared colors in feature widgets. Use
+`Theme.of(context).colorScheme` for semantic Material colors and `AppColors`
+for Fyqen-specific semantic tokens. Use `AppSpacing`, `AppRadius`, and
+`AppDurations`; new visual tokens belong in the centralized design system.
+Avoid one-off magic numbers when a shared token is appropriate, and do not add
+premium-theme values to feature files. Maintain contrast and readable text
+scaling. Theme switching requires architectural review and must not be added
+casually.
+
 ## State and Business Logic
 
 Keep business rules outside widgets. Do not use mutable global state or static

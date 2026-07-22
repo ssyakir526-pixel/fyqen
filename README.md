@@ -9,9 +9,9 @@ and progress toward financial freedom through a net-worth-focused journey.
 
 ## Current Development Status
 
-The project is in the foundation stage. The current application provides a
-minimal shell and temporary Dashboard placeholder while its architecture is
-established.
+The architecture foundation is complete and the default Dark Purple design
+system is implemented. The Dashboard remains a temporary placeholder; finance
+features are not implemented yet.
 
 ## Technology
 
@@ -19,6 +19,9 @@ established.
 - Dart
 - Android
 - Kotlin for the Android host project
+- Material 3
+- Centralized design tokens
+- Dark Purple default theme
 
 Firebase is planned for a later stage and is not currently integrated.
 
