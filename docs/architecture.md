@@ -85,6 +85,16 @@ headings; and `EmptyState` communicates unavailable content. Future screens
 must compose these building blocks instead of duplicating page padding,
 constraints, scrolling, card styling, or empty-state layouts.
 
+## Form and Feedback Foundation
+
+Shared form controls belong in `lib/shared/widgets`, cross-feature visual
+feedback helpers belong in `lib/shared/feedback`, and generic input validation
+belongs in `lib/core/validation`. Feature-specific validation remains within
+its feature. Presentation widgets must not perform business operations: future
+feature layers supply loading and error state, confirmation dialogs return user
+intent only, and snack bars display supplied messages only. Authentication and
+data flows will be designed separately.
+
 ## Firebase Boundary
 
 Firebase will be introduced later through data-layer implementations and

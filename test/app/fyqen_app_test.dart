@@ -21,6 +21,9 @@ void main() {
     expect(find.text(AppConstants.appSlogan), findsOneWidget);
     expect(find.text('FINANCIAL FREEDOM'), findsOneWidget);
     expect(find.text('Your journey starts here'), findsOneWidget);
+    expect(find.text('Interaction foundation'), findsOneWidget);
+    expect(find.text('Example field'), findsOneWidget);
+    expect(find.text('Continue'), findsOneWidget);
     expect(find.byType(MaterialApp), findsOneWidget);
 
     final NavigationBar navigationBar = tester.widget<NavigationBar>(

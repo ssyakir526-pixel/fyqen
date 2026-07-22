@@ -4,10 +4,7 @@ import '../../core/theme/app_spacing.dart';
 
 /// Provides the responsive, scrollable content area used by Fyqen pages.
 class AppPage extends StatelessWidget {
-  const AppPage({
-    required this.children,
-    super.key,
-  });
+  const AppPage({required this.children, super.key});
 
   final List<Widget> children;
 

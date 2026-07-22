@@ -19,11 +19,7 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
-      buildTestApp(
-        const AppPage(
-          children: <Widget>[Text('Page content')],
-        ),
-      ),
+      buildTestApp(const AppPage(children: <Widget>[Text('Page content')])),
     );
 
     expect(find.text('Page content'), findsOneWidget);
@@ -36,9 +32,7 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
-      buildTestApp(
-        const AppCard(child: Text('Card content')),
-      ),
+      buildTestApp(const AppCard(child: Text('Card content'))),
     );
 
     final BuildContext cardContext = tester.element(find.byType(Card));

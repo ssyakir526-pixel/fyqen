@@ -4,10 +4,7 @@ import '../../core/theme/app_spacing.dart';
 
 /// A themed content card with Fyqen's standard internal spacing.
 class AppCard extends StatelessWidget {
-  const AppCard({
-    required this.child,
-    super.key,
-  });
+  const AppCard({required this.child, super.key});
 
   final Widget child;
 

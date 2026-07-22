@@ -4,10 +4,7 @@ import '../../core/theme/app_spacing.dart';
 
 /// Adds consistent separation after a major page section.
 class AppSection extends StatelessWidget {
-  const AppSection({
-    required this.child,
-    super.key,
-  });
+  const AppSection({required this.child, super.key});
 
   final Widget child;
 

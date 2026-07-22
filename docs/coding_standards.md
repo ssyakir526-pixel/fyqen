@@ -42,6 +42,17 @@ premium-theme values to feature files. Maintain contrast and readable text
 scaling. Theme switching requires architectural review and must not be added
 casually.
 
+## Forms and Feedback
+
+Reuse `AppTextField` and `AppButton` instead of recreating shared input or
+button styling in feature pages. Do not hard-code repeated validation messages
+or expose raw exceptions directly in UI. Shared buttons must not perform async
+operations; future submission controls are disabled while an operation loads.
+Keep confirmation dialogs free of business logic and use `AppSnackBar` for
+brief user feedback. Future feature code must check mounted state before using
+`BuildContext` after asynchronous gaps. Add validation to `AppValidators` only
+when it is genuinely generic.
+
 ## Navigation
 
 Primary navigation metadata must be centralized, and destination order must

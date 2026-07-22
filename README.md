@@ -40,6 +40,13 @@ Future screens use the shared `AppPage`, `AppSection`, `AppCard`,
 `SectionTitle`, and `EmptyState` building blocks. They provide consistent page
 layout, spacing, cards, headings, and empty-content messaging.
 
+## Form and Feedback Foundation
+
+Reusable controls include `AppTextField`, `AppButton`, `AppLoadingIndicator`,
+and `AppErrorState`. `AppSnackBar`, the app confirmation dialog, and
+`AppValidators` provide generic user-feedback and validation foundations.
+Authentication and finance forms remain unimplemented.
+
 ## Documentation
 
 - [Architecture](docs/architecture.md)
