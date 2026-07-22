@@ -24,7 +24,11 @@ integration remain unimplemented. The Dashboard also uses a reusable
 `JourneyOverviewCard` for unavailable and supplied-data presentation states;
 journey stages, progress, next-direction logic, persistence, and backend
 integration remain unimplemented. The Dashboard currently uses its
-unavailable state.
+unavailable state. The Dashboard also uses a reusable `QuickActionsCard` with
+presentation-only `DashboardQuickAction` definitions. It currently displays
+disabled Add asset and Add liability actions. Navigation, forms, persistence,
+and financial operations remain unimplemented; the component only forwards
+supplied callbacks.
 
 ## Technology
 

@@ -109,6 +109,13 @@ determine next steps. It does not own level, achievement, streak, or challenge
 logic; future application and domain layers will prepare and supply journey
 data while Dashboard pages compose the widget without owning business logic.
 
+`DashboardQuickAction` is a presentation-layer action definition, and
+`QuickActionsCard` renders supplied actions without determining business
+availability, navigating, or creating assets or liabilities. Future
+presentation and application layers will supply callbacks; Dashboard pages
+compose actions without owning financial business logic, and creation flows
+will belong to their respective feature modules.
+
 ## Firebase Boundary
 
 Firebase will be introduced later through data-layer implementations and

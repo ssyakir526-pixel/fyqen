@@ -9,7 +9,7 @@ import 'package:fyqen/features/dashboard/presentation/pages/dashboard_placeholde
 import 'package:fyqen/features/dashboard/presentation/widgets/financial_independence_progress_card.dart';
 import 'package:fyqen/features/dashboard/presentation/widgets/journey_overview_card.dart';
 import 'package:fyqen/features/dashboard/presentation/widgets/net_worth_hero_card.dart';
-import 'package:fyqen/shared/widgets/app_button.dart';
+import 'package:fyqen/features/dashboard/presentation/widgets/quick_actions_card.dart';
 import 'package:fyqen/shared/widgets/section_title.dart';
 
 void main() {
@@ -29,8 +29,8 @@ void main() {
     final List<String> sectionLabels = sectionTitles
         .map((SectionTitle sectionTitle) => sectionTitle.title)
         .toList();
-    final List<AppButton> quickActions = tester
-        .widgetList<AppButton>(find.byType(AppButton))
+    final List<OutlinedButton> quickActionButtons = tester
+        .widgetList<OutlinedButton>(find.byType(OutlinedButton))
         .toList();
 
     expect(find.text('Welcome back'), findsOneWidget);
@@ -40,6 +40,9 @@ void main() {
     expect(find.text('Progress unavailable'), findsOneWidget);
     expect(find.byType(JourneyOverviewCard), findsOneWidget);
     expect(find.text('Journey unavailable'), findsOneWidget);
+    expect(find.byType(QuickActionsCard), findsOneWidget);
+    expect(find.text('Add asset'), findsOneWidget);
+    expect(find.text('Add liability'), findsOneWidget);
     expect(
       sectionLabels,
       containsAll(<String>[
@@ -49,18 +52,11 @@ void main() {
         'Quick Actions',
       ]),
     );
-    expect(quickActions, hasLength(4));
+    expect(quickActionButtons, hasLength(2));
     expect(
-      quickActions.map((AppButton button) => button.label),
-      containsAll(<String>[
-        'Add Asset',
-        'Add Liability',
-        'View History',
-        'Battle',
-      ]),
-    );
-    expect(
-      quickActions.every((AppButton button) => button.onPressed == null),
+      quickActionButtons.every(
+        (OutlinedButton button) => button.onPressed == null,
+      ),
       isTrue,
     );
     expect(find.byType(MaterialApp), findsOneWidget);
