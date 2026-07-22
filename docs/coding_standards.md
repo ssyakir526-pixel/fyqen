@@ -42,6 +42,16 @@ premium-theme values to feature files. Maintain contrast and readable text
 scaling. Theme switching requires architectural review and must not be added
 casually.
 
+## Navigation
+
+Primary navigation metadata must be centralized, and destination order must
+remain consistent between metadata and page lists. Feature widgets must not
+manipulate global navigation state directly. Use local widget state for simple
+presentation-only navigation when appropriate, and do not introduce a routing
+package without architectural review. Avoid navigation side effects in
+`build()`, use stable keys for major navigation widgets when tests benefit, and
+do not add nested navigators or duplicate primary navigation bars casually.
+
 ## State and Business Logic
 
 Keep business rules outside widgets. Do not use mutable global state or static

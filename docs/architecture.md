@@ -55,6 +55,18 @@ state when domain entities are appropriate.
 wiring, startup/bootstrap logic, and routing configuration when those concerns
 have real implementation requirements.
 
+## Primary Navigation
+
+`FyqenShell` owns primary tab selection for Dashboard, Portfolio, Journey,
+History, Battle, and Settings. It uses Flutter SDK `NavigationBar` and an
+`IndexedStack`, so visited destination pages remain mounted. Local widget state
+is appropriate for this presentation-only selection state, and no third-party
+routing package is configured.
+
+Future authentication flows, detail screens, deep links, and nested routing
+will be designed separately. Feature pages must not create competing primary
+navigation, and the shell is not responsible for finance business logic.
+
 ## Design System and Theming
 
 Shared theme code belongs in `lib/core/theme`. Feature widgets consume theme

@@ -9,9 +9,10 @@ and progress toward financial freedom through a net-worth-focused journey.
 
 ## Current Development Status
 
-The architecture foundation is complete and the default Dark Purple design
-system is implemented. The Dashboard remains a temporary placeholder; finance
-features are not implemented yet.
+The architecture foundation and default Dark Purple design system are complete.
+The six-destination navigation shell connects Dashboard, Portfolio, Journey,
+History, Battle, and Settings. Non-Dashboard destinations remain temporary
+placeholders, and finance features are not implemented yet.
 
 ## Technology
 
@@ -29,6 +30,8 @@ Firebase is planned for a later stage and is not currently integrated.
 
 Fyqen follows a pragmatic feature-first architecture with clear layer
 boundaries. Read the [architecture guide](docs/architecture.md) for details.
+Primary navigation uses Material 3 `NavigationBar`, state-preserving
+`IndexedStack` composition, and Flutter SDK navigation only.
 
 ## Documentation
 
