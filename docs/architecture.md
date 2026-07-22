@@ -103,6 +103,12 @@ progress or format currency or percentages. Future application and domain
 layers will prepare and supply values; Dashboard pages compose the widget but
 do not own financial calculation logic.
 
+`JourneyOverviewCard` also belongs to the Dashboard presentation layer. It
+receives prepared display values and does not calculate journey stages or
+determine next steps. It does not own level, achievement, streak, or challenge
+logic; future application and domain layers will prepare and supply journey
+data while Dashboard pages compose the widget without owning business logic.
+
 ## Firebase Boundary
 
 Firebase will be introduced later through data-layer implementations and

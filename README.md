@@ -20,7 +20,11 @@ reusable `NetWorthHeroCard`; it receives display content from future feature
 layers and performs no calculations. The Dashboard also uses a reusable
 `FinancialIndependenceProgressCard` for unavailable and supplied-data
 presentation states. FI calculations, formatting, persistence, and backend
-integration remain unimplemented.
+integration remain unimplemented. The Dashboard also uses a reusable
+`JourneyOverviewCard` for unavailable and supplied-data presentation states;
+journey stages, progress, next-direction logic, persistence, and backend
+integration remain unimplemented. The Dashboard currently uses its
+unavailable state.
 
 ## Technology
 

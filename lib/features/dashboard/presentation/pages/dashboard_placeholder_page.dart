@@ -8,6 +8,7 @@ import '../../../../shared/widgets/app_page.dart';
 import '../../../../shared/widgets/app_section.dart';
 import '../../../../shared/widgets/section_title.dart';
 import '../widgets/financial_independence_progress_card.dart';
+import '../widgets/journey_overview_card.dart';
 import '../widgets/net_worth_hero_card.dart';
 
 /// A presentation-only foundation for Fyqen's future Dashboard feature.
@@ -45,11 +46,12 @@ class DashboardPlaceholderPage extends StatelessWidget {
             ),
           ),
           AppSection(
-            child: _DashboardSection(
-              title: 'Journey',
-              cardTitle: 'Level system coming soon',
-              cardMessage:
-                  'Future updates will visualize your long-term financial journey.',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SectionTitle(title: 'Journey'),
+                JourneyOverviewCard(hasData: false),
+              ],
             ),
           ),
           AppSection(
@@ -90,40 +92,6 @@ class DashboardPlaceholderPage extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _DashboardSection extends StatelessWidget {
-  const _DashboardSection({
-    required this.title,
-    required this.cardTitle,
-    required this.cardMessage,
-  });
-
-  final String title;
-  final String cardTitle;
-  final String cardMessage;
-
-  @override
-  Widget build(BuildContext context) {
-    final TextTheme textTheme = Theme.of(context).textTheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        SectionTitle(title: title),
-        AppCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(cardTitle, style: textTheme.titleLarge),
-              const SizedBox(height: AppSpacing.sm),
-              Text(cardMessage, style: textTheme.bodyMedium),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:fyqen/core/constants/app_constants.dart';
 import 'package:fyqen/core/theme/app_colors.dart';
 import 'package:fyqen/features/dashboard/presentation/pages/dashboard_placeholder_page.dart';
 import 'package:fyqen/features/dashboard/presentation/widgets/financial_independence_progress_card.dart';
+import 'package:fyqen/features/dashboard/presentation/widgets/journey_overview_card.dart';
 import 'package:fyqen/features/dashboard/presentation/widgets/net_worth_hero_card.dart';
 import 'package:fyqen/shared/widgets/app_button.dart';
 import 'package:fyqen/shared/widgets/section_title.dart';
@@ -37,6 +38,8 @@ void main() {
     expect(find.text('Net worth unavailable'), findsOneWidget);
     expect(find.byType(FinancialIndependenceProgressCard), findsOneWidget);
     expect(find.text('Progress unavailable'), findsOneWidget);
+    expect(find.byType(JourneyOverviewCard), findsOneWidget);
+    expect(find.text('Journey unavailable'), findsOneWidget);
     expect(
       sectionLabels,
       containsAll(<String>[
