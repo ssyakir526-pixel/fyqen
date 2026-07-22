@@ -15,7 +15,7 @@ void main() {
     await tester.pumpWidget(buildShell());
 
     expect(find.byKey(const Key('dashboard_destination')), findsOneWidget);
-    expect(find.text('Your journey starts here'), findsOneWidget);
+    expect(find.text('Welcome back'), findsOneWidget);
     expectNavigationSelection(tester, 0);
 
     await selectDestination(tester, 'portfolio_destination');
@@ -64,8 +64,9 @@ void main() {
     expectNavigationSelection(tester, 5);
 
     await selectDestination(tester, 'dashboard_destination');
-    expect(find.text('Your journey starts here'), findsOneWidget);
+    expect(find.text('Welcome back'), findsOneWidget);
     expectNavigationSelection(tester, 0);
+
     expect(tester.takeException(), isNull);
   });
 
@@ -77,6 +78,7 @@ void main() {
     final IndexedStack initialStack = tester.widget<IndexedStack>(
       find.byType(IndexedStack),
     );
+
     final List<Widget> initialChildren = initialStack.children;
 
     expect(initialStack.children, hasLength(6));
@@ -87,6 +89,7 @@ void main() {
     final IndexedStack updatedStack = tester.widget<IndexedStack>(
       find.byType(IndexedStack),
     );
+
     expect(updatedStack.index, 1);
     expect(updatedStack.children, same(initialChildren));
   });

@@ -13,7 +13,11 @@ The architecture foundation and default Dark Purple design system are complete.
 The six-destination navigation shell connects Dashboard, Portfolio, Journey,
 History, Battle, and Settings. Non-Dashboard destinations remain temporary
 placeholders built from the reusable UI foundation, and finance features are
-not implemented yet.
+not implemented yet. The Dashboard now provides a presentation-only layout for
+future net-worth, financial-independence, journey, and quick-action content;
+its business logic is not implemented. Dashboard presentation now includes a
+reusable `NetWorthHeroCard`; it receives display content from future feature
+layers and performs no calculations.
 
 ## Technology
 
