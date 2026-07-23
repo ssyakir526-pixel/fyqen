@@ -194,6 +194,23 @@ domain. Separate classes provide intention-revealing entry points, preserve the
 boundary between orchestration and domain invariants, and avoid switch-based
 generic behavior.
 
+## In-Memory Portfolio Repository
+
+`lib/features/portfolio/infrastructure/repositories/in_memory_portfolio_repository.dart`
+is an infrastructure implementation of the application-layer
+`PortfolioRepository` contract. Dependency direction remains inward: the
+implementation depends on the contract and Portfolio domain, while neither
+depends on infrastructure. It uses instance-local `Map` storage with Portfolio
+ID keys; there is no static or global storage. Saving an ID replaces the prior
+complete aggregate reference, lookups return that exact reference or null, and
+missing deletion is idempotent. Lookup and deletion IDs are trimmed while
+remaining case-sensitive. No DTO, mapper, serialization, Firebase, database,
+file persistence, authentication, ownership, or financial arithmetic exists.
+Instances are isolated and data lasts only for the repository lifetime, making
+this appropriate for development and tests rather than production persistence.
+Future Firestore infrastructure must implement the same application contract
+without changing domain behavior.
+
 ## Portfolio Repository Contract
 
 `lib/features/portfolio/application/repositories/portfolio_repository.dart`

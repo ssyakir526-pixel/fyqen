@@ -89,6 +89,19 @@ from the caller, and allow domain exceptions to propagate unchanged. No
 persistence, repository, Firebase, state management, Portfolio UI, or
 financial calculations are implemented.
 
+## In-Memory Portfolio Repository
+
+`lib/features/portfolio/infrastructure/repositories/in_memory_portfolio_repository.dart`
+provides an in-memory implementation of the application-layer
+`PortfolioRepository` contract for development and testing. It stores complete
+Portfolio aggregates by ID, supports `findById`, `save`, and `deleteById`, and
+replaces a stored snapshot when the same ID is saved. Missing lookups return
+null and missing deletion completes normally. Repository instances have
+isolated storage and preserve supplied Portfolio references. This storage is
+not durable: data is lost when its repository instance is discarded. No
+Firebase, database, local storage, authentication, UI integration, or financial
+calculations exist.
+
 ## Portfolio Repository Contract
 
 The Portfolio application layer now defines a persistence-neutral
