@@ -1,4 +1,4 @@
-import 'decimal_string_normalizer.dart';
+import '../../../../core/domain/utils/decimal_string_normalizer.dart';
 
 /// A positive asset quantity stored as an exact canonical decimal string.
 final class AssetQuantity {

@@ -1,27 +1,24 @@
 import '../../../../core/domain/utils/decimal_string_normalizer.dart';
 
-/// Represents the exact non-negative price of one asset unit.
-class AssetUnitPrice {
-  const AssetUnitPrice._({required String amount, required String currencyCode})
-    : _amount = amount,
-      _currencyCode = currencyCode;
+/// An exact non-negative liability amount in a normalized currency.
+final class LiabilityAmount {
+  const LiabilityAmount._({
+    required String amount,
+    required String currencyCode,
+  }) : _amount = amount,
+       _currencyCode = currencyCode;
 
-  factory AssetUnitPrice({
+  factory LiabilityAmount({
     required String amount,
     required String currencyCode,
   }) {
-    final String normalizedAmount = DecimalStringNormalizer.normalize(
-      amount,
-      allowZero: true,
-    );
-
-    final String normalizedCurrencyCode = _normalizeCurrencyCode(currencyCode);
-
-    return AssetUnitPrice._(
-      amount: normalizedAmount,
-      currencyCode: normalizedCurrencyCode,
+    return LiabilityAmount._(
+      amount: DecimalStringNormalizer.normalize(amount, allowZero: true),
+      currencyCode: _normalizeCurrencyCode(currencyCode),
     );
   }
+
+  static final RegExp _currencyCodePattern = RegExp(r'^[A-Z]{3}$');
 
   final String _amount;
   final String _currencyCode;
@@ -33,9 +30,7 @@ class AssetUnitPrice {
   static String _normalizeCurrencyCode(String value) {
     final String normalizedValue = value.trim().toUpperCase();
 
-    final RegExp currencyCodePattern = RegExp(r'^[A-Z]{3}$');
-
-    if (!currencyCodePattern.hasMatch(normalizedValue)) {
+    if (!_currencyCodePattern.hasMatch(normalizedValue)) {
       throw FormatException(
         'Currency code must contain exactly three ASCII letters.',
         value,
@@ -49,7 +44,7 @@ class AssetUnitPrice {
   bool operator ==(Object other) {
     return identical(this, other) ||
         other.runtimeType == runtimeType &&
-            other is AssetUnitPrice &&
+            other is LiabilityAmount &&
             other._amount == _amount &&
             other._currencyCode == _currencyCode;
   }

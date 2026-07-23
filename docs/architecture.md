@@ -129,6 +129,23 @@ JSON and Firestore conversion are intentionally absent, and total-value
 calculation is deferred. Future data models must map into these domain types
 rather than adding persistence concerns to them.
 
+## Liabilities Domain Foundation
+
+`lib/features/liabilities/domain` contains the persistence-independent
+Liabilities domain layer. `Liability` is an immutable entity with normalized
+ID-based equality. `LiabilityAmount` stores an exact non-negative
+decimal-string monetary amount with a normalized three-letter uppercase
+currency code, and `LiabilityType` provides debt classification. Outstanding
+balance and original amount must have the same currency. Lender name and a
+UTC-normalized due date are optional. Zero balances are allowed, and an
+outstanding balance is not constrained below the original amount because no
+interest, repayment, or amortization calculations exist yet. Floating-point
+values are intentionally avoided; JSON and Firestore conversion are absent,
+and repayment, interest, and net-worth calculations are deferred. The core
+`DecimalStringNormalizer` supports exact decimal-string normalization without
+arithmetic. Future data models must map into domain types rather than adding
+persistence concerns directly to them.
+
 ## Firebase Boundary
 
 Firebase will be introduced later through data-layer implementations and

@@ -42,6 +42,18 @@ representation, and no total-value calculation exists yet. Persistence,
 Firestore mapping, repositories, state management, and asset UI flows remain
 unimplemented.
 
+## Liabilities Domain Foundation
+
+The Liabilities feature now has its first domain foundation. `Liability` is an
+immutable, persistence-independent entity whose identity is its normalized
+liability ID. `LiabilityAmount` stores an exact non-negative decimal amount
+with a normalized three-letter currency code, while `LiabilityType` classifies
+debt categories. Outstanding balance and original amount must use the same
+currency. Optional lender name and due date are supported, and dates are
+normalized to UTC. Liability monetary values do not use floating-point
+representation. Debt calculations, persistence, Firestore mapping,
+repositories, state management, and liability UI flows remain unimplemented.
+
 ## Technology
 
 - Flutter
