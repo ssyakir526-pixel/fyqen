@@ -8,6 +8,7 @@ import 'package:fyqen/features/liabilities/domain/entities/liability.dart';
 import 'package:fyqen/features/liabilities/domain/enums/liability_type.dart';
 import 'package:fyqen/features/liabilities/domain/value_objects/liability_amount.dart';
 import 'package:fyqen/features/portfolio/domain/entities/portfolio.dart';
+import 'package:fyqen/features/portfolio/domain/value_objects/financial_independence_target.dart';
 import 'package:fyqen/features/portfolio/infrastructure/errors/portfolio_data_mapping_exception.dart';
 import 'package:fyqen/features/portfolio/infrastructure/mappers/portfolio_mapper.dart';
 
@@ -60,12 +61,14 @@ void main() {
   Portfolio portfolio({
     List<Asset> assets = const <Asset>[],
     List<Liability> liabilities = const <Liability>[],
+    FinancialIndependenceTarget? financialIndependenceTarget,
   }) {
     return Portfolio(
       id: 'portfolio-1',
       name: 'Main Portfolio',
       assets: assets,
       liabilities: liabilities,
+      financialIndependenceTarget: financialIndependenceTarget,
       createdAt: DateTime.utc(2026, 1, 1),
       updatedAt: DateTime.utc(2026, 1, 2),
     );
@@ -90,11 +93,33 @@ void main() {
       expect(map['updatedAt'], '2026-01-02T00:00:00.000Z');
       expect(map['assets'], isEmpty);
       expect(map['liabilities'], isEmpty);
+      expect(map['financialIndependenceTarget'], isNull);
       expect(identical(original, reconstructed), isFalse);
       expect(reconstructed.id, original.id);
       expect(reconstructed.name, original.name);
       expect(reconstructed.createdAt, original.createdAt);
       expect(reconstructed.updatedAt, original.updatedAt);
+    });
+
+    test('round-trips an optional exact Financial Independence target', () {
+      final Portfolio original = portfolio(
+        financialIndependenceTarget: FinancialIndependenceTarget(
+          amount: '1000.50',
+          currencyCode: 'myr',
+        ),
+      );
+
+      final Map<String, Object?> map = mapper.toMap(original);
+      final Portfolio reconstructed = mapper.fromMap(map);
+
+      expect(map['financialIndependenceTarget'], <String, Object?>{
+        'amount': '1000.5',
+        'currencyCode': 'MYR',
+      });
+      expect(
+        reconstructed.financialIndependenceTarget,
+        original.financialIndependenceTarget,
+      );
     });
 
     test(

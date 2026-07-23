@@ -11,6 +11,7 @@ import 'package:fyqen/features/portfolio/application/use_cases/rename_portfolio.
 import 'package:fyqen/features/portfolio/application/use_cases/replace_asset_in_portfolio.dart';
 import 'package:fyqen/features/portfolio/application/use_cases/replace_liability_in_portfolio.dart';
 import 'package:fyqen/features/portfolio/application/use_cases/save_portfolio.dart';
+import 'package:fyqen/features/portfolio/application/use_cases/set_financial_independence_target.dart';
 import 'package:fyqen/features/portfolio/domain/entities/portfolio.dart';
 import 'package:fyqen/features/portfolio/presentation/controllers/portfolio_controller.dart';
 import 'package:fyqen/features/portfolio/presentation/state/portfolio_view_state.dart';
@@ -30,6 +31,7 @@ final class PortfolioSession extends StatefulWidget {
     required this.addLiabilityToPortfolio,
     required this.replaceLiabilityInPortfolio,
     required this.removeLiabilityFromPortfolio,
+    required this.setFinancialIndependenceTarget,
     required this.onSignOut,
     super.key,
     this.currentTime = DateTime.now,
@@ -44,6 +46,7 @@ final class PortfolioSession extends StatefulWidget {
   final AddLiabilityToPortfolioUseCase addLiabilityToPortfolio;
   final ReplaceLiabilityInPortfolioUseCase replaceLiabilityInPortfolio;
   final RemoveLiabilityFromPortfolioUseCase removeLiabilityFromPortfolio;
+  final SetFinancialIndependenceTargetUseCase setFinancialIndependenceTarget;
   final VoidCallback onSignOut;
   final DateTime Function() currentTime;
 
@@ -68,6 +71,7 @@ final class _PortfolioSessionState extends State<PortfolioSession> {
       addLiabilityToPortfolio: widget.addLiabilityToPortfolio,
       replaceLiabilityInPortfolio: widget.replaceLiabilityInPortfolio,
       removeLiabilityFromPortfolio: widget.removeLiabilityFromPortfolio,
+      setFinancialIndependenceTarget: widget.setFinancialIndependenceTarget,
       currentTime: widget.currentTime,
     );
     unawaited(_controller.load());
@@ -109,6 +113,8 @@ final class _PortfolioSessionState extends State<PortfolioSession> {
           onAddLiability: _controller.addLiability,
           onReplaceLiability: _controller.replaceLiability,
           onRemoveLiability: _controller.removeLiability,
+          onSetFinancialIndependenceTarget:
+              _controller.setFinancialIndependenceTarget,
           createAssetId: _createAssetId,
           createLiabilityId: _createLiabilityId,
           currentTime: widget.currentTime,

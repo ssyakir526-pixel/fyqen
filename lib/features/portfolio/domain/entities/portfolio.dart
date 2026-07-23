@@ -1,5 +1,6 @@
 import 'package:fyqen/features/assets/domain/entities/asset.dart';
 import 'package:fyqen/features/liabilities/domain/entities/liability.dart';
+import 'package:fyqen/features/portfolio/domain/value_objects/financial_independence_target.dart';
 
 /// An immutable aggregate root for a validated portfolio snapshot.
 final class Portfolio {
@@ -8,12 +9,14 @@ final class Portfolio {
     required String name,
     required List<Asset> assets,
     required List<Liability> liabilities,
+    required FinancialIndependenceTarget? financialIndependenceTarget,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) : _id = id,
        _name = name,
        _assets = assets,
        _liabilities = liabilities,
+       _financialIndependenceTarget = financialIndependenceTarget,
        _createdAt = createdAt,
        _updatedAt = updatedAt;
 
@@ -22,6 +25,7 @@ final class Portfolio {
     required String name,
     required List<Asset> assets,
     required List<Liability> liabilities,
+    FinancialIndependenceTarget? financialIndependenceTarget,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) {
@@ -46,6 +50,7 @@ final class Portfolio {
       name: normalizedName,
       assets: List<Asset>.unmodifiable(assets),
       liabilities: List<Liability>.unmodifiable(liabilities),
+      financialIndependenceTarget: financialIndependenceTarget,
       createdAt: normalizedCreatedAt,
       updatedAt: normalizedUpdatedAt,
     );
@@ -55,6 +60,7 @@ final class Portfolio {
   final String _name;
   final List<Asset> _assets;
   final List<Liability> _liabilities;
+  final FinancialIndependenceTarget? _financialIndependenceTarget;
   final DateTime _createdAt;
   final DateTime _updatedAt;
 
@@ -65,6 +71,9 @@ final class Portfolio {
   List<Asset> get assets => _assets;
 
   List<Liability> get liabilities => _liabilities;
+
+  FinancialIndependenceTarget? get financialIndependenceTarget =>
+      _financialIndependenceTarget;
 
   DateTime get createdAt => _createdAt;
 
@@ -81,6 +90,7 @@ final class Portfolio {
       name: name,
       assets: _assets,
       liabilities: _liabilities,
+      financialIndependenceTarget: _financialIndependenceTarget,
       createdAt: _createdAt,
       updatedAt: normalizedUpdatedAt,
     );
@@ -101,6 +111,7 @@ final class Portfolio {
       name: _name,
       assets: <Asset>[..._assets, asset],
       liabilities: _liabilities,
+      financialIndependenceTarget: _financialIndependenceTarget,
       createdAt: _createdAt,
       updatedAt: normalizedUpdatedAt,
     );
@@ -127,6 +138,7 @@ final class Portfolio {
       name: _name,
       assets: updatedAssets,
       liabilities: _liabilities,
+      financialIndependenceTarget: _financialIndependenceTarget,
       createdAt: _createdAt,
       updatedAt: normalizedUpdatedAt,
     );
@@ -157,6 +169,7 @@ final class Portfolio {
       name: _name,
       assets: updatedAssets,
       liabilities: _liabilities,
+      financialIndependenceTarget: _financialIndependenceTarget,
       createdAt: _createdAt,
       updatedAt: normalizedUpdatedAt,
     );
@@ -182,6 +195,7 @@ final class Portfolio {
       name: _name,
       assets: _assets,
       liabilities: <Liability>[..._liabilities, liability],
+      financialIndependenceTarget: _financialIndependenceTarget,
       createdAt: _createdAt,
       updatedAt: normalizedUpdatedAt,
     );
@@ -211,6 +225,7 @@ final class Portfolio {
       name: _name,
       assets: _assets,
       liabilities: updatedLiabilities,
+      financialIndependenceTarget: _financialIndependenceTarget,
       createdAt: _createdAt,
       updatedAt: normalizedUpdatedAt,
     );
@@ -244,6 +259,27 @@ final class Portfolio {
       name: _name,
       assets: _assets,
       liabilities: updatedLiabilities,
+      financialIndependenceTarget: _financialIndependenceTarget,
+      createdAt: _createdAt,
+      updatedAt: normalizedUpdatedAt,
+    );
+  }
+
+  /// Returns a new snapshot with the supplied Financial Independence target.
+  Portfolio setFinancialIndependenceTarget({
+    required FinancialIndependenceTarget target,
+    required DateTime updatedAt,
+  }) {
+    final DateTime normalizedUpdatedAt = _validatedModificationTimestamp(
+      updatedAt,
+    );
+
+    return Portfolio(
+      id: _id,
+      name: _name,
+      assets: _assets,
+      liabilities: _liabilities,
+      financialIndependenceTarget: target,
       createdAt: _createdAt,
       updatedAt: normalizedUpdatedAt,
     );

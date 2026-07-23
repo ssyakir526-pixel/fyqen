@@ -52,6 +52,8 @@ final class _FyqenAppState extends State<FyqenApp> {
                 _compositionRoot.replaceLiabilityInPortfolio,
             removeLiabilityFromPortfolio:
                 _compositionRoot.removeLiabilityFromPortfolio,
+            setFinancialIndependenceTarget:
+                _compositionRoot.setFinancialIndependenceTarget,
             onSignOut: onSignOut,
           );
         },

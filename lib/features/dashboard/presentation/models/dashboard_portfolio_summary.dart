@@ -1,6 +1,7 @@
 import 'package:fyqen/features/assets/domain/entities/asset.dart';
 import 'package:fyqen/features/liabilities/domain/entities/liability.dart';
 import 'package:fyqen/features/portfolio/domain/entities/portfolio.dart';
+import 'package:fyqen/features/portfolio/domain/value_objects/financial_independence_target.dart';
 
 /// Exact, presentation-only summary values derived from one Portfolio snapshot.
 final class DashboardPortfolioSummary {
@@ -10,6 +11,11 @@ final class DashboardPortfolioSummary {
     required this.totalAssetsLabel,
     required this.totalLiabilitiesLabel,
     required this.netWorthLabel,
+    required this.hasFinancialIndependenceTarget,
+    required this.financialIndependenceTargetLabel,
+    required this.isFinancialIndependenceProgressAvailable,
+    required this.financialIndependenceProgress,
+    required this.financialIndependenceProgressLabel,
   });
 
   factory DashboardPortfolioSummary.fromPortfolio(Portfolio portfolio) {
@@ -20,17 +26,12 @@ final class DashboardPortfolioSummary {
       ),
     };
 
-    if (currencies.length > 1) {
-      return DashboardPortfolioSummary._(
-        assetCount: portfolio.assets.length,
-        liabilityCount: portfolio.liabilities.length,
-        totalAssetsLabel: 'Unavailable across currencies',
-        totalLiabilitiesLabel: 'Unavailable across currencies',
-        netWorthLabel: 'Unavailable across currencies',
-      );
-    }
-
-    final String? currencyCode = currencies.isEmpty ? null : currencies.single;
+    final bool hasMixedCurrencies = currencies.length > 1;
+    final FinancialIndependenceTarget? target =
+        portfolio.financialIndependenceTarget;
+    final String? currencyCode = hasMixedCurrencies || currencies.isEmpty
+        ? null
+        : currencies.single;
     final _ExactDecimal totalAssets = portfolio.assets.fold<_ExactDecimal>(
       _ExactDecimal.zero,
       (_ExactDecimal total, asset) =>
@@ -45,12 +46,36 @@ final class DashboardPortfolioSummary {
               total + _ExactDecimal.parse(liability.outstandingBalance.amount),
         );
 
+    final _ExactDecimal netWorth = totalAssets - totalLiabilities;
+    final _FinancialIndependenceProgress? progress =
+        target == null ||
+            hasMixedCurrencies ||
+            (currencyCode != null && currencyCode != target.currencyCode)
+        ? null
+        : _FinancialIndependenceProgress.fromValues(
+            netWorth: netWorth,
+            target: _ExactDecimal.parse(target.amount),
+          );
+
     return DashboardPortfolioSummary._(
       assetCount: portfolio.assets.length,
       liabilityCount: portfolio.liabilities.length,
-      totalAssetsLabel: _format(totalAssets, currencyCode),
-      totalLiabilitiesLabel: _format(totalLiabilities, currencyCode),
-      netWorthLabel: _format(totalAssets - totalLiabilities, currencyCode),
+      totalAssetsLabel: hasMixedCurrencies
+          ? 'Unavailable across currencies'
+          : _format(totalAssets, currencyCode ?? target?.currencyCode),
+      totalLiabilitiesLabel: hasMixedCurrencies
+          ? 'Unavailable across currencies'
+          : _format(totalLiabilities, currencyCode ?? target?.currencyCode),
+      netWorthLabel: hasMixedCurrencies
+          ? 'Unavailable across currencies'
+          : _format(netWorth, currencyCode ?? target?.currencyCode),
+      hasFinancialIndependenceTarget: target != null,
+      financialIndependenceTargetLabel: target == null
+          ? null
+          : _format(_ExactDecimal.parse(target.amount), target.currencyCode),
+      isFinancialIndependenceProgressAvailable: progress != null,
+      financialIndependenceProgress: progress?.indicatorValue,
+      financialIndependenceProgressLabel: progress?.label,
     );
   }
 
@@ -59,6 +84,11 @@ final class DashboardPortfolioSummary {
   final String totalAssetsLabel;
   final String totalLiabilitiesLabel;
   final String netWorthLabel;
+  final bool hasFinancialIndependenceTarget;
+  final String? financialIndependenceTargetLabel;
+  final bool isFinancialIndependenceProgressAvailable;
+  final double? financialIndependenceProgress;
+  final String? financialIndependenceProgressLabel;
 
   static String assetValueLabel(Asset asset) {
     final _ExactDecimal value =
@@ -78,6 +108,44 @@ final class DashboardPortfolioSummary {
     final String amount = value.toDisplayString();
     return currencyCode == null ? amount : '$currencyCode $amount';
   }
+}
+
+final class _FinancialIndependenceProgress {
+  const _FinancialIndependenceProgress({
+    required this.indicatorValue,
+    required this.label,
+  });
+
+  factory _FinancialIndependenceProgress.fromValues({
+    required _ExactDecimal netWorth,
+    required _ExactDecimal target,
+  }) {
+    if (netWorth.unscaled <= BigInt.zero) {
+      return const _FinancialIndependenceProgress(
+        indicatorValue: 0,
+        label: '0%',
+      );
+    }
+
+    final BigInt numerator =
+        netWorth.unscaled *
+        BigInt.from(10).pow(target.scale) *
+        BigInt.from(100);
+    final BigInt denominator =
+        target.unscaled * BigInt.from(10).pow(netWorth.scale);
+    final BigInt percentage = numerator ~/ denominator;
+    final double indicatorValue = percentage >= BigInt.from(100)
+        ? 1
+        : percentage.toDouble() / 100;
+
+    return _FinancialIndependenceProgress(
+      indicatorValue: indicatorValue,
+      label: '$percentage%',
+    );
+  }
+
+  final double indicatorValue;
+  final String label;
 }
 
 final class _ExactDecimal {

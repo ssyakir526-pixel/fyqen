@@ -38,6 +38,7 @@ void main() {
           'dueDate': '2027-01-01T00:00:00.000Z',
         },
       ],
+      'financialIndependenceTarget': null,
     };
   }
 
@@ -59,6 +60,29 @@ void main() {
       expect(dto.assets.single['quantity'], '1.25');
       expect(dto.liabilities.single['dueDate'], '2027-01-01T00:00:00.000Z');
       expect(dto.toMap(), map);
+    });
+
+    test('supports absent targets and validates configured target data', () {
+      final Map<String, Object?> legacyMap = completeMap()
+        ..remove('financialIndependenceTarget');
+      final PortfolioDto legacyDto = PortfolioDto.fromMap(legacyMap);
+      expect(legacyDto.financialIndependenceTarget, isNull);
+
+      final Map<String, Object?> configuredMap = completeMap()
+        ..['financialIndependenceTarget'] = <String, Object?>{
+          'amount': '1000.50',
+          'currencyCode': 'MYR',
+        };
+      final PortfolioDto configuredDto = PortfolioDto.fromMap(configuredMap);
+      expect(configuredDto.financialIndependenceTarget!['amount'], '1000.50');
+      expect(configuredDto.financialIndependenceTarget!['currencyCode'], 'MYR');
+
+      final Map<String, Object?> malformedTarget = completeMap()
+        ..['financialIndependenceTarget'] = <String, Object?>{'amount': '1'};
+      expect(
+        () => PortfolioDto.fromMap(malformedTarget),
+        throwsA(mappingErrorAt('financialIndependenceTarget.currencyCode')),
+      );
     });
 
     test('rejects absent, wrong, and unsupported schema versions', () {

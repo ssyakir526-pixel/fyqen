@@ -29,7 +29,14 @@ class FinancialIndependenceProgressCard extends StatelessWidget {
         label:
             'Progress unavailable. Your journey progress will appear here '
             'after setup.',
-        child: const AppCard(child: _UnavailableProgressContent()),
+        child: AppCard(
+          key: const Key('financial-independence-progress-unavailable'),
+          child: _UnavailableProgressContent(
+            currentValueLabel: currentValueLabel,
+            targetValueLabel: targetValueLabel,
+            subtitle: subtitle,
+          ),
+        ),
       );
     }
 
@@ -70,12 +77,21 @@ class FinancialIndependenceProgressCard extends StatelessWidget {
                 Text('Financial Independence', style: textTheme.labelLarge),
                 if (progressLabel case final String progressLabel
                     when progressLabel.isNotEmpty)
-                  Text(progressLabel, style: textTheme.bodySmall),
+                  Text(
+                    progressLabel,
+                    key: const Key(
+                      'financial-independence-progress-percentage',
+                    ),
+                    style: textTheme.bodySmall,
+                  ),
               ],
             ),
             if (progress != null) ...<Widget>[
               const SizedBox(height: AppSpacing.md),
-              LinearProgressIndicator(value: progress),
+              LinearProgressIndicator(
+                key: const Key('financial-independence-progress-indicator'),
+                value: progress,
+              ),
             ],
             if (_hasText(currentValueLabel) ||
                 _hasText(targetValueLabel)) ...<Widget>[
@@ -86,10 +102,20 @@ class FinancialIndependenceProgressCard extends StatelessWidget {
                 children: <Widget>[
                   if (currentValueLabel case final String currentValueLabel
                       when currentValueLabel.isNotEmpty)
-                    _ValueSummary(label: 'Current', value: currentValueLabel),
+                    _ValueSummary(
+                      key: const Key(
+                        'financial-independence-current-net-worth',
+                      ),
+                      label: 'Current',
+                      value: currentValueLabel,
+                    ),
                   if (targetValueLabel case final String targetValueLabel
                       when targetValueLabel.isNotEmpty)
-                    _ValueSummary(label: 'Target', value: targetValueLabel),
+                    _ValueSummary(
+                      key: const Key('financial-independence-target-value'),
+                      label: 'Target',
+                      value: targetValueLabel,
+                    ),
                 ],
               ),
             ],
@@ -110,7 +136,15 @@ class FinancialIndependenceProgressCard extends StatelessWidget {
 }
 
 class _UnavailableProgressContent extends StatelessWidget {
-  const _UnavailableProgressContent();
+  const _UnavailableProgressContent({
+    this.currentValueLabel,
+    this.targetValueLabel,
+    this.subtitle,
+  });
+
+  final String? currentValueLabel;
+  final String? targetValueLabel;
+  final String? subtitle;
 
   @override
   Widget build(BuildContext context) {
@@ -122,16 +156,39 @@ class _UnavailableProgressContent extends StatelessWidget {
         Text('Progress unavailable', style: textTheme.titleLarge),
         const SizedBox(height: AppSpacing.sm),
         Text(
-          'Your journey progress will appear here after setup.',
+          subtitle ?? 'Your journey progress will appear here after setup.',
           style: textTheme.bodyMedium,
         ),
+        if (currentValueLabel != null || targetValueLabel != null) ...<Widget>[
+          const SizedBox(height: AppSpacing.lg),
+          Wrap(
+            spacing: AppSpacing.lg,
+            runSpacing: AppSpacing.md,
+            children: <Widget>[
+              if (currentValueLabel case final String current
+                  when current.isNotEmpty)
+                _ValueSummary(
+                  key: const Key('financial-independence-current-net-worth'),
+                  label: 'Current',
+                  value: current,
+                ),
+              if (targetValueLabel case final String target
+                  when target.isNotEmpty)
+                _ValueSummary(
+                  key: const Key('financial-independence-target-value'),
+                  label: 'Target',
+                  value: target,
+                ),
+            ],
+          ),
+        ],
       ],
     );
   }
 }
 
 class _ValueSummary extends StatelessWidget {
-  const _ValueSummary({required this.label, required this.value});
+  const _ValueSummary({required this.label, required this.value, super.key});
 
   final String label;
   final String value;

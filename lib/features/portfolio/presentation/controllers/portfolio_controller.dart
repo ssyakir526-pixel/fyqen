@@ -11,7 +11,9 @@ import 'package:fyqen/features/portfolio/application/use_cases/rename_portfolio.
 import 'package:fyqen/features/portfolio/application/use_cases/replace_asset_in_portfolio.dart';
 import 'package:fyqen/features/portfolio/application/use_cases/replace_liability_in_portfolio.dart';
 import 'package:fyqen/features/portfolio/application/use_cases/save_portfolio.dart';
+import 'package:fyqen/features/portfolio/application/use_cases/set_financial_independence_target.dart';
 import 'package:fyqen/features/portfolio/domain/entities/portfolio.dart';
+import 'package:fyqen/features/portfolio/domain/value_objects/financial_independence_target.dart';
 import 'package:fyqen/features/portfolio/presentation/state/portfolio_view_state.dart';
 
 /// Coordinates one authenticated Portfolio presentation session.
@@ -26,6 +28,8 @@ final class PortfolioController extends ChangeNotifier {
     required AddLiabilityToPortfolioUseCase addLiabilityToPortfolio,
     required ReplaceLiabilityInPortfolioUseCase replaceLiabilityInPortfolio,
     required RemoveLiabilityFromPortfolioUseCase removeLiabilityFromPortfolio,
+    required SetFinancialIndependenceTargetUseCase
+    setFinancialIndependenceTarget,
     required DateTime Function() currentTime,
   }) : _loadPortfolio = loadPortfolio,
        _savePortfolio = savePortfolio,
@@ -36,6 +40,7 @@ final class PortfolioController extends ChangeNotifier {
        _addLiabilityToPortfolio = addLiabilityToPortfolio,
        _replaceLiabilityInPortfolio = replaceLiabilityInPortfolio,
        _removeLiabilityFromPortfolio = removeLiabilityFromPortfolio,
+       _setFinancialIndependenceTarget = setFinancialIndependenceTarget,
        _currentTime = currentTime;
 
   static const String _primaryPortfolioId = 'primary';
@@ -50,6 +55,7 @@ final class PortfolioController extends ChangeNotifier {
   final AddLiabilityToPortfolioUseCase _addLiabilityToPortfolio;
   final ReplaceLiabilityInPortfolioUseCase _replaceLiabilityInPortfolio;
   final RemoveLiabilityFromPortfolioUseCase _removeLiabilityFromPortfolio;
+  final SetFinancialIndependenceTargetUseCase _setFinancialIndependenceTarget;
   final DateTime Function() _currentTime;
 
   PortfolioViewState _state = const PortfolioViewState.initial();
@@ -164,6 +170,19 @@ final class PortfolioController extends ChangeNotifier {
           _removeLiabilityFromPortfolio(
             portfolio: portfolio,
             liabilityId: liabilityId,
+            updatedAt: timestamp,
+          ),
+    );
+  }
+
+  Future<bool> setFinancialIndependenceTarget(
+    FinancialIndependenceTarget target,
+  ) {
+    return _saveMutation(
+      (Portfolio portfolio, DateTime timestamp) =>
+          _setFinancialIndependenceTarget(
+            portfolio: portfolio,
+            target: target,
             updatedAt: timestamp,
           ),
     );

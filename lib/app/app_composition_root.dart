@@ -20,6 +20,7 @@ import 'package:fyqen/features/portfolio/application/use_cases/rename_portfolio.
 import 'package:fyqen/features/portfolio/application/use_cases/replace_asset_in_portfolio.dart';
 import 'package:fyqen/features/portfolio/application/use_cases/replace_liability_in_portfolio.dart';
 import 'package:fyqen/features/portfolio/application/use_cases/save_portfolio.dart';
+import 'package:fyqen/features/portfolio/application/use_cases/set_financial_independence_target.dart';
 import 'package:fyqen/features/portfolio/infrastructure/repositories/firestore_portfolio_repository.dart';
 import 'package:fyqen/features/portfolio/infrastructure/repositories/in_memory_portfolio_repository.dart';
 
@@ -48,6 +49,8 @@ final class AppCompositionRoot {
     addLiabilityToPortfolio = const AddLiabilityToPortfolioUseCase();
     replaceLiabilityInPortfolio = const ReplaceLiabilityInPortfolioUseCase();
     removeLiabilityFromPortfolio = const RemoveLiabilityFromPortfolioUseCase();
+    setFinancialIndependenceTarget =
+        const SetFinancialIndependenceTargetUseCase();
 
     watchAuthenticationState = WatchAuthenticationStateUseCase(
       this.authenticationRepository,
@@ -120,6 +123,8 @@ final class AppCompositionRoot {
   late final AddLiabilityToPortfolioUseCase addLiabilityToPortfolio;
   late final ReplaceLiabilityInPortfolioUseCase replaceLiabilityInPortfolio;
   late final RemoveLiabilityFromPortfolioUseCase removeLiabilityFromPortfolio;
+  late final SetFinancialIndependenceTargetUseCase
+  setFinancialIndependenceTarget;
 
   late final WatchAuthenticationStateUseCase watchAuthenticationState;
   late final GetCurrentAuthenticatedUserUseCase getCurrentAuthenticatedUser;

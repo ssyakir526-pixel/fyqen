@@ -9,7 +9,6 @@ import 'package:fyqen/core/theme/app_colors.dart';
 import 'package:fyqen/features/authentication/application/repositories/authentication_repository.dart';
 import 'package:fyqen/features/authentication/domain/entities/authenticated_user.dart';
 import 'package:fyqen/features/dashboard/presentation/pages/dashboard_placeholder_page.dart';
-import 'package:fyqen/features/dashboard/presentation/widgets/financial_independence_progress_card.dart';
 import 'package:fyqen/features/dashboard/presentation/widgets/journey_overview_card.dart';
 import 'package:fyqen/features/dashboard/presentation/widgets/net_worth_hero_card.dart';
 import 'package:fyqen/features/dashboard/presentation/widgets/quick_actions_card.dart';
@@ -50,8 +49,11 @@ void main() {
     expect(find.byType(NetWorthHeroCard), findsOneWidget);
     expect(find.text('Net worth unavailable'), findsNothing);
     expect(find.text('0'), findsOneWidget);
-    expect(find.byType(FinancialIndependenceProgressCard), findsOneWidget);
-    expect(find.text('Progress unavailable'), findsOneWidget);
+    expect(
+      find.byKey(const Key('financial-independence-no-target-card')),
+      findsOneWidget,
+    );
+    expect(find.text('Set your FI target'), findsOneWidget);
     expect(find.byType(JourneyOverviewCard), findsOneWidget);
     expect(find.text('Journey unavailable'), findsOneWidget);
     expect(find.byType(QuickActionsCard), findsOneWidget);

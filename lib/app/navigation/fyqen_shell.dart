@@ -7,6 +7,7 @@ import '../../features/history/presentation/pages/history_placeholder_page.dart'
 import '../../features/journey/presentation/pages/journey_placeholder_page.dart';
 import '../../features/liabilities/domain/entities/liability.dart';
 import '../../features/portfolio/domain/entities/portfolio.dart';
+import '../../features/portfolio/domain/value_objects/financial_independence_target.dart';
 import '../../features/portfolio/presentation/pages/portfolio_management_page.dart';
 import '../../features/portfolio/presentation/pages/portfolio_placeholder_page.dart';
 import '../../features/settings/presentation/pages/settings_placeholder_page.dart';
@@ -25,6 +26,7 @@ final class FyqenShell extends StatefulWidget {
     this.onAddLiability,
     this.onReplaceLiability,
     this.onRemoveLiability,
+    this.onSetFinancialIndependenceTarget,
     this.createAssetId,
     this.createLiabilityId,
     this.currentTime,
@@ -39,6 +41,8 @@ final class FyqenShell extends StatefulWidget {
   final Future<bool> Function(Liability liability)? onAddLiability;
   final Future<bool> Function(Liability liability)? onReplaceLiability;
   final Future<bool> Function(String liabilityId)? onRemoveLiability;
+  final Future<bool> Function(FinancialIndependenceTarget target)?
+  onSetFinancialIndependenceTarget;
   final String Function()? createAssetId;
   final String Function()? createLiabilityId;
   final DateTime Function()? currentTime;
@@ -86,6 +90,8 @@ final class _FyqenShellState extends State<FyqenShell> {
       DashboardPlaceholderPage(
         portfolio: portfolio,
         isPortfolioSaving: widget.isPortfolioSaving,
+        onSetFinancialIndependenceTarget:
+            widget.onSetFinancialIndependenceTarget,
       ),
       canManagePortfolio
           ? PortfolioManagementPage(

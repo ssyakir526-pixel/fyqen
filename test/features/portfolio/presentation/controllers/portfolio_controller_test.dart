@@ -13,7 +13,9 @@ import 'package:fyqen/features/portfolio/application/use_cases/rename_portfolio.
 import 'package:fyqen/features/portfolio/application/use_cases/replace_asset_in_portfolio.dart';
 import 'package:fyqen/features/portfolio/application/use_cases/replace_liability_in_portfolio.dart';
 import 'package:fyqen/features/portfolio/application/use_cases/save_portfolio.dart';
+import 'package:fyqen/features/portfolio/application/use_cases/set_financial_independence_target.dart';
 import 'package:fyqen/features/portfolio/domain/entities/portfolio.dart';
+import 'package:fyqen/features/portfolio/domain/value_objects/financial_independence_target.dart';
 import 'package:fyqen/features/portfolio/presentation/controllers/portfolio_controller.dart';
 import 'package:fyqen/features/portfolio/presentation/state/portfolio_view_state.dart';
 
@@ -40,6 +42,8 @@ void main() {
       addLiabilityToPortfolio: const AddLiabilityToPortfolioUseCase(),
       replaceLiabilityInPortfolio: const ReplaceLiabilityInPortfolioUseCase(),
       removeLiabilityFromPortfolio: const RemoveLiabilityFromPortfolioUseCase(),
+      setFinancialIndependenceTarget:
+          const SetFinancialIndependenceTargetUseCase(),
       currentTime: () => DateTime.utc(2026),
     );
   }
@@ -104,6 +108,31 @@ void main() {
       expect(subject.state.portfolio, same(existing));
       expect(subject.state.failure, same(failure));
     });
+
+    test(
+      'saves the Financial Independence target through the shared Portfolio',
+      () async {
+        final _RecordingPortfolioRepository repository =
+            _RecordingPortfolioRepository(portfolio: portfolio());
+        final PortfolioController subject = controller(repository);
+        await subject.load();
+
+        final bool didSave = await subject.setFinancialIndependenceTarget(
+          FinancialIndependenceTarget(amount: '1000', currencyCode: 'myr'),
+        );
+
+        expect(didSave, isTrue);
+        expect(repository.saveCalls, 1);
+        expect(
+          subject.state.portfolio!.financialIndependenceTarget!.amount,
+          '1000',
+        );
+        expect(
+          subject.state.portfolio!.financialIndependenceTarget!.currencyCode,
+          'MYR',
+        );
+      },
+    );
 
     test('retries an explicit failed load without automatic retries', () async {
       const PortfolioPersistenceException failure =

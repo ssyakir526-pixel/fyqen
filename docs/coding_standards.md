@@ -145,6 +145,14 @@ Do not seed sample liabilities or introduce debt advice, automatic interest,
 repayment calculations, or currency conversion without explicit architecture.
 Use distinct stable keys for page-level and empty-state actions.
 
+Financial Independence targets belong to the Portfolio aggregate and use the
+exact positive decimal Domain value object. Target forms validate before Domain
+construction and must retain entered values on failed persistence. Dashboard
+progress is presentation derivation from the shared Portfolio snapshot; do not
+duplicate it in widgets, convert currencies, add projections, or give financial
+advice. Missing persisted target fields must remain backward-compatible as an
+unconfigured target.
+
 ## Null Safety and Types
 
 Avoid `dynamic`; prefer `Object?` for unknown values. Do not use `!` unless it

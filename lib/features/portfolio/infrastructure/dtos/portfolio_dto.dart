@@ -14,10 +14,14 @@ final class PortfolioDto {
     required this.updatedAt,
     required List<Map<String, Object?>> assets,
     required List<Map<String, Object?>> liabilities,
+    Map<String, Object?>? financialIndependenceTarget,
   }) : _assets = List<Map<String, Object?>>.unmodifiable(assets.map(_copyMap)),
        _liabilities = List<Map<String, Object?>>.unmodifiable(
          liabilities.map(_copyMap),
-       ) {
+       ),
+       _financialIndependenceTarget = financialIndependenceTarget == null
+           ? null
+           : _copyMap(financialIndependenceTarget) {
     if (schemaVersion != supportedSchemaVersion) {
       throw PortfolioDataMappingException(
         path: 'schemaVersion',
@@ -37,6 +41,7 @@ final class PortfolioDto {
       liabilities: _decodeLiabilities(
         _requiredValue(map, 'liabilities', 'liabilities'),
       ),
+      financialIndependenceTarget: _decodeFinancialIndependenceTarget(map),
     );
   }
 
@@ -49,12 +54,16 @@ final class PortfolioDto {
   final String updatedAt;
   final List<Map<String, Object?>> _assets;
   final List<Map<String, Object?>> _liabilities;
+  final Map<String, Object?>? _financialIndependenceTarget;
 
   List<Map<String, Object?>> get assets =>
       List<Map<String, Object?>>.unmodifiable(_assets);
 
   List<Map<String, Object?>> get liabilities =>
       List<Map<String, Object?>>.unmodifiable(_liabilities);
+
+  Map<String, Object?>? get financialIndependenceTarget =>
+      _copyOptionalMap(_financialIndependenceTarget);
 
   Map<String, Object?> toMap() {
     return <String, Object?>{
@@ -65,6 +74,7 @@ final class PortfolioDto {
       'updatedAt': updatedAt,
       'assets': _assets.map(Map<String, Object?>.of).toList(),
       'liabilities': _liabilities.map(Map<String, Object?>.of).toList(),
+      'financialIndependenceTarget': financialIndependenceTarget,
     };
   }
 
@@ -96,6 +106,32 @@ final class PortfolioDto {
         return _decodeLiability(value[index], 'liabilities[$index]');
       }),
     );
+  }
+
+  static Map<String, Object?>? _decodeFinancialIndependenceTarget(
+    Map<String, Object?> map,
+  ) {
+    if (!map.containsKey('financialIndependenceTarget') ||
+        map['financialIndependenceTarget'] == null) {
+      return null;
+    }
+
+    final Map<String, Object?> target = _decodeMap(
+      map['financialIndependenceTarget'],
+      'financialIndependenceTarget',
+    );
+    return Map<String, Object?>.unmodifiable(<String, Object?>{
+      'amount': _requiredString(
+        target,
+        'amount',
+        'financialIndependenceTarget.amount',
+      ),
+      'currencyCode': _requiredString(
+        target,
+        'currencyCode',
+        'financialIndependenceTarget.currencyCode',
+      ),
+    });
   }
 
   static Map<String, Object?> _decodeAsset(Object? value, String path) {
@@ -241,5 +277,9 @@ final class PortfolioDto {
 
   static Map<String, Object?> _copyMap(Map<String, Object?> value) {
     return Map<String, Object?>.unmodifiable(value);
+  }
+
+  static Map<String, Object?>? _copyOptionalMap(Map<String, Object?>? value) {
+    return value == null ? null : _copyMap(value);
   }
 }

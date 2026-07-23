@@ -261,6 +261,20 @@ existing Portfolio; no optimistic local-only state or realtime listener exists.
 Production persistence still requires a Firestore Database with secure rules
 deployed and Email/Password authentication enabled in Firebase Console.
 
+## Financial Independence Target
+
+Each Portfolio supports one optional Financial Independence (FI) target: the
+net-worth amount the user aims to reach. It uses exact decimal strings and a
+normalized three-letter currency code. The target is stored inside the existing
+Portfolio document, so earlier documents without this field remain valid and
+load as unconfigured targets.
+
+Dashboard progress derives from the shared Portfolio snapshot as net worth
+divided by the FI target. It remains unavailable for mixed currencies or a
+currency mismatch; Fyqen performs no currency conversion. The target form and
+Dashboard do not provide projections, deadlines, withdrawal calculations, or
+financial advice.
+
 The Portfolio application layer now defines a persistence-neutral
 `PortfolioRepository` contract for finding one Portfolio by ID, saving a
 complete Portfolio snapshot, and deleting by ID. It has no implementation,

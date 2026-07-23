@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../features/portfolio/domain/entities/portfolio.dart';
+import '../../../../features/portfolio/domain/value_objects/financial_independence_target.dart';
+import '../../../../features/portfolio/presentation/widgets/financial_independence_target_form.dart';
+import '../../../../shared/widgets/app_button.dart';
+import '../../../../shared/widgets/app_card.dart';
 import '../../../../shared/widgets/app_page.dart';
 import '../../../../shared/widgets/app_section.dart';
 import '../../../../shared/widgets/section_title.dart';
@@ -18,10 +23,13 @@ class DashboardPlaceholderPage extends StatelessWidget {
     super.key,
     this.portfolio,
     this.isPortfolioSaving = false,
+    this.onSetFinancialIndependenceTarget,
   });
 
   final Portfolio? portfolio;
   final bool isPortfolioSaving;
+  final Future<bool> Function(FinancialIndependenceTarget target)?
+  onSetFinancialIndependenceTarget;
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +75,33 @@ class DashboardPlaceholderPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 const SectionTitle(title: 'Financial Independence'),
-                const FinancialIndependenceProgressCard(hasData: false),
+                if (summary == null || !summary.hasFinancialIndependenceTarget)
+                  _FinancialIndependenceNoTargetCard(
+                    onSetTarget: onSetFinancialIndependenceTarget,
+                    isSaving: isPortfolioSaving,
+                  )
+                else ...<Widget>[
+                  FinancialIndependenceProgressCard(
+                    key: const Key('financial-independence-progress-card'),
+                    hasData: summary.isFinancialIndependenceProgressAvailable,
+                    progress: summary.financialIndependenceProgress,
+                    progressLabel: summary.financialIndependenceProgressLabel,
+                    currentValueLabel: summary.netWorthLabel,
+                    targetValueLabel: summary.financialIndependenceTargetLabel,
+                    subtitle: summary.isFinancialIndependenceProgressAvailable
+                        ? null
+                        : 'Progress cannot be calculated across currencies.',
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  AppButton(
+                    key: const Key('edit-financial-independence-target-button'),
+                    label: 'Edit Target',
+                    onPressed: isPortfolioSaving
+                        ? null
+                        : () => _openTargetForm(context, currentPortfolio),
+                    expand: false,
+                  ),
+                ],
               ],
             ),
           ),
@@ -102,6 +136,85 @@ class DashboardPlaceholderPage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _openTargetForm(
+    BuildContext context,
+    Portfolio? portfolio,
+  ) async {
+    final Future<bool> Function(FinancialIndependenceTarget target)? onSubmit =
+        onSetFinancialIndependenceTarget;
+    if (onSubmit == null) {
+      return;
+    }
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return FinancialIndependenceTargetForm(
+          initialTarget: portfolio?.financialIndependenceTarget,
+          onSubmit: onSubmit,
+          isSaving: isPortfolioSaving,
+        );
+      },
+    );
+  }
+}
+
+final class _FinancialIndependenceNoTargetCard extends StatelessWidget {
+  const _FinancialIndependenceNoTargetCard({
+    required this.onSetTarget,
+    required this.isSaving,
+  });
+
+  final Future<bool> Function(FinancialIndependenceTarget target)? onSetTarget;
+  final bool isSaving;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      key: const Key('financial-independence-no-target-card'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            'Set your FI target',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            'Add the net worth goal you want to reach so Fyqen can calculate your financial freedom progress.',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          AppButton(
+            key: const Key('set-financial-independence-target-button'),
+            label: 'Set FI Target',
+            onPressed: onSetTarget == null || isSaving
+                ? null
+                : () => _openForm(context),
+            expand: false,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _openForm(BuildContext context) async {
+    final Future<bool> Function(FinancialIndependenceTarget target)? onSubmit =
+        onSetTarget;
+    if (onSubmit == null) {
+      return;
+    }
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return FinancialIndependenceTargetForm(onSubmit: onSubmit);
+      },
     );
   }
 }

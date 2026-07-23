@@ -541,6 +541,31 @@ There is no local liability cache, Firebase type, repository, UID, realtime
 listener, optimistic state, loan service, automatic interest calculation,
 repayment schedule, debt advice, or currency conversion in Presentation.
 
+## Financial Independence Target
+
+`FinancialIndependenceTarget` is an immutable Portfolio domain value object
+with an exact positive decimal amount and normalized currency code. A Portfolio
+may have one target or no target; it is not a separate aggregate or document.
+
+```text
+Dashboard target form
+-> PortfolioSession callback
+-> PortfolioController.setFinancialIndependenceTarget
+-> SetFinancialIndependenceTargetUseCase
+-> SavePortfolioUseCase
+-> PortfolioRepository
+-> FirestorePortfolioRepository
+```
+
+The existing Portfolio document stores the nullable nested
+`financialIndependenceTarget` field with `amount` and `currencyCode` strings.
+Absent fields from earlier documents decode as an unconfigured target, while
+malformed target data follows the existing mapping-exception path. Dashboard
+progress is derived by `DashboardPortfolioSummary` from the same immutable
+Portfolio snapshot used by Assets and Liabilities. Mixed currencies and target
+currency mismatches leave progress unavailable; no conversion, projection, or
+financial advice is added.
+
 `lib/features/portfolio/application/repositories/portfolio_repository.dart`
 defines the persistence capability required by future Portfolio workflows. The
 application layer owns this contract, while future infrastructure adapters may

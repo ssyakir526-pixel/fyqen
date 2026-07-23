@@ -6,6 +6,7 @@ import 'package:fyqen/features/liabilities/domain/entities/liability.dart';
 import 'package:fyqen/features/liabilities/domain/enums/liability_type.dart';
 import 'package:fyqen/features/liabilities/domain/value_objects/liability_amount.dart';
 import 'package:fyqen/features/portfolio/domain/entities/portfolio.dart';
+import 'package:fyqen/features/portfolio/domain/value_objects/financial_independence_target.dart';
 import 'package:fyqen/features/portfolio/infrastructure/dtos/portfolio_dto.dart';
 import 'package:fyqen/features/portfolio/infrastructure/errors/portfolio_data_mapping_exception.dart';
 
@@ -14,6 +15,8 @@ final class PortfolioMapper {
   const PortfolioMapper();
 
   PortfolioDto toDto(Portfolio portfolio) {
+    final FinancialIndependenceTarget? target =
+        portfolio.financialIndependenceTarget;
     return PortfolioDto(
       schemaVersion: PortfolioDto.supportedSchemaVersion,
       id: portfolio.id,
@@ -24,6 +27,9 @@ final class PortfolioMapper {
       liabilities: portfolio.liabilities
           .map(_liabilityToMap)
           .toList(growable: false),
+      financialIndependenceTarget: target == null
+          ? null
+          : _financialIndependenceTargetToMap(target),
     );
   }
 
@@ -42,6 +48,8 @@ final class PortfolioMapper {
       (int index) =>
           _liabilityFromMap(dto.liabilities[index], 'liabilities[$index]'),
     );
+    final FinancialIndependenceTarget? financialIndependenceTarget =
+        _financialIndependenceTargetFromMap(dto.financialIndependenceTarget);
 
     try {
       return Portfolio(
@@ -49,6 +57,7 @@ final class PortfolioMapper {
         name: dto.name,
         assets: assets,
         liabilities: liabilities,
+        financialIndependenceTarget: financialIndependenceTarget,
         createdAt: _timestampFromString(dto.createdAt, 'createdAt'),
         updatedAt: _timestampFromString(dto.updatedAt, 'updatedAt'),
       );
@@ -90,6 +99,42 @@ final class PortfolioMapper {
           ? null
           : _timestampToString(liability.dueDate!),
     };
+  }
+
+  static Map<String, Object?> _financialIndependenceTargetToMap(
+    FinancialIndependenceTarget target,
+  ) {
+    return <String, Object?>{
+      'amount': target.amount,
+      'currencyCode': target.currencyCode,
+    };
+  }
+
+  static FinancialIndependenceTarget? _financialIndependenceTargetFromMap(
+    Map<String, Object?>? map,
+  ) {
+    if (map == null) {
+      return null;
+    }
+
+    try {
+      return FinancialIndependenceTarget(
+        amount: map['amount'] as String,
+        currencyCode: map['currencyCode'] as String,
+      );
+    } on ArgumentError catch (error) {
+      throw PortfolioDataMappingException(
+        path: 'financialIndependenceTarget',
+        message: 'Financial Independence target violates a domain invariant.',
+        cause: error,
+      );
+    } on FormatException catch (error) {
+      throw PortfolioDataMappingException(
+        path: 'financialIndependenceTarget',
+        message: 'Financial Independence target has an invalid value.',
+        cause: error,
+      );
+    }
   }
 
   static Asset _assetFromMap(Map<String, Object?> map, String path) {
