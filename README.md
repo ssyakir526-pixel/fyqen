@@ -114,6 +114,19 @@ The existing seven aggregate-operation use cases remain synchronous and
 repository-free. No Firebase, Firestore, authentication, UI integration, or
 financial calculations are implemented.
 
+## Portfolio Persistence Data Mapping
+
+The Portfolio infrastructure layer now provides a persistence data-mapping
+boundary. `PortfolioDto` defines the complete version 1 persistence schema and
+`PortfolioMapper` converts complete Portfolio aggregates to and from DTO/map
+data. Exact decimal values are stored as strings, enum meanings use stable enum
+names, and timestamps use UTC ISO-8601 strings. Asset and Liability ordering is
+preserved. Malformed external data produces `PortfolioDataMappingException`.
+
+Domain entities remain persistence-independent. Firebase, Firestore,
+authentication, user ownership, durable persistence, direct UI use of the
+mapper, and financial calculations are not implemented.
+
 ## Portfolio Repository Contract
 
 The Portfolio application layer now defines a persistence-neutral

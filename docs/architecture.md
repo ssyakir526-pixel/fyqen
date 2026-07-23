@@ -204,8 +204,9 @@ depends on infrastructure. It uses instance-local `Map` storage with Portfolio
 ID keys; there is no static or global storage. Saving an ID replaces the prior
 complete aggregate reference, lookups return that exact reference or null, and
 missing deletion is idempotent. Lookup and deletion IDs are trimmed while
-remaining case-sensitive. No DTO, mapper, serialization, Firebase, database,
-file persistence, authentication, ownership, or financial arithmetic exists.
+remaining case-sensitive. It does not use the separate DTO or mapper boundary.
+No Firebase, database, file persistence, authentication, ownership, or
+financial arithmetic exists.
 Instances are isolated and data lasts only for the repository lifetime, making
 this appropriate for development and tests rather than production persistence.
 Future Firestore infrastructure must implement the same application contract
@@ -229,6 +230,44 @@ an aggregate operation, and save; that composition is not implemented here.
 `InMemoryPortfolioRepository` can satisfy the workflows for development and
 tests, while a future Firestore implementation can do so without changing the
 use cases. No Firebase integration exists today.
+
+## Portfolio Persistence Data Mapping
+
+`lib/features/portfolio/infrastructure/dtos/portfolio_dto.dart` contains the
+single root `PortfolioDto` for the persistence-neutral version 1 schema, while
+`lib/features/portfolio/infrastructure/mappers/portfolio_mapper.dart` contains
+`PortfolioMapper`. `PortfolioDataMappingException` in the infrastructure
+errors directory reports malformed external values with a data path.
+
+The map schema stores `schemaVersion`, Portfolio identity and name, UTC
+ISO-8601 `createdAt` and `updatedAt` strings, plus ordered `assets` and
+`liabilities` lists. Child records store their stable enum names, exact decimal
+strings, currency codes, timestamps, and optional values. Required fields and
+their types are decoded strictly; unknown fields are ignored for forward
+compatibility. No missing value is defaulted or repaired.
+
+Mapping converts complete aggregates in both directions through the existing
+domain factories. It preserves ordering and produces a new validated domain
+snapshot. Financial decimals are never converted to `double`, enum indexes are
+not persisted, and mapping neither generates IDs nor timestamps. Firebase types
+must not enter the domain or application layers, keeping the persistence
+representation separate from financial business rules.
+
+A Firestore-specific repository adapter may later use this mapper, but no such
+adapter, Firebase connection, authentication, user-ownership model, or durable
+persistence exists today. Authentication and user ownership must be designed
+before production user-data access is introduced.
+
+Future direction:
+
+```text
+Firestore-specific document data
+-> Firestore repository adapter
+-> PortfolioMapper
+-> Portfolio domain aggregate
+```
+
+The future adapter is intentionally deferred.
 
 ## Portfolio Repository Contract
 
