@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "212953019639",
+    "project_id": "fyqen-df590",
+    "storage_bucket": "fyqen-df590.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:212953019639:android:d884b2e35fe899f6290ff2",
+        "android_client_info": {
+          "package_name": "com.fyqen.fyqen"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbqTWnU5lgVgXh2W4dH4QhAKGvyRO_8KU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

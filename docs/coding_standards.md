@@ -70,6 +70,13 @@ service locators. Do not introduce a state-management package without a
 dedicated architectural decision. Future features must model loading, success,
 empty, and error states explicitly.
 
+## External SDK Boundaries
+
+Initialize external SDKs only at the framework/bootstrap boundary. Generated SDK
+configuration must not be imported into Domain or Application code, and
+presentation code must not call SDK plugins directly. SDK-backed infrastructure
+must implement application-owned abstractions.
+
 ## Null Safety and Types
 
 Avoid `dynamic`; prefer `Object?` for unknown values. Do not use `!` unless it
