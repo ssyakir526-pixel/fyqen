@@ -75,7 +75,15 @@ empty, and error states explicitly.
 Initialize external SDKs only at the framework/bootstrap boundary. Generated SDK
 configuration must not be imported into Domain or Application code, and
 presentation code must not call SDK plugins directly. SDK-backed infrastructure
-must implement application-owned abstractions.
+must implement application-owned abstractions. The application composition root
+may construct those adapters with injected SDK dependencies, but must not expose
+SDK types to feature code.
+
+Never expose Firebase `User` or `UserCredential` outside Infrastructure. Never
+log or persist plaintext passwords. Translate Firebase exceptions at the
+infrastructure boundary, keep application use cases dependent on
+application-owned repository contracts, and leave authentication stream
+subscription to explicit future presentation or state ownership.
 
 ## Null Safety and Types
 

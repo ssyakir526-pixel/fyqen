@@ -2,6 +2,14 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:fyqen/app/app_composition_root.dart';
 import 'package:fyqen/features/assets/domain/entities/asset.dart';
+import 'package:fyqen/features/authentication/application/errors/authentication_exception.dart';
+import 'package:fyqen/features/authentication/application/repositories/authentication_repository.dart';
+import 'package:fyqen/features/authentication/application/use_cases/get_current_authenticated_user.dart';
+import 'package:fyqen/features/authentication/application/use_cases/register_with_email_and_password.dart';
+import 'package:fyqen/features/authentication/application/use_cases/sign_in_with_email_and_password.dart';
+import 'package:fyqen/features/authentication/application/use_cases/sign_out.dart';
+import 'package:fyqen/features/authentication/application/use_cases/watch_authentication_state.dart';
+import 'package:fyqen/features/authentication/domain/entities/authenticated_user.dart';
 import 'package:fyqen/features/liabilities/domain/entities/liability.dart';
 import 'package:fyqen/features/portfolio/application/repositories/portfolio_repository.dart';
 import 'package:fyqen/features/portfolio/application/use_cases/add_asset_to_portfolio.dart';
@@ -29,9 +37,20 @@ void main() {
     );
   }
 
+  AppCompositionRoot createRoot({
+    PortfolioRepository? portfolioRepository,
+    AuthenticationRepository? authenticationRepository,
+  }) {
+    return AppCompositionRoot(
+      portfolioRepository: portfolioRepository,
+      authenticationRepository:
+          authenticationRepository ?? _RecordingAuthenticationRepository(),
+    );
+  }
+
   group('AppCompositionRoot', () {
     test('creates the default graph with all Portfolio use cases', () {
-      final AppCompositionRoot root = AppCompositionRoot();
+      final AppCompositionRoot root = createRoot();
 
       expect(root.portfolioRepository, isA<InMemoryPortfolioRepository>());
       expect(root.portfolioRepository, isA<PortfolioRepository>());
@@ -59,7 +78,7 @@ void main() {
     test('uses a supplied repository without construction side effects', () async {
       final _RecordingPortfolioRepository repository =
           _RecordingPortfolioRepository();
-      final AppCompositionRoot root = AppCompositionRoot(
+      final AppCompositionRoot root = createRoot(
         portfolioRepository: repository,
       );
       final Portfolio portfolio = createPortfolio();
@@ -84,7 +103,7 @@ void main() {
 
     test('preserves repository exceptions through composed workflows', () async {
       final ArgumentError error = ArgumentError('save failed');
-      final AppCompositionRoot root = AppCompositionRoot(
+      final AppCompositionRoot root = createRoot(
         portfolioRepository: _RecordingPortfolioRepository(saveError: error),
       );
 
@@ -94,7 +113,7 @@ void main() {
     test('keeps aggregate operations synchronous and repository-free', () {
       final _RecordingPortfolioRepository repository =
           _RecordingPortfolioRepository();
-      final AppCompositionRoot root = AppCompositionRoot(
+      final AppCompositionRoot root = createRoot(
         portfolioRepository: repository,
       );
       final Portfolio original = createPortfolio();
@@ -113,8 +132,8 @@ void main() {
     });
 
     test('shares default persistence within a root and isolates separate roots', () async {
-      final AppCompositionRoot firstRoot = AppCompositionRoot();
-      final AppCompositionRoot secondRoot = AppCompositionRoot();
+      final AppCompositionRoot firstRoot = createRoot();
+      final AppCompositionRoot secondRoot = createRoot();
       final Portfolio portfolio = createPortfolio();
 
       await firstRoot.savePortfolio(portfolio);
@@ -125,6 +144,83 @@ void main() {
       );
       expect(identical(await firstRoot.loadPortfolio('portfolio-1'), portfolio), isTrue);
       expect(await secondRoot.loadPortfolio('portfolio-1'), isNull);
+    });
+
+    test('composes supplied authentication dependencies without side effects', () async {
+      final AuthenticatedUser user = AuthenticatedUser(
+        id: 'user-1',
+        email: 'user@example.com',
+      );
+      final _RecordingAuthenticationRepository repository =
+          _RecordingAuthenticationRepository(
+            currentUser: user,
+            signInUser: user,
+            registrationUser: user,
+          );
+      final AppCompositionRoot root = createRoot(
+        authenticationRepository: repository,
+      );
+
+      expect(identical(root.authenticationRepository, repository), isTrue);
+      expect(root.watchAuthenticationState, isA<WatchAuthenticationStateUseCase>());
+      expect(
+        root.getCurrentAuthenticatedUser,
+        isA<GetCurrentAuthenticatedUserUseCase>(),
+      );
+      expect(
+        root.signInWithEmailAndPassword,
+        isA<SignInWithEmailAndPasswordUseCase>(),
+      );
+      expect(
+        root.registerWithEmailAndPassword,
+        isA<RegisterWithEmailAndPasswordUseCase>(),
+      );
+      expect(root.signOut, isA<SignOutUseCase>());
+      expect(repository.totalCalls, 0);
+
+      expect(root.getCurrentAuthenticatedUser(), same(user));
+      expect(await root.signInWithEmailAndPassword(
+        email: 'user@example.com',
+        password: 'test-password',
+      ), same(user));
+      expect(await root.registerWithEmailAndPassword(
+        email: 'user@example.com',
+        password: 'test-password',
+      ), same(user));
+      await root.signOut();
+
+      expect(repository.currentUserCalls, 1);
+      expect(repository.signInCalls, 1);
+      expect(repository.registerCalls, 1);
+      expect(repository.signOutCalls, 1);
+      expect(repository.watchCalls, 0);
+    });
+
+    test('keeps supplied authentication repositories isolated and propagates errors', () async {
+      final AuthenticationException error = const AuthenticationException(
+        code: AuthenticationFailureCode.unknown,
+        message: 'Sign-out failed.',
+      );
+      final _RecordingAuthenticationRepository firstRepository =
+          _RecordingAuthenticationRepository(signOutError: error);
+      final _RecordingAuthenticationRepository secondRepository =
+          _RecordingAuthenticationRepository();
+      final AppCompositionRoot firstRoot = createRoot(
+        authenticationRepository: firstRepository,
+      );
+      final AppCompositionRoot secondRoot = createRoot(
+        authenticationRepository: secondRepository,
+      );
+
+      expect(
+        identical(firstRoot.authenticationRepository, secondRoot.authenticationRepository),
+        isFalse,
+      );
+      await expectLater(firstRoot.signOut(), throwsA(same(error)));
+      await secondRoot.signOut();
+
+      expect(firstRepository.signOutCalls, 1);
+      expect(secondRepository.signOutCalls, 1);
     });
   });
 }
@@ -161,5 +257,70 @@ final class _RecordingPortfolioRepository implements PortfolioRepository {
     deleteCalls += 1;
     deleteId = portfolioId;
     return Future<void>.value();
+  }
+}
+
+final class _RecordingAuthenticationRepository
+    implements AuthenticationRepository {
+  _RecordingAuthenticationRepository({
+    this.currentUser,
+    this.signInUser,
+    this.registrationUser,
+    this.signOutError,
+    Stream<AuthenticatedUser?>? authenticationState,
+  }) : _authenticationState =
+           authenticationState ?? Stream<AuthenticatedUser?>.empty();
+
+  final AuthenticatedUser? currentUser;
+  final AuthenticatedUser? signInUser;
+  final AuthenticatedUser? registrationUser;
+  final Object? signOutError;
+  final Stream<AuthenticatedUser?> _authenticationState;
+  int watchCalls = 0;
+  int currentUserCalls = 0;
+  int signInCalls = 0;
+  int registerCalls = 0;
+  int signOutCalls = 0;
+
+  int get totalCalls {
+    return watchCalls + currentUserCalls + signInCalls + registerCalls + signOutCalls;
+  }
+
+  @override
+  Stream<AuthenticatedUser?> watchAuthenticationState() {
+    watchCalls += 1;
+    return _authenticationState;
+  }
+
+  @override
+  AuthenticatedUser? getCurrentUser() {
+    currentUserCalls += 1;
+    return currentUser;
+  }
+
+  @override
+  Future<AuthenticatedUser> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) {
+    signInCalls += 1;
+    return Future<AuthenticatedUser>.value(signInUser!);
+  }
+
+  @override
+  Future<AuthenticatedUser> registerWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) {
+    registerCalls += 1;
+    return Future<AuthenticatedUser>.value(registrationUser!);
+  }
+
+  @override
+  Future<void> signOut() {
+    signOutCalls += 1;
+    return signOutError == null
+        ? Future<void>.value()
+        : Future<void>.error(signOutError!);
   }
 }

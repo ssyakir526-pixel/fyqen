@@ -94,14 +94,47 @@ Domain
 - Value objects
 ```
 
-Firebase imports do not enter Domain, Application, Portfolio infrastructure,
-`PortfolioRepository`, or `AppCompositionRoot`. Firebase Core does not provide
+Firebase imports do not enter Domain, application use cases, Portfolio
+infrastructure, `PortfolioRepository`, or presentation code. The composition
+root may construct an infrastructure adapter with an injected SDK dependency,
+but it must not expose SDK types to feature code. Firebase Core does not provide
 persistence by itself: InMemoryPortfolioRepository remains active, and Cloud
-Firestore, Firebase Authentication, user ownership, remote Portfolio storage,
-cross-device synchronization, security rules, and UI integration do not exist.
-Future Firebase-backed infrastructure must implement application-owned
-abstractions. Authentication and user ownership must be designed before
-production Portfolio cloud persistence is introduced.
+Firestore, user ownership, remote Portfolio storage, cross-device
+synchronization, security rules, and UI integration do not exist. Future
+Firebase-backed infrastructure must implement application-owned abstractions.
+Authentication and user ownership must be designed before production Portfolio
+cloud persistence is introduced.
+
+## Firebase Authentication Foundation
+
+Authentication is a separate feature from Portfolio. Its future presentation
+flow is deliberately bounded as follows:
+
+```text
+Future Presentation
+-> Authentication use cases
+-> AuthenticationRepository
+-> FirebaseAuthenticationRepository
+-> FirebaseAuth
+```
+
+`AuthenticatedUser` is a Firebase-independent domain entity. Application use
+cases depend only on `AuthenticationRepository`; Firebase `User`,
+`UserCredential`, and `FirebaseAuthException` stop in the infrastructure
+repository. That repository maps users internally and translates Firebase
+authentication failures to application-owned `AuthenticationException` values.
+
+`AppCompositionRoot` constructs one `AuthenticationRepository` per root and
+shares it across the authentication use cases. Composition does not read the
+current user, subscribe to authentication state, or perform sign-in,
+registration, or sign-out. No authentication UI state management, route guard,
+or UI integration exists yet.
+
+Authentication identity may later supply ownership context for a Firestore
+Portfolio repository, but user ownership, Cloud Firestore, cloud Portfolio
+persistence, and synchronization are not implemented. Before runtime
+email/password operations are used, the Email/Password provider must be enabled
+manually in the correct Firebase Console project.
 
 ## Primary Navigation
 
