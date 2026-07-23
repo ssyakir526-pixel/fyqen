@@ -116,6 +116,19 @@ presentation and application layers will supply callbacks; Dashboard pages
 compose actions without owning financial business logic, and creation flows
 will belong to their respective feature modules.
 
+## Assets Domain Foundation
+
+`lib/features/assets/domain` contains the persistence-independent Assets
+domain layer. `Asset` is an immutable entity with normalized ID-based equality.
+`AssetQuantity` stores a positive exact decimal-string quantity, and
+`AssetUnitPrice` stores a non-negative exact decimal-string amount with a
+normalized three-letter uppercase currency code. `AssetType` provides the
+domain classification. Floating-point values are intentionally avoided to
+preserve decimal input exactly until a dedicated calculation strategy exists.
+JSON and Firestore conversion are intentionally absent, and total-value
+calculation is deferred. Future data models must map into these domain types
+rather than adding persistence concerns to them.
+
 ## Firebase Boundary
 
 Firebase will be introduced later through data-layer implementations and

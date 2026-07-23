@@ -30,6 +30,18 @@ disabled Add asset and Add liability actions. Navigation, forms, persistence,
 and financial operations remain unimplemented; the component only forwards
 supplied callbacks.
 
+## Assets Domain Foundation
+
+The Assets feature now has its first domain foundation. `Asset` is an
+immutable, persistence-independent entity whose identity is its normalized
+asset ID. `AssetQuantity` stores a positive exact decimal quantity as a
+canonical string, while `AssetUnitPrice` stores a non-negative exact decimal
+price and normalized three-letter currency code. `AssetType` classifies the
+financial asset category. Quantity and unit price do not use floating-point
+representation, and no total-value calculation exists yet. Persistence,
+Firestore mapping, repositories, state management, and asset UI flows remain
+unimplemented.
+
 ## Technology
 
 - Flutter
