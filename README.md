@@ -114,6 +114,21 @@ The existing seven aggregate-operation use cases remain synchronous and
 repository-free. No Firebase, Firestore, authentication, UI integration, or
 financial calculations are implemented.
 
+## Application Composition Root
+
+`AppCompositionRoot` provides explicit, manual constructor-based dependency
+injection for the current Portfolio dependency graph. It selects
+`InMemoryPortfolioRepository` by default, or accepts a `PortfolioRepository`
+implementation through its constructor as a future replacement point. One
+repository instance is shared by `LoadPortfolioUseCase`, `SavePortfolioUseCase`,
+and `DeletePortfolioUseCase`; all seven synchronous aggregate-operation use
+cases are also exposed. Aggregate modification and persistence remain separate
+operations.
+
+No service locator, dependency-injection package, or global mutable singleton
+is used. No UI currently consumes the composition root. Firebase, Firestore,
+authentication, and user ownership remain unimplemented.
+
 ## Portfolio Persistence Data Mapping
 
 The Portfolio infrastructure layer now provides a persistence data-mapping

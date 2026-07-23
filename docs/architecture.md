@@ -231,6 +231,43 @@ an aggregate operation, and save; that composition is not implemented here.
 tests, while a future Firestore implementation can do so without changing the
 use cases. No Firebase integration exists today.
 
+## Application Composition Root
+
+`lib/app/app_composition_root.dart` is the explicit application composition
+root. It uses manual constructor-based dependency injection: it exposes a
+`PortfolioRepository`, selects `InMemoryPortfolioRepository` by default, and
+accepts another `PortfolioRepository` through its constructor. The selected
+repository instance is shared by `LoadPortfolioUseCase`, `SavePortfolioUseCase`,
+and `DeletePortfolioUseCase`.
+
+The root explicitly constructs those persistence workflows and all seven
+synchronous aggregate-operation use cases. It performs composition only: it
+does not perform business logic, repository operations, asynchronous
+initialization, automatic persistence, or UI integration. Aggregate operations
+and persistence workflows remain separate.
+
+```text
+App bootstrap
+-> AppCompositionRoot
+-> PortfolioRepository
+-> InMemoryPortfolioRepository
+
+AppCompositionRoot
+-> LoadPortfolioUseCase
+-> SavePortfolioUseCase
+-> DeletePortfolioUseCase
+
+AppCompositionRoot
+-> Seven synchronous aggregate-operation use cases
+```
+
+There is no global service location, static singleton state, or
+dependency-injection package. `AppCompositionRoot` must not become a service
+locator, business-logic class, state-management object, repository wrapper, or
+UI controller. A future `FirestorePortfolioRepository` can be supplied through
+the same constructor parameter only after authentication and user ownership are
+designed. Firebase and Firestore are not currently integrated.
+
 ## Portfolio Persistence Data Mapping
 
 `lib/features/portfolio/infrastructure/dtos/portfolio_dto.dart` contains the
