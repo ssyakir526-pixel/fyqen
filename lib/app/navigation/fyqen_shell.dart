@@ -10,23 +10,31 @@ import 'fyqen_destination.dart';
 
 /// Owns selection for Fyqen's persistent primary navigation destinations.
 final class FyqenShell extends StatefulWidget {
-  const FyqenShell({super.key});
+  const FyqenShell({super.key, this.onSignOut});
+
+  final VoidCallback? onSignOut;
 
   @override
   State<FyqenShell> createState() => _FyqenShellState();
 }
 
 final class _FyqenShellState extends State<FyqenShell> {
-  static const List<Widget> _pages = <Widget>[
-    DashboardPlaceholderPage(),
-    PortfolioPlaceholderPage(),
-    JourneyPlaceholderPage(),
-    HistoryPlaceholderPage(),
-    BattlePlaceholderPage(),
-    SettingsPlaceholderPage(),
-  ];
+  late final List<Widget> _pages;
 
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = <Widget>[
+      const DashboardPlaceholderPage(),
+      const PortfolioPlaceholderPage(),
+      const JourneyPlaceholderPage(),
+      const HistoryPlaceholderPage(),
+      const BattlePlaceholderPage(),
+      SettingsPlaceholderPage(onSignOut: widget.onSignOut),
+    ];
+  }
 
   void _onDestinationSelected(int index) {
     setState(() {

@@ -85,6 +85,15 @@ infrastructure boundary, keep application use cases dependent on
 application-owned repository contracts, and leave authentication stream
 subscription to explicit future presentation or state ownership.
 
+Authentication widgets must not import `firebase_auth` or access repositories
+directly; presentation controllers use application use cases. Stream
+subscriptions must be cancelled explicitly, passwords must never be stored in
+presentation state or logged, and authentication stream events are the source
+of truth for signed-in state. Async completion must not overwrite newer stream
+state. ChangeNotifier controllers require explicit widget ownership and
+disposal, and user-facing authentication errors must use safe presentation
+messages.
+
 ## Null Safety and Types
 
 Avoid `dynamic`; prefer `Object?` for unknown values. Do not use `!` unless it

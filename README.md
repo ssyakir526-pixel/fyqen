@@ -168,6 +168,21 @@ or cloud Portfolio persistence. Before future runtime email/password operations
 can succeed, enable the Email/Password provider in the correct Firebase Console
 project's Authentication settings.
 
+## Authentication Presentation Foundation
+
+Fyqen now presents email/password authentication through `AuthenticationGate`,
+which owns a Flutter SDK `ChangeNotifier` controller and selects login,
+registration, session-restoration, or the existing authenticated navigation
+shell. The authentication-state stream remains the source of truth for signed-in
+state. Login and registration screens use local form controllers only, and a
+callback-based sign-out action is available in Settings.
+
+Widgets receive state and callbacks; they do not access Firebase or repositories
+directly. Password reset, email verification, social sign-in, Firestore,
+Portfolio ownership, and cloud persistence remain unimplemented. Passwords are
+never logged or persisted. Enable Email/Password manually in Firebase Console
+for project `fyqen-df590` before runtime authentication can succeed.
+
 ## Portfolio Persistence Data Mapping
 
 The Portfolio infrastructure layer now provides a persistence data-mapping

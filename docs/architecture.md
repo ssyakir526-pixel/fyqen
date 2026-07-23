@@ -136,6 +136,30 @@ persistence, and synchronization are not implemented. Before runtime
 email/password operations are used, the Email/Password provider must be enabled
 manually in the correct Firebase Console project.
 
+## Authentication Presentation Foundation
+
+```text
+FyqenApp
+-> AuthenticationGate
+-> AuthenticationController
+-> Authentication use cases
+-> AuthenticationRepository
+-> FirebaseAuthenticationRepository
+-> FirebaseAuth
+```
+
+`AuthenticationGate` owns the controller lifecycle, while
+`AuthenticationController` owns and cancels its authentication-state stream
+subscription. `AppCompositionRoot` owns dependency creation. Stream events are
+the source of truth for signed-in state: successful operations do not fabricate
+an identity, and sign-out waits for a signed-out stream event. Widgets receive
+callbacks and state, never Firebase types or repositories directly.
+
+Authenticated content remains the existing six-destination navigation shell.
+Portfolio and authentication remain separate; sign-out does not clear Portfolio
+data. Firestore ownership and cloud persistence are deferred. No third-party
+state-management package or route guard is used.
+
 ## Primary Navigation
 
 `FyqenShell` owns primary tab selection for Dashboard, Portfolio, Journey,

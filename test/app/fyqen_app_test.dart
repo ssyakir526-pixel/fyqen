@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:fyqen/app/app_composition_root.dart';
 import 'package:fyqen/app/fyqen_app.dart';
 import 'package:fyqen/app/navigation/fyqen_shell.dart';
 import 'package:fyqen/core/constants/app_constants.dart';
 import 'package:fyqen/core/theme/app_colors.dart';
+import 'package:fyqen/features/authentication/application/repositories/authentication_repository.dart';
+import 'package:fyqen/features/authentication/domain/entities/authenticated_user.dart';
 import 'package:fyqen/features/dashboard/presentation/pages/dashboard_placeholder_page.dart';
 import 'package:fyqen/features/dashboard/presentation/widgets/financial_independence_progress_card.dart';
 import 'package:fyqen/features/dashboard/presentation/widgets/journey_overview_card.dart';
@@ -16,7 +19,14 @@ void main() {
   testWidgets('renders the Dashboard layout foundation', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(const FyqenApp());
+    await tester.pumpWidget(
+      FyqenApp(
+        compositionRoot: AppCompositionRoot(
+          authenticationRepository: _AuthenticatedRepository(),
+        ),
+      ),
+    );
+    await tester.pump();
 
     expect(find.byType(FyqenShell), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);
@@ -71,4 +81,38 @@ void main() {
     expect(theme.scaffoldBackgroundColor, AppColors.background);
     expect(tester.takeException(), isNull);
   });
+}
+
+final class _AuthenticatedRepository implements AuthenticationRepository {
+  final AuthenticatedUser _user = AuthenticatedUser(
+    id: 'user-1',
+    email: 'user@example.com',
+  );
+
+  @override
+  Stream<AuthenticatedUser?> watchAuthenticationState() {
+    return Stream<AuthenticatedUser?>.value(_user);
+  }
+
+  @override
+  AuthenticatedUser? getCurrentUser() => _user;
+
+  @override
+  Future<AuthenticatedUser> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) {
+    return Future<AuthenticatedUser>.value(_user);
+  }
+
+  @override
+  Future<AuthenticatedUser> registerWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) {
+    return Future<AuthenticatedUser>.value(_user);
+  }
+
+  @override
+  Future<void> signOut() => Future<void>.value();
 }
