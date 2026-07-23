@@ -77,6 +77,18 @@ are rejected. Asset and Liability ID namespaces remain independent. There is
 still no persistence, repository, state management, Portfolio UI, or financial
 calculation.
 
+## Portfolio Application Use Cases
+
+The Portfolio feature now has a thin application-layer use-case foundation:
+`RenamePortfolioUseCase`, `AddAssetToPortfolioUseCase`,
+`ReplaceAssetInPortfolioUseCase`, `RemoveAssetFromPortfolioUseCase`,
+`AddLiabilityToPortfolioUseCase`, `ReplaceLiabilityInPortfolioUseCase`, and
+`RemoveLiabilityFromPortfolioUseCase`. These stateless synchronous use cases
+delegate to Portfolio, return a new validated snapshot, receive `updatedAt`
+from the caller, and allow domain exceptions to propagate unchanged. No
+persistence, repository, Firebase, state management, Portfolio UI, or
+financial calculations are implemented.
+
 ## Technology
 
 - Flutter

@@ -180,6 +180,20 @@ entity. Explicit operations communicate domain intent, preserve aggregate
 invariants, reject invalid operations, and avoid arbitrary field replacement.
 They perform no financial arithmetic.
 
+## Portfolio Application Use Cases
+
+`lib/features/portfolio/application/use_cases/` contains thin, operation-
+specific application boundaries that depend inward on the Portfolio domain;
+the domain does not depend on this layer. Each stateless synchronous use case
+receives a Portfolio and explicit `updatedAt`, delegates to one aggregate
+operation, returns Portfolio directly, and lets domain exceptions propagate.
+There is no generic base use case, mutation service, repository dependency, or
+persistence/I-O. Future UI or state-management layers may call these use cases,
+and future persistence workflows may compose them with repositories outside the
+domain. Separate classes provide intention-revealing entry points, preserve the
+boundary between orchestration and domain invariants, and avoid switch-based
+generic behavior.
+
 ## Firebase Boundary
 
 Firebase will be introduced later through data-layer implementations and
