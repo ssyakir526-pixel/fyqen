@@ -53,6 +53,7 @@ final class PortfolioSession extends StatefulWidget {
 
 final class _PortfolioSessionState extends State<PortfolioSession> {
   late final PortfolioController _controller;
+  int _assetIdSequence = 0;
 
   @override
   void initState() {
@@ -102,8 +103,20 @@ final class _PortfolioSessionState extends State<PortfolioSession> {
           onSignOut: widget.onSignOut,
           portfolio: portfolio!,
           isPortfolioSaving: state.status == PortfolioStatus.saving,
+          onAddAsset: _controller.addAsset,
+          onReplaceAsset: _controller.replaceAsset,
+          onRemoveAsset: _controller.removeAsset,
+          createAssetId: _createAssetId,
+          currentTime: widget.currentTime,
         );
       },
     );
+  }
+
+  String _createAssetId() {
+    final int timestamp = widget.currentTime().toUtc().microsecondsSinceEpoch;
+    final String assetId = 'asset-$timestamp-$_assetIdSequence';
+    _assetIdSequence += 1;
+    return assetId;
   }
 }

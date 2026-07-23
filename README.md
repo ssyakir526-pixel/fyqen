@@ -239,6 +239,16 @@ access—not public test rules.
 
 ## Portfolio Repository Contract
 
+## Asset Management UI
+
+The existing Portfolio destination now provides Asset Management. Authenticated
+users can view, add, edit, and delete immutable Assets through
+`PortfolioController` callbacks and existing Portfolio use cases. Forms validate
+input before Domain construction, deletion requires confirmation, and failed
+persistence retains entered form values and the current Portfolio. Dashboard
+and Assets use the same Portfolio snapshot. There is no market-data service,
+automatic price update, currency conversion, or Liability management UI.
+
 The Portfolio application layer now defines a persistence-neutral
 `PortfolioRepository` contract for finding one Portfolio by ID, saving a
 complete Portfolio snapshot, and deleting by ID. It has no implementation,

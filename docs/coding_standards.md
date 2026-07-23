@@ -124,6 +124,14 @@ after disposal, and widget rebuilds must not trigger duplicate loads. Map
 persistence failures to safe presentation text; do not add automatic retry,
 synchronization, or migration without an explicit architecture decision.
 
+Asset forms must validate input before Domain construction. Asset edits preserve
+ID and `createdAt`, while updating `updatedAt` through the injected clock
+boundary. Use Domain exact decimal value objects for financial input. Widgets
+must not access PortfolioRepository or Firestore. Add, edit, and delete
+submissions must be single-flight; forms close only after success and retain
+input on failure. Asset deletion requires confirmation. Do not seed sample
+financial data or add market-price fetching without explicit architecture.
+
 ## Null Safety and Types
 
 Avoid `dynamic`; prefer `Object?` for unknown values. Do not use `!` unless it

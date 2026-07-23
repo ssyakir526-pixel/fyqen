@@ -1,3 +1,4 @@
+import 'package:fyqen/features/assets/domain/entities/asset.dart';
 import 'package:fyqen/features/portfolio/domain/entities/portfolio.dart';
 
 /// Exact, presentation-only summary values derived from one Portfolio snapshot.
@@ -57,6 +58,13 @@ final class DashboardPortfolioSummary {
   final String totalAssetsLabel;
   final String totalLiabilitiesLabel;
   final String netWorthLabel;
+
+  static String assetValueLabel(Asset asset) {
+    final _ExactDecimal value =
+        _ExactDecimal.parse(asset.quantity.value) *
+        _ExactDecimal.parse(asset.unitPrice.amount);
+    return _format(value, asset.unitPrice.currencyCode);
+  }
 
   static String _format(_ExactDecimal value, String? currencyCode) {
     final String amount = value.toDisplayString();

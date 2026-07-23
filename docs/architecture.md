@@ -494,6 +494,25 @@ choose the region carefully, review the local secure rules, and deploy them.
 
 ## Portfolio Repository Contract
 
+## Asset Management Presentation
+
+```text
+AssetsPage
+-> AssetForm
+-> PortfolioController callbacks
+-> Portfolio use cases
+-> PortfolioRepository
+-> FirestorePortfolioRepository
+```
+
+AssetsPage receives an immutable Portfolio snapshot and session-owned callbacks.
+AssetForm constructs immutable Asset values after validation; edits preserve the
+Asset ID and `createdAt` while updating `updatedAt` through the injected session
+clock. Delete confirmation remains in Presentation. Dashboard and AssetsPage
+share PortfolioViewState without local asset caches. No Asset widget imports
+Firebase, accesses a repository, or stores a UID. No realtime listener,
+market-data service, or currency conversion exists.
+
 `lib/features/portfolio/application/repositories/portfolio_repository.dart`
 defines the persistence capability required by future Portfolio workflows. The
 application layer owns this contract, while future infrastructure adapters may
