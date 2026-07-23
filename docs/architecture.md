@@ -616,6 +616,36 @@ derived again for each shared Portfolio snapshot and has no XP, artificial
 points, manual stage completion, Challenges, Achievements, financial advice,
 or projections.
 
+## Achievement Rule Engine
+
+The Achievement feature is a presentation-only, typed rule engine. Its
+`AchievementEvaluationContext` composes Portfolio collection counts with the
+existing Dashboard, Level, and Journey summaries. `AchievementRule`
+implementations evaluate that immutable context, and the fixed catalog creates
+an immutable `AchievementCatalogSummary` for display.
+
+```text
+Shared Portfolio snapshot
+-> Dashboard / Level / Journey summaries
+-> AchievementEvaluationContext
+-> typed AchievementRule evaluation
+-> AchievementCatalogSummary
+-> AchievementsPage
+```
+
+Rules are application-defined Dart types; there is no expression parser,
+remote configuration, user-authored rule, controller, repository, Firebase
+value, or persistence flow. Achievement status is revocable and represents
+only the current Portfolio. Count rules remain available without comparable
+financial data, while Level, Journey, and FI rules safely become unavailable.
+The catalog has twelve stable ordered IDs and provides no XP, points, rewards,
+historical unlock tracking, Challenge, or streak behavior.
+
+The ordered IDs are `first-asset`, `building-a-portfolio`,
+`no-current-liabilities`, `level-10`, `level-25`, `level-50`, `level-75`,
+`level-90`, `journey-stage-3`, `journey-stage-5`, `journey-stage-9`, and
+`financial-freedom-reached`.
+
 `lib/features/portfolio/application/repositories/portfolio_repository.dart`
 defines the persistence capability required by future Portfolio workflows. The
 application layer owns this contract, while future infrastructure adapters may

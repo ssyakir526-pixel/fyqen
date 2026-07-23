@@ -22,10 +22,10 @@ enum FyqenDestination {
     selectedIcon: Icons.history_rounded,
     unselectedIcon: Icons.history_outlined,
   ),
-  battle(
-    label: 'Battle',
-    selectedIcon: Icons.sports_martial_arts_rounded,
-    unselectedIcon: Icons.sports_martial_arts_outlined,
+  achievements(
+    label: 'Achievements',
+    selectedIcon: Icons.emoji_events_rounded,
+    unselectedIcon: Icons.emoji_events_outlined,
   ),
   settings(
     label: 'Settings',

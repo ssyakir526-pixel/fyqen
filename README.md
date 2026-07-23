@@ -300,6 +300,21 @@ currencies leave Journey unavailable because Fyqen performs no currency
 conversion. Journey has no XP, artificial points, Challenges, Achievements,
 financial advice, or projections.
 
+## Achievements
+
+Achievements are typed, application-defined rules evaluated from the current
+Portfolio snapshot and existing Dashboard, Level, and Journey summaries. Their
+status is derived, revocable, and never persisted: an earned Achievement
+becomes unearned when its current rule is no longer satisfied. The fixed,
+ordered catalog contains First Asset, Building a Portfolio, No Current
+Liabilities, Level 10/25/50/75/90 milestones, three Journey-stage milestones,
+and Financial Freedom Reached.
+
+Portfolio-count rules remain available without an FI target or with mixed
+currencies; financial rules become unavailable when existing summaries cannot
+compare financial values. There are no remote or user-created rules, XP,
+points, rewards, historical unlock tracking, Challenges, or streaks.
+
 The Portfolio application layer now defines a persistence-neutral
 `PortfolioRepository` contract for finding one Portfolio by ID, saving a
 complete Portfolio snapshot, and deleting by ID. It has no implementation,

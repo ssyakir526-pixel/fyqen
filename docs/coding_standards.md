@@ -172,6 +172,15 @@ XP or artificial points, recalculate Level boundaries, or add Challenge or
 Achievement behavior. Missing targets reuse the existing target form; mixed
 currencies remain unavailable without conversion, advice, or projections.
 
+Achievement rules are typed, immutable Presentation code that evaluates only
+the centralized Achievement evaluation context. Keep the fixed catalog ordered
+and application-defined; do not add expression strings, JSON interpreters,
+remote rules, user-created rules, controllers, repositories, or persistence.
+Achievement status is revocable and must never retain historical unlock state,
+timestamps, XP, points, rewards, Challenge, or streak behavior. Count rules
+remain evaluable without financial comparison, while unavailable financial
+summaries must yield an unavailable Achievement rather than a false zero.
+
 ## Null Safety and Types
 
 Avoid `dynamic`; prefer `Object?` for unknown values. Do not use `!` unless it

@@ -41,13 +41,8 @@ void main() {
     );
     expectNavigationSelection(tester, 3);
 
-    await selectDestination(tester, 'battle_destination');
-    expect(
-      find.text(
-        'Privacy-preserving net-worth comparisons will be introduced here.',
-      ),
-      findsOneWidget,
-    );
+    await selectDestination(tester, 'achievements_destination');
+    expect(find.byKey(const Key('achievements-page')), findsOneWidget);
     expectNavigationSelection(tester, 4);
 
     await selectDestination(tester, 'settings_destination');

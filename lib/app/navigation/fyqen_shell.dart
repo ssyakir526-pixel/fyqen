@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../features/achievements/presentation/pages/achievements_page.dart';
 import '../../features/assets/domain/entities/asset.dart';
-import '../../features/battle/presentation/pages/battle_placeholder_page.dart';
 import '../../features/dashboard/presentation/pages/dashboard_placeholder_page.dart';
 import '../../features/history/presentation/pages/history_placeholder_page.dart';
 import '../../features/journey/presentation/pages/journey_placeholder_page.dart';
@@ -117,7 +117,7 @@ final class _FyqenShellState extends State<FyqenShell> {
             widget.onSetFinancialIndependenceTarget,
       ),
       const HistoryPlaceholderPage(),
-      const BattlePlaceholderPage(),
+      AchievementsPage(portfolio: portfolio),
       SettingsPlaceholderPage(onSignOut: widget.onSignOut),
     ];
   }
