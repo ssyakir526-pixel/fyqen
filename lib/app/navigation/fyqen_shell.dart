@@ -110,7 +110,12 @@ final class _FyqenShellState extends State<FyqenShell> {
               onSectionSelected: _onPortfolioSectionSelected,
             )
           : const PortfolioPlaceholderPage(),
-      const JourneyPlaceholderPage(),
+      JourneyPlaceholderPage(
+        portfolio: portfolio,
+        isPortfolioSaving: widget.isPortfolioSaving,
+        onSetFinancialIndependenceTarget:
+            widget.onSetFinancialIndependenceTarget,
+      ),
       const HistoryPlaceholderPage(),
       const BattlePlaceholderPage(),
       SettingsPlaceholderPage(onSignOut: widget.onSignOut),

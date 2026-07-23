@@ -588,8 +588,33 @@ net worth resolve to Level 1; reaching or exceeding the target resolves to
 Level 100. For positive progress below the target, the current level is
 `max(1, floor((netWorth / fiTarget) * 100))`; the first Level 1 band spans
 0% through below 2% for progress toward Level 2. Mixed-currency or otherwise
-unavailable financial comparisons make the level unavailable. No XP, Journey,
+unavailable financial comparisons make the level unavailable. No XP,
 Achievement, or currency conversion is implemented.
+
+## Financial Freedom Journey
+
+`FinancialFreedomJourneySummary` and `JourneyStageSummary` are immutable
+presentation models in the Journey feature. They compose the existing
+`DashboardPortfolioSummary` and `FinancialFreedomLevelSummary`; they do not
+recalculate net worth or Level boundaries, add a Portfolio field, or introduce
+any controller, repository, Firebase value, or persistence flow.
+
+```text
+Shared Portfolio snapshot
+-> DashboardPortfolioSummary
+-> FinancialFreedomLevelSummary
+-> FinancialFreedomJourneySummary
+-> JourneyPlaceholderPage
+```
+
+The centralized stage definitions contain the ten fixed Level checkpoints:
+10, 20, 30, 40, 50, 60, 70, 80, 90, and 100. A reached checkpoint marks that
+stage completed; the following stage is current. At Level 100 every stage is
+completed and no next checkpoint exists. A missing target shows the existing
+FI-target form, while mixed currencies make Journey unavailable. Journey is
+derived again for each shared Portfolio snapshot and has no XP, artificial
+points, manual stage completion, Challenges, Achievements, financial advice,
+or projections.
 
 `lib/features/portfolio/application/repositories/portfolio_repository.dart`
 defines the persistence capability required by future Portfolio workflows. The

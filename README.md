@@ -282,9 +282,23 @@ FI target values used for Dashboard progress. Levels range from 1 to 100 and
 are not persisted. Level 100 represents reaching or exceeding the target;
 negative and zero comparable net worth remain Level 1. Mixed currencies make
 the level unavailable because Fyqen performs no currency conversion. The level
-uses no XP, artificial points, streaks, Journey implementation, or
-achievements. Because it is derived from the current Portfolio snapshot, it
-updates automatically when comparable net worth or the FI target changes.
+uses no XP, artificial points, streaks, or achievements. Because it is derived
+from the current Portfolio snapshot, it updates automatically when comparable
+net worth or the FI target changes.
+
+## Financial Freedom Journey
+
+The Journey screen is derived from the same shared Portfolio snapshot, FI
+progress, and Level summary. It is not stored or manually completed. Ten fixed
+stages use Level checkpoints 10 through 100: Foundation, Stability, Momentum,
+Growth, Halfway, Expansion, Strength, Independence, Final Stretch, and
+Financial Freedom. Reaching a checkpoint completes its stage; the next stage
+is current. At Level 100, all stages are complete.
+
+Without an FI target, Journey provides the existing target-setup form. Mixed
+currencies leave Journey unavailable because Fyqen performs no currency
+conversion. Journey has no XP, artificial points, Challenges, Achievements,
+financial advice, or projections.
 
 The Portfolio application layer now defines a persistence-neutral
 `PortfolioRepository` contract for finding one Portfolio by ID, saving a

@@ -162,7 +162,15 @@ must use the centralized exact financial summary inputs, remain in the 1–100
 range, and must never be persisted, manually edited, or represented as XP.
 Boundary decisions must not depend on rounded display strings or binary
 floating-point rounding. Mixed-currency values leave Level unavailable; do not
-add currency conversion, Journey, or Achievement behavior to the Level system.
+add currency conversion or Achievement behavior to the Level system.
+
+Financial Freedom Journey state is derived presentation state composed from
+the existing Dashboard and Level summaries. Keep the ten stage definitions in
+one immutable mapping and derive completed, current, and upcoming status only
+from the current Level. Never persist or manually complete Journey stages, add
+XP or artificial points, recalculate Level boundaries, or add Challenge or
+Achievement behavior. Missing targets reuse the existing target form; mixed
+currencies remain unavailable without conversion, advice, or projections.
 
 ## Null Safety and Types
 

@@ -28,12 +28,8 @@ void main() {
     expectNavigationSelection(tester, 1);
 
     await selectDestination(tester, 'journey_destination');
-    expect(
-      find.text(
-        'Your progress toward financial freedom will be visualized here.',
-      ),
-      findsOneWidget,
-    );
+    expect(find.byKey(const Key('journey-page')), findsOneWidget);
+    expect(find.text('Set your FI target'), findsOneWidget);
     expectNavigationSelection(tester, 2);
 
     await selectDestination(tester, 'history_destination');
