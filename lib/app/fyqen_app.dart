@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../core/constants/app_constants.dart';
 import '../core/theme/app_theme.dart';
 import '../features/authentication/presentation/widgets/authentication_gate.dart';
+import '../features/portfolio/presentation/widgets/portfolio_session.dart';
 import 'app_composition_root.dart';
-import 'navigation/fyqen_shell.dart';
 
 /// The root widget for the Fyqen application.
 class FyqenApp extends StatefulWidget {
@@ -41,7 +41,21 @@ final class _FyqenAppState extends State<FyqenApp> {
             _compositionRoot.registerWithEmailAndPassword,
         signOut: _compositionRoot.signOut,
         authenticatedBuilder: (BuildContext context, VoidCallback onSignOut) {
-          return FyqenShell(onSignOut: onSignOut);
+          return PortfolioSession(
+            loadPortfolio: _compositionRoot.loadPortfolio,
+            savePortfolio: _compositionRoot.savePortfolio,
+            renamePortfolio: _compositionRoot.renamePortfolio,
+            addAssetToPortfolio: _compositionRoot.addAssetToPortfolio,
+            replaceAssetInPortfolio: _compositionRoot.replaceAssetInPortfolio,
+            removeAssetFromPortfolio:
+                _compositionRoot.removeAssetFromPortfolio,
+            addLiabilityToPortfolio: _compositionRoot.addLiabilityToPortfolio,
+            replaceLiabilityInPortfolio:
+                _compositionRoot.replaceLiabilityInPortfolio,
+            removeLiabilityFromPortfolio:
+                _compositionRoot.removeLiabilityFromPortfolio,
+            onSignOut: onSignOut,
+          );
         },
       ),
     );

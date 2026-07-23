@@ -4,15 +4,23 @@ import '../../features/battle/presentation/pages/battle_placeholder_page.dart';
 import '../../features/dashboard/presentation/pages/dashboard_placeholder_page.dart';
 import '../../features/history/presentation/pages/history_placeholder_page.dart';
 import '../../features/journey/presentation/pages/journey_placeholder_page.dart';
+import '../../features/portfolio/domain/entities/portfolio.dart';
 import '../../features/portfolio/presentation/pages/portfolio_placeholder_page.dart';
 import '../../features/settings/presentation/pages/settings_placeholder_page.dart';
 import 'fyqen_destination.dart';
 
 /// Owns selection for Fyqen's persistent primary navigation destinations.
 final class FyqenShell extends StatefulWidget {
-  const FyqenShell({super.key, this.onSignOut});
+  const FyqenShell({
+    super.key,
+    this.onSignOut,
+    this.portfolio,
+    this.isPortfolioSaving = false,
+  });
 
   final VoidCallback? onSignOut;
+  final Portfolio? portfolio;
+  final bool isPortfolioSaving;
 
   @override
   State<FyqenShell> createState() => _FyqenShellState();
@@ -27,7 +35,10 @@ final class _FyqenShellState extends State<FyqenShell> {
   void initState() {
     super.initState();
     _pages = <Widget>[
-      const DashboardPlaceholderPage(),
+      DashboardPlaceholderPage(
+        portfolio: widget.portfolio,
+        isPortfolioSaving: widget.isPortfolioSaving,
+      ),
       const PortfolioPlaceholderPage(),
       const JourneyPlaceholderPage(),
       const HistoryPlaceholderPage(),

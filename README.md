@@ -216,11 +216,20 @@ available for tests and explicit development injection.
 
 Firestore failures are translated to `PortfolioPersistenceException`, and
 unauthenticated access is rejected. UID is resolved on every repository
-operation; app/root construction, registration, sign-in, and sign-out do not
-load, save, create, delete, or migrate a Portfolio. No user profile document,
+operation. Portfolio presentation now uses a session-scoped
+`PortfolioController`, which loads once after authenticated content begins.
+When no Portfolio exists, it creates and saves one deterministic empty
+`primary` Portfolio named `My Portfolio`. Registration and sign-out do not
+create or delete cloud Portfolio data; sign-out only disposes the presentation
+session.
+
+The Dashboard receives the loaded Portfolio and displays Portfolio-derived
+asset, liability, and net-worth summaries. Firestore remains behind use cases
+and `PortfolioRepository`; no widget receives a UID or accesses Firebase.
+Save failures retain the latest loaded Portfolio. No user profile document,
 synchronization, repository switcher, migration, realtime listener, conflict
-resolution, or cloud Portfolio UI is implemented. Portfolio documents do not
-contain passwords or tokens.
+resolution, or cloud Portfolio editor is implemented. Portfolio documents do
+not contain passwords or tokens.
 
 `firestore.rules` contains local, per-user access rules for this schema. They
 are not active until manually deployed. Before runtime Firestore access, open

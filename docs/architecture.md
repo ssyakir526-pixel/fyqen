@@ -460,9 +460,32 @@ Future Portfolio Presentation
 Production `FyqenApp` uses `AppCompositionRoot.production` to select the
 Firestore repository once. The base root constructor remains in-memory for
 tests and explicit development injection. AuthenticationGate prevents
-signed-out users from accessing the authenticated shell. There is no repository
-switching, automatic in-memory fallback, automatic Firestore operation on
-authentication events, synchronization, migration, or Firestore subscription.
+signed-out users from accessing the authenticated shell. Its authenticated
+branch creates `PortfolioSession`, which owns one `PortfolioController`, loads
+once, and disposes on sign-out. A missing Portfolio is initialized once through
+the existing load/save use cases. There is no repository switching, automatic
+in-memory fallback, synchronization, migration, or Firestore subscription.
+
+```text
+AuthenticationGate
+-> authenticated
+-> PortfolioSession
+-> PortfolioController
+-> Portfolio use cases
+-> PortfolioRepository
+-> FirestorePortfolioRepository
+
+Dashboard
+-> loaded Portfolio
+-> presentation-only summary values
+```
+
+PortfolioSession owns only presentation lifecycle; AppCompositionRoot owns
+dependencies. The controller stores neither a repository nor a UID and imports
+no Firebase type. Sign-out disposes local presentation state without deleting
+cloud data, and a later sign-in creates a fresh session. Dashboard summaries
+derive from the supplied immutable Portfolio; no realtime subscription, sync,
+migration, or global Portfolio state exists.
 
 `firestore.rules` locally restricts the `users/{uid}/portfolio/primary` schema
 to the matching authenticated UID. The rules are not deployed. Before runtime

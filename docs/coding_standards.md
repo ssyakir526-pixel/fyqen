@@ -114,6 +114,16 @@ repositories are test/development dependencies, not silent production
 fallbacks. Firebase plugin instances must not be accessed by
 Firebase-independent widget tests.
 
+Portfolio presentation controllers depend on use cases only and must not store
+UIDs or access repositories directly. Authenticated Portfolio state must be
+disposed when its shell is removed. Missing cloud aggregates may be initialized
+once through explicit use cases, but registration and sign-out must not create
+or delete them. Dashboard values must derive from Domain models. Save failures
+must retain the last loaded Portfolio, controller completions must not notify
+after disposal, and widget rebuilds must not trigger duplicate loads. Map
+persistence failures to safe presentation text; do not add automatic retry,
+synchronization, or migration without an explicit architecture decision.
+
 ## Null Safety and Types
 
 Avoid `dynamic`; prefer `Object?` for unknown values. Do not use `!` unless it

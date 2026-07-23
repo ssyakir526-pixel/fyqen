@@ -29,6 +29,7 @@ void main() {
       ),
     );
     await tester.pump();
+    await tester.pump();
 
     expect(find.byType(FyqenShell), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);
@@ -45,9 +46,10 @@ void main() {
         .widgetList<OutlinedButton>(find.byType(OutlinedButton))
         .toList();
 
-    expect(find.text('Welcome back'), findsOneWidget);
+    expect(find.text('Welcome back, My Portfolio'), findsOneWidget);
     expect(find.byType(NetWorthHeroCard), findsOneWidget);
-    expect(find.text('Net worth unavailable'), findsOneWidget);
+    expect(find.text('Net worth unavailable'), findsNothing);
+    expect(find.text('0'), findsOneWidget);
     expect(find.byType(FinancialIndependenceProgressCard), findsOneWidget);
     expect(find.text('Progress unavailable'), findsOneWidget);
     expect(find.byType(JourneyOverviewCard), findsOneWidget);
@@ -98,12 +100,14 @@ void main() {
 
     await tester.pumpWidget(FyqenApp(compositionRoot: root));
     await tester.pump();
+    await tester.pump();
     await tester.pumpWidget(FyqenApp(compositionRoot: root));
     await tester.pump();
 
     expect(identical(root.portfolioRepository, portfolioRepository), isTrue);
     expect(authenticationRepository.watchCalls, 1);
-    expect(portfolioRepository.totalCalls, 0);
+    expect(portfolioRepository.findCalls, 1);
+    expect(portfolioRepository.saveCalls, 1);
     expect(find.byType(FyqenShell), findsOneWidget);
   });
 
