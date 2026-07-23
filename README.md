@@ -196,6 +196,28 @@ Domain entities remain persistence-independent. Firebase, Firestore,
 authentication, user ownership, durable persistence, direct UI use of the
 mapper, and financial calculations are not implemented.
 
+## Firestore Portfolio Repository Foundation
+
+`FirestorePortfolioRepository` is an infrastructure implementation of the
+existing `PortfolioRepository` contract. It uses an application-owned
+`AuthenticatedUserIdProvider` to resolve ownership for each operation and maps
+complete aggregate snapshots through `PortfolioMapper` and `PortfolioDto`.
+The deterministic document path is `users/{uid}/portfolio/primary`; no UID is
+stored in the Portfolio domain entity or supplied by presentation code.
+
+The active application composition remains `InMemoryPortfolioRepository`; no
+production UI reads or writes Firestore yet. Firestore failures are translated
+to `PortfolioPersistenceException`, and unauthenticated access is rejected.
+No user profile document, ownership rules deployment, synchronization,
+repository switching, migration, realtime listener, or cloud Portfolio UI is
+implemented. Portfolio documents do not contain passwords or tokens.
+
+`firestore.rules` contains local, per-user access rules for this schema. They
+are not active until manually deployed. Before runtime Firestore access, open
+Firebase Console, select `fyqen-df590`, create the Firestore database, choose
+its region carefully, review the local rules, and deploy them with secure
+access—not public test rules.
+
 ## Portfolio Repository Contract
 
 The Portfolio application layer now defines a persistence-neutral
@@ -212,8 +234,11 @@ database, Firebase integration, authentication dependency, or financial logic.
 - Material 3
 - Centralized design tokens
 - Dark Purple default theme
+- Firebase Core and Authentication
+- Cloud Firestore (infrastructure foundation only)
 
-Firebase is planned for a later stage and is not currently integrated.
+Firebase Core and Authentication are configured. Firestore is not activated for
+the production Portfolio UI yet.
 
 ## Architecture
 

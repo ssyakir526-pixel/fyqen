@@ -94,16 +94,14 @@ Domain
 - Value objects
 ```
 
-Firebase imports do not enter Domain, application use cases, Portfolio
-infrastructure, `PortfolioRepository`, or presentation code. The composition
-root may construct an infrastructure adapter with an injected SDK dependency,
-but it must not expose SDK types to feature code. Firebase Core does not provide
-persistence by itself: InMemoryPortfolioRepository remains active, and Cloud
-Firestore, user ownership, remote Portfolio storage, cross-device
-synchronization, security rules, and UI integration do not exist. Future
-Firebase-backed infrastructure must implement application-owned abstractions.
-Authentication and user ownership must be designed before production Portfolio
-cloud persistence is introduced.
+Firebase imports do not enter Domain, application use cases,
+`PortfolioRepository`, or presentation code. Firebase-backed authentication and
+Firestore adapters are isolated in Infrastructure. The composition root may
+construct those adapters with injected SDK dependencies, but it must not expose
+SDK types to feature code. InMemoryPortfolioRepository remains the active
+default. Cloud Firestore has a persistence foundation and local security rules,
+but its production UI activation, repository switching, synchronization, and
+realtime subscriptions are deferred.
 
 ## Firebase Authentication Foundation
 
@@ -333,8 +331,9 @@ existing Portfolio and return a new snapshot without I/O, while persistence
 workflows coordinate repository I/O. Future state management may compose load,
 an aggregate operation, and save; that composition is not implemented here.
 `InMemoryPortfolioRepository` can satisfy the workflows for development and
-tests, while a future Firestore implementation can do so without changing the
-use cases. No Firebase integration exists today.
+tests, while `FirestorePortfolioRepository` can satisfy them through the same
+contract without changing the use cases. Firestore remains inactive in
+presentation.
 
 ## Application Composition Root
 
@@ -369,9 +368,10 @@ AppCompositionRoot
 There is no global service location, static singleton state, or
 dependency-injection package. `AppCompositionRoot` must not become a service
 locator, business-logic class, state-management object, repository wrapper, or
-UI controller. A future `FirestorePortfolioRepository` can be supplied through
-the same constructor parameter only after authentication and user ownership are
-designed. Firebase and Firestore are not currently integrated.
+UI controller. `FirestorePortfolioRepository` can be supplied through the same
+constructor parameter, or composed explicitly through
+`AppCompositionRoot.firestore`. The default remains in-memory until a later
+presentation activation decision.
 
 ## Portfolio Persistence Data Mapping
 
@@ -395,12 +395,8 @@ not persisted, and mapping neither generates IDs nor timestamps. Firebase types
 must not enter the domain or application layers, keeping the persistence
 representation separate from financial business rules.
 
-A Firestore-specific repository adapter may later use this mapper, but no such
-adapter, Firebase connection, authentication, user-ownership model, or durable
-persistence exists today. Authentication and user ownership must be designed
-before production user-data access is introduced.
-
-Future direction:
+A Firestore-specific repository adapter uses this mapper while keeping Firebase
+types outside the domain and application layers:
 
 ```text
 Firestore-specific document data
@@ -409,7 +405,52 @@ Firestore-specific document data
 -> Portfolio domain aggregate
 ```
 
-The future adapter is intentionally deferred.
+## Firestore Portfolio Repository Foundation
+
+`FirestorePortfolioRepository` is a Firebase-specific infrastructure adapter
+for the existing application-owned `PortfolioRepository` contract. It receives
+`FirebaseFirestore` and an `AuthenticatedUserIdProvider` through constructor
+injection. The provider returns only the current stable user ID; it does not
+expose Firebase user types, subscribe to authentication, or perform
+authentication operations.
+
+The adapter maps `Portfolio -> PortfolioMapper -> PortfolioDto -> Firestore`
+and reverses that mapping on reads. Its deterministic ownership path is:
+
+```text
+users/{uid}/portfolio/primary
+```
+
+One document holds one complete aggregate. The adapter resolves its UID at the
+start of every operation and does not cache it. It uses replacement `set` for
+saves, idempotent document deletion, and returns null for a missing primary
+document, matching the existing repository contract. UID is never stored in
+the Portfolio domain entity or accepted from presentation code. Firestore
+plugin failures are translated into the application-owned
+`PortfolioPersistenceException` at the infrastructure boundary; Firebase User,
+snapshots, maps, and exceptions do not cross it.
+
+```text
+Future Portfolio Presentation
+-> Portfolio use cases
+-> PortfolioRepository
+-> FirestorePortfolioRepository
+   -> AuthenticatedUserIdProvider
+      -> FirebaseAuthenticatedUserIdProvider
+         -> FirebaseAuth
+   -> PortfolioDto / PortfolioMapper
+   -> FirebaseFirestore
+```
+
+The default composition remains `InMemoryPortfolioRepository`; no production UI
+is connected to Firestore, repository switching, synchronization, migration,
+and Firestore subscriptions are deferred. `AppCompositionRoot.firestore` is an
+explicit opt-in composition route; its default constructor remains in-memory.
+
+`firestore.rules` locally restricts the `users/{uid}/portfolio/primary` schema
+to the matching authenticated UID. The rules are not deployed. Before runtime
+use, manually create Firestore Database for `fyqen-df590` in Firebase Console,
+choose the region carefully, review the local secure rules, and deploy them.
 
 ## Portfolio Repository Contract
 

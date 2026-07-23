@@ -1,10 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fyqen/features/authentication/application/providers/authenticated_user_id_provider.dart';
 import 'package:fyqen/features/authentication/application/repositories/authentication_repository.dart';
 import 'package:fyqen/features/authentication/application/use_cases/get_current_authenticated_user.dart';
 import 'package:fyqen/features/authentication/application/use_cases/register_with_email_and_password.dart';
 import 'package:fyqen/features/authentication/application/use_cases/sign_in_with_email_and_password.dart';
 import 'package:fyqen/features/authentication/application/use_cases/sign_out.dart';
 import 'package:fyqen/features/authentication/application/use_cases/watch_authentication_state.dart';
+import 'package:fyqen/features/authentication/infrastructure/providers/firebase_authenticated_user_id_provider.dart';
 import 'package:fyqen/features/authentication/infrastructure/repositories/firebase_authentication_repository.dart';
 import 'package:fyqen/features/portfolio/application/repositories/portfolio_repository.dart';
 import 'package:fyqen/features/portfolio/application/use_cases/add_asset_to_portfolio.dart';
@@ -17,6 +20,7 @@ import 'package:fyqen/features/portfolio/application/use_cases/rename_portfolio.
 import 'package:fyqen/features/portfolio/application/use_cases/replace_asset_in_portfolio.dart';
 import 'package:fyqen/features/portfolio/application/use_cases/replace_liability_in_portfolio.dart';
 import 'package:fyqen/features/portfolio/application/use_cases/save_portfolio.dart';
+import 'package:fyqen/features/portfolio/infrastructure/repositories/firestore_portfolio_repository.dart';
 import 'package:fyqen/features/portfolio/infrastructure/repositories/in_memory_portfolio_repository.dart';
 
 /// Explicitly composes the current application dependency graph.
@@ -25,6 +29,7 @@ final class AppCompositionRoot {
     PortfolioRepository? portfolioRepository,
     AuthenticationRepository? authenticationRepository,
     FirebaseAuth? firebaseAuth,
+    this.authenticatedUserIdProvider,
   }) : portfolioRepository = portfolioRepository ?? InMemoryPortfolioRepository(),
        authenticationRepository =
            authenticationRepository ??
@@ -56,7 +61,33 @@ final class AppCompositionRoot {
     signOut = SignOutUseCase(this.authenticationRepository);
   }
 
+  /// Explicitly composes the Firestore-backed Portfolio infrastructure.
+  ///
+  /// The default constructor intentionally continues to select in-memory
+  /// Portfolio persistence until a later activation decision.
+  factory AppCompositionRoot.firestore({
+    required FirebaseAuth firebaseAuth,
+    required FirebaseFirestore firebaseFirestore,
+    AuthenticationRepository? authenticationRepository,
+    AuthenticatedUserIdProvider? authenticatedUserIdProvider,
+  }) {
+    final AuthenticatedUserIdProvider userIdProvider =
+        authenticatedUserIdProvider ??
+        FirebaseAuthenticatedUserIdProvider(firebaseAuth: firebaseAuth);
+
+    return AppCompositionRoot(
+      portfolioRepository: FirestorePortfolioRepository(
+        firestore: firebaseFirestore,
+        authenticatedUserIdProvider: userIdProvider,
+      ),
+      authenticationRepository: authenticationRepository,
+      firebaseAuth: firebaseAuth,
+      authenticatedUserIdProvider: userIdProvider,
+    );
+  }
+
   final PortfolioRepository portfolioRepository;
+  final AuthenticatedUserIdProvider? authenticatedUserIdProvider;
   final AuthenticationRepository authenticationRepository;
 
   late final LoadPortfolioUseCase loadPortfolio;

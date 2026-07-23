@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fyqen/app/app_composition_root.dart';
 import 'package:fyqen/features/assets/domain/entities/asset.dart';
 import 'package:fyqen/features/authentication/application/errors/authentication_exception.dart';
+import 'package:fyqen/features/authentication/application/providers/authenticated_user_id_provider.dart';
 import 'package:fyqen/features/authentication/application/repositories/authentication_repository.dart';
 import 'package:fyqen/features/authentication/application/use_cases/get_current_authenticated_user.dart';
 import 'package:fyqen/features/authentication/application/use_cases/register_with_email_and_password.dart';
@@ -40,11 +41,13 @@ void main() {
   AppCompositionRoot createRoot({
     PortfolioRepository? portfolioRepository,
     AuthenticationRepository? authenticationRepository,
+    AuthenticatedUserIdProvider? authenticatedUserIdProvider,
   }) {
     return AppCompositionRoot(
       portfolioRepository: portfolioRepository,
       authenticationRepository:
           authenticationRepository ?? _RecordingAuthenticationRepository(),
+      authenticatedUserIdProvider: authenticatedUserIdProvider,
     );
   }
 
@@ -196,6 +199,18 @@ void main() {
       expect(repository.watchCalls, 0);
     });
 
+    test('preserves an identity-provider override without reading it', () {
+      final _RecordingAuthenticatedUserIdProvider provider =
+          _RecordingAuthenticatedUserIdProvider('user-1');
+
+      final AppCompositionRoot root = createRoot(
+        authenticatedUserIdProvider: provider,
+      );
+
+      expect(identical(root.authenticatedUserIdProvider, provider), isTrue);
+      expect(provider.currentUserIdReads, 0);
+    });
+
     test('keeps supplied authentication repositories isolated and propagates errors', () async {
       final AuthenticationException error = const AuthenticationException(
         code: AuthenticationFailureCode.unknown,
@@ -223,6 +238,20 @@ void main() {
       expect(secondRepository.signOutCalls, 1);
     });
   });
+}
+
+final class _RecordingAuthenticatedUserIdProvider
+    implements AuthenticatedUserIdProvider {
+  _RecordingAuthenticatedUserIdProvider(this.userId);
+
+  final String? userId;
+  int currentUserIdReads = 0;
+
+  @override
+  String? get currentUserId {
+    currentUserIdReads += 1;
+    return userId;
+  }
 }
 
 final class _RecordingPortfolioRepository implements PortfolioRepository {

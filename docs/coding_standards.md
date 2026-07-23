@@ -94,6 +94,17 @@ state. ChangeNotifier controllers require explicit widget ownership and
 disposal, and user-facing authentication errors must use safe presentation
 messages.
 
+Firestore adapters must depend on application-owned identity and repository
+contracts. Presentation must not construct ownership paths or supply user IDs,
+and Firebase/Firestore exceptions must be translated at the infrastructure
+boundary without exposing document paths or user identifiers. Resolve the
+current Firebase UID for each repository operation; never cache it across
+authentication changes. Portfolio domain entities must not hold Firebase
+ownership IDs. Complete aggregate saves must replace the stored document rather
+than leave stale nested data. Never use public Firestore test rules or log user
+IDs, credentials, tokens, or full Portfolio payloads. Firestore tests must not
+access the real Firebase project.
+
 ## Null Safety and Types
 
 Avoid `dynamic`; prefer `Object?` for unknown values. Do not use `!` unless it
