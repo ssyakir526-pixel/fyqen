@@ -146,6 +146,25 @@ and repayment, interest, and net-worth calculations are deferred. The core
 arithmetic. Future data models must map into domain types rather than adding
 persistence concerns directly to them.
 
+## Portfolio Domain Foundation
+
+`lib/features/portfolio/domain/entities/portfolio.dart` contains the Portfolio
+aggregate root: a validated immutable snapshot with ID-based entity equality.
+Its non-empty ID and name are trimmed, and it groups existing Asset and
+Liability entities while preserving collection order. Duplicate Asset IDs and
+duplicate Liability IDs are rejected independently; their ID namespaces remain
+separate. Input collections are defensively copied and exposed as unmodifiable
+lists. Portfolio timestamps are normalized to UTC, and `updatedAt` cannot
+precede `createdAt`; child timestamps need not match Portfolio timestamps.
+
+Portfolio has no persistence concerns, user-ownership field, base currency,
+financial totals, currency aggregation, or mutation methods. Monetary totals
+are deferred because child entities may use different currencies, decimal
+arithmetic has not been introduced, and currency conversion has not been
+designed. Future application-layer operations must produce a new validated
+Portfolio snapshot, and future persistence models must map into the domain
+entity rather than adding JSON or Firestore concerns directly to it.
+
 ## Firebase Boundary
 
 Firebase will be introduced later through data-layer implementations and

@@ -54,6 +54,18 @@ normalized to UTC. Liability monetary values do not use floating-point
 representation. Debt calculations, persistence, Firestore mapping,
 repositories, state management, and liability UI flows remain unimplemented.
 
+## Portfolio Domain Foundation
+
+The Portfolio feature now has its first domain foundation. `Portfolio` is an
+immutable, persistence-independent aggregate that groups existing `Asset` and
+`Liability` entities. Its identity is its normalized portfolio ID, and its ID
+and name are validated and trimmed. Asset and Liability collections preserve
+insertion order, reject duplicate IDs within their own type, and keep Asset and
+Liability ID namespaces independent. Incoming lists are defensively copied and
+exposed as unmodifiable collections. Portfolio timestamps are normalized to
+UTC. No financial calculation, currency aggregation, persistence, repository,
+state management, or Portfolio UI exists yet.
+
 ## Technology
 
 - Flutter
