@@ -168,16 +168,31 @@ Financial Freedom Journey state is derived presentation state composed from
 the existing Dashboard and Level summaries. Keep the ten stage definitions in
 one immutable mapping and derive completed, current, and upcoming status only
 from the current Level. Never persist or manually complete Journey stages, add
-XP or artificial points, recalculate Level boundaries, or add Challenge or
-Achievement behavior. Missing targets reuse the existing target form; mixed
-currencies remain unavailable without conversion, advice, or projections.
+XP or artificial points, or recalculate Level boundaries. Missing targets
+reuse the existing target form; mixed currencies remain unavailable without
+conversion, advice, or projections.
+
+Challenge rules are typed, immutable Journey presentation code. Evaluate the
+centralized immutable Challenge context from existing Dashboard, Level, and
+Journey summaries rather than recalculating financial values or parsing display
+strings. Keep the eight application-defined definitions in one unmodifiable,
+priority-ordered catalog. Challenge status must be active, completed, or
+unavailable; it is reversible and must never be persisted or manually changed.
+Select the first active Challenge deterministically, use an unavailable item
+only for an explanation when no active item exists, and show no recommendation
+when all items are complete. Do not add expression parsing, JSON rules, remote
+rules, user-created rules, controllers, repositories, caches, DTOs, Firestore
+fields, history, claimed states, rewards, XP, points, notifications, due dates,
+AI-generated directions, currency conversion, or financial advice. Reuse
+PortfolioSession loading and failure ownership, and keep daily streaks
+unimplemented.
 
 Achievement rules are typed, immutable Presentation code that evaluates only
 the centralized Achievement evaluation context. Keep the fixed catalog ordered
 and application-defined; do not add expression strings, JSON interpreters,
 remote rules, user-created rules, controllers, repositories, or persistence.
 Achievement status is revocable and must never retain historical unlock state,
-timestamps, XP, points, rewards, Challenge, or streak behavior. Count rules
+timestamps, XP, points, rewards, or streak behavior. Count rules
 remain evaluable without financial comparison, while unavailable financial
 summaries must yield an unavailable Achievement rather than a false zero.
 

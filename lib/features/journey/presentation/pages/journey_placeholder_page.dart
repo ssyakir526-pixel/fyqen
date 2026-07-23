@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:fyqen/core/constants/app_constants.dart';
 import 'package:fyqen/core/theme/app_spacing.dart';
 import 'package:fyqen/features/dashboard/presentation/models/dashboard_portfolio_summary.dart';
+import 'package:fyqen/features/dashboard/presentation/models/financial_freedom_level_summary.dart';
+import 'package:fyqen/features/journey/presentation/challenges/models/challenge_catalog.dart';
+import 'package:fyqen/features/journey/presentation/challenges/models/challenge_evaluation_context.dart';
+import 'package:fyqen/features/journey/presentation/challenges/widgets/journey_challenge_section.dart';
 import 'package:fyqen/features/journey/presentation/models/financial_freedom_journey_summary.dart';
 import 'package:fyqen/features/journey/presentation/models/journey_stage_summary.dart';
 import 'package:fyqen/features/portfolio/domain/entities/portfolio.dart';
@@ -31,11 +35,28 @@ final class JourneyPlaceholderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Portfolio? currentPortfolio = portfolio;
-    final FinancialFreedomJourneySummary summary = currentPortfolio == null
+    final DashboardPortfolioSummary? dashboardSummary = currentPortfolio == null
+        ? null
+        : DashboardPortfolioSummary.fromPortfolio(currentPortfolio);
+    final FinancialFreedomLevelSummary? levelSummary = dashboardSummary == null
+        ? null
+        : FinancialFreedomLevelSummary.fromDashboardSummary(dashboardSummary);
+    final FinancialFreedomJourneySummary summary = dashboardSummary == null
         ? const FinancialFreedomJourneySummary.noTarget()
-        : FinancialFreedomJourneySummary.fromDashboardSummary(
-            DashboardPortfolioSummary.fromPortfolio(currentPortfolio),
+        : FinancialFreedomJourneySummary.fromSummaries(
+            dashboardSummary: dashboardSummary,
+            levelSummary: levelSummary!,
           );
+    final ChallengeEvaluationContext challengeContext = currentPortfolio == null
+        ? const ChallengeEvaluationContext.empty()
+        : ChallengeEvaluationContext.fromSummaries(
+            portfolio: currentPortfolio,
+            dashboardSummary: dashboardSummary!,
+            levelSummary: levelSummary!,
+            journeySummary: summary,
+          );
+    final ChallengeCatalogSummary challengeSummary =
+        ChallengeCatalogSummary.fromContext(challengeContext);
 
     return Scaffold(
       key: const Key('journey-page'),
@@ -60,13 +81,15 @@ final class JourneyPlaceholderPage extends StatelessWidget {
             )
           else ...<Widget>[
             AppSection(child: _CurrentPositionCard(summary: summary)),
-            AppSection(child: _JourneyTimeline(summary: summary)),
             AppSection(
               child: summary.isComplete
                   ? const _CompletedJourneyCard()
                   : _NextDirectionCard(summary: summary),
             ),
           ],
+          AppSection(child: JourneyChallengeSection(summary: challengeSummary)),
+          if (summary.isAvailable)
+            AppSection(child: _JourneyTimeline(summary: summary)),
         ],
       ),
     );

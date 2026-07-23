@@ -11,7 +11,7 @@ and progress toward financial freedom through a net-worth-focused journey.
 
 The architecture foundation and default Dark Purple design system are complete.
 The six-destination navigation shell connects Dashboard, Portfolio, Journey,
-History, Battle, and Settings. Non-Dashboard destinations remain temporary
+History, Achievements, and Settings. Non-Dashboard destinations remain temporary
 placeholders built from the reusable UI foundation, and finance features are
 not implemented yet. The Dashboard now provides a presentation-only layout for
 future net-worth, financial-independence, journey, and quick-action content;
@@ -297,8 +297,33 @@ is current. At Level 100, all stages are complete.
 
 Without an FI target, Journey provides the existing target-setup form. Mixed
 currencies leave Journey unavailable because Fyqen performs no currency
-conversion. Journey has no XP, artificial points, Challenges, Achievements,
-financial advice, or projections.
+conversion. Journey has no XP, artificial points, financial advice, or
+projections.
+
+## Challenges
+
+Challenges are a presentation-only, application-defined source of measurable
+next directions inside the existing Journey destination; they do not add a
+seventh navigation item. A typed, deterministic rule catalog evaluates the
+same shared Portfolio snapshot and existing Dashboard, Level, and Journey
+summaries. The catalog is fixed and ordered: `set-fi-target`,
+`add-first-asset`, `track-three-assets`, `reach-level-10`, `reach-level-25`,
+`complete-three-journey-stages`, `complete-five-journey-stages`, and
+`reach-financial-freedom`.
+
+Challenge status is derived and reversible. The first active Challenge by
+stable priority is recommended; when none are active, the first unavailable
+Challenge provides a safe explanation, and all completed Challenges produce a
+current-state summary. Missing FI targets leave setup and asset-count
+Challenges available while financial Challenges are unavailable. Mixed
+currencies keep configured-target and asset-count evaluation available but do
+not invent financial progress or currency conversion.
+
+There is no Challenge persistence, controller, repository, Firestore schema,
+history, claimed status, reward, XP, points, notifications, due dates,
+remote-configured Challenge, user-created Challenge, AI-generated Challenge,
+or financial advice. PortfolioSession remains the owner of Portfolio loading
+and failure states. Daily streaks remain unimplemented.
 
 ## Achievements
 
@@ -313,7 +338,7 @@ and Financial Freedom Reached.
 Portfolio-count rules remain available without an FI target or with mixed
 currencies; financial rules become unavailable when existing summaries cannot
 compare financial values. There are no remote or user-created rules, XP,
-points, rewards, historical unlock tracking, Challenges, or streaks.
+points, rewards, historical unlock tracking, or streaks.
 
 The Portfolio application layer now defines a persistence-neutral
 `PortfolioRepository` contract for finding one Portfolio by ID, saving a

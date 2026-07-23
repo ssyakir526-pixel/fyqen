@@ -161,7 +161,7 @@ state-management package or route guard is used.
 ## Primary Navigation
 
 `FyqenShell` owns primary tab selection for Dashboard, Portfolio, Journey,
-History, Battle, and Settings. It uses Flutter SDK `NavigationBar` and an
+History, Achievements, and Settings. It uses Flutter SDK `NavigationBar` and an
 `IndexedStack`, so visited destination pages remain mounted. Local widget state
 is appropriate for this presentation-only selection state, and no third-party
 routing package is configured.
@@ -613,8 +613,41 @@ stage completed; the following stage is current. At Level 100 every stage is
 completed and no next checkpoint exists. A missing target shows the existing
 FI-target form, while mixed currencies make Journey unavailable. Journey is
 derived again for each shared Portfolio snapshot and has no XP, artificial
-points, manual stage completion, Challenges, Achievements, financial advice,
-or projections.
+points, manual stage completion, financial advice, or projections.
+
+## Challenge System
+
+Challenges are Journey presentation models, rules, and widgets rather than a
+new feature boundary or navigation destination. `ChallengeEvaluationContext`
+composes a shared immutable `Portfolio` snapshot with existing Dashboard,
+Level, and Journey summaries. It never recalculates net worth, FI progress,
+Level, or Journey boundaries. The fixed, application-defined catalog evaluates
+typed Dart rules into an immutable `ChallengeCatalogSummary`.
+
+```text
+PortfolioSession -> FyqenShell -> JourneyPlaceholderPage
+Shared Portfolio snapshot -> Dashboard / Level / Journey summaries
+-> ChallengeEvaluationContext -> ChallengeRule -> ChallengeCatalogSummary
+-> Journey Challenge section
+```
+
+The catalog has exactly eight stable IDs in priority and display order:
+`set-fi-target`, `add-first-asset`, `track-three-assets`, `reach-level-10`,
+`reach-level-25`, `complete-three-journey-stages`,
+`complete-five-journey-stages`, and `reach-financial-freedom`. The first active
+Challenge is recommended deterministically. If none is active, the first
+unavailable Challenge is shown only to explain why it cannot be evaluated; if
+all are complete, no Challenge is recommended.
+
+Challenge state is derived and reversible, never persisted. There is no
+Challenge controller, repository, DTO, mapper, use case, Portfolio field,
+Firestore document, history, claimed state, reward, XP, points, notification,
+due date, remote rule, user-authored rule, AI rule, or financial advice.
+PortfolioSession continues to own loading and failure UI. Without an FI target,
+setup and asset-count rules remain available while financial rules are safely
+unavailable. Mixed currencies keep target-configuration and asset-count rules
+available, but never create financial progress or currency conversion. Streaks
+remain unimplemented.
 
 ## Achievement Rule Engine
 
@@ -639,7 +672,7 @@ value, or persistence flow. Achievement status is revocable and represents
 only the current Portfolio. Count rules remain available without comparable
 financial data, while Level, Journey, and FI rules safely become unavailable.
 The catalog has twelve stable ordered IDs and provides no XP, points, rewards,
-historical unlock tracking, Challenge, or streak behavior.
+historical unlock tracking, or streak behavior.
 
 The ordered IDs are `first-asset`, `building-a-portfolio`,
 `no-current-liabilities`, `level-10`, `level-25`, `level-50`, `level-75`,
