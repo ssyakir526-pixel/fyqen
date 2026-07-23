@@ -1,4 +1,5 @@
 import 'package:fyqen/features/assets/domain/entities/asset.dart';
+import 'package:fyqen/features/liabilities/domain/entities/liability.dart';
 import 'package:fyqen/features/portfolio/domain/entities/portfolio.dart';
 
 /// Exact, presentation-only summary values derived from one Portfolio snapshot.
@@ -66,6 +67,13 @@ final class DashboardPortfolioSummary {
     return _format(value, asset.unitPrice.currencyCode);
   }
 
+  static String liabilityValueLabel(Liability liability) {
+    return _format(
+      _ExactDecimal.parse(liability.outstandingBalance.amount),
+      liability.outstandingBalance.currencyCode,
+    );
+  }
+
   static String _format(_ExactDecimal value, String? currencyCode) {
     final String amount = value.toDisplayString();
     return currencyCode == null ? amount : '$currencyCode $amount';
@@ -120,10 +128,9 @@ final class _ExactDecimal {
 
     final int separator = digits.length - scale;
     final String integer = digits.substring(0, separator);
-    final String fraction = digits.substring(separator).replaceFirst(
-      RegExp(r'0+$'),
-      '',
-    );
+    final String fraction = digits
+        .substring(separator)
+        .replaceFirst(RegExp(r'0+$'), '');
     final String value = fraction.isEmpty ? integer : '$integer.$fraction';
     return isNegative ? '-$value' : value;
   }

@@ -20,6 +20,7 @@ final class AssetsPage extends StatelessWidget {
     required this.currentTime,
     super.key,
     this.isSaving = false,
+    this.showAppBar = true,
   });
 
   final Portfolio portfolio;
@@ -29,11 +30,46 @@ final class AssetsPage extends StatelessWidget {
   final String Function() createAssetId;
   final DateTime Function() currentTime;
   final bool isSaving;
+  final bool showAppBar;
 
   @override
   Widget build(BuildContext context) {
     final DashboardPortfolioSummary summary =
         DashboardPortfolioSummary.fromPortfolio(portfolio);
+
+    final Widget body = SafeArea(
+      child: portfolio.assets.isEmpty
+          ? AssetsEmptyState(onAddAsset: () => _openForm(context))
+          : ListView.separated(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              itemCount: portfolio.assets.length + 1,
+              separatorBuilder: (BuildContext context, int index) =>
+                  const SizedBox(height: AppSpacing.md),
+              itemBuilder: (BuildContext context, int index) {
+                if (index == 0) {
+                  return _AssetSummary(
+                    assetCount: summary.assetCount,
+                    totalAssetsLabel: summary.totalAssetsLabel,
+                    isSaving: isSaving,
+                    onAddAsset: () => _openForm(context),
+                  );
+                }
+
+                final Asset asset = portfolio.assets[index - 1];
+                return AssetListItem(
+                  asset: asset,
+                  onEdit: isSaving ? null : () => _openForm(context, asset),
+                  onDelete: isSaving
+                      ? null
+                      : () => _confirmDelete(context, asset),
+                );
+              },
+            ),
+    );
+
+    if (!showAppBar) {
+      return body;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -47,35 +83,7 @@ final class AssetsPage extends StatelessWidget {
           ),
         ],
       ),
-      body: SafeArea(
-        child: portfolio.assets.isEmpty
-            ? AssetsEmptyState(onAddAsset: () => _openForm(context))
-            : ListView.separated(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                itemCount: portfolio.assets.length + 1,
-                separatorBuilder: (BuildContext context, int index) =>
-                    const SizedBox(height: AppSpacing.md),
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == 0) {
-                    return _AssetSummary(
-                      assetCount: summary.assetCount,
-                      totalAssetsLabel: summary.totalAssetsLabel,
-                      isSaving: isSaving,
-                      onAddAsset: () => _openForm(context),
-                    );
-                  }
-
-                  final Asset asset = portfolio.assets[index - 1];
-                  return AssetListItem(
-                    asset: asset,
-                    onEdit: isSaving ? null : () => _openForm(context, asset),
-                    onDelete: isSaving
-                        ? null
-                        : () => _confirmDelete(context, asset),
-                  );
-                },
-              ),
-      ),
+      body: body,
     );
   }
 

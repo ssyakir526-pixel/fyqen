@@ -60,23 +60,26 @@ void main() {
       expect(subject.state.failure, isNull);
     });
 
-    test('creates and saves one deterministic empty Portfolio when missing', () async {
-      final _RecordingPortfolioRepository repository =
-          _RecordingPortfolioRepository();
-      final PortfolioController subject = controller(repository);
+    test(
+      'creates and saves one deterministic empty Portfolio when missing',
+      () async {
+        final _RecordingPortfolioRepository repository =
+            _RecordingPortfolioRepository();
+        final PortfolioController subject = controller(repository);
 
-      await subject.load();
+        await subject.load();
 
-      final Portfolio saved = repository.savedPortfolio!;
-      expect(repository.findCalls, 1);
-      expect(repository.saveCalls, 1);
-      expect(saved.id, 'primary');
-      expect(saved.name, 'My Portfolio');
-      expect(saved.assets, isEmpty);
-      expect(saved.liabilities, isEmpty);
-      expect(subject.state.status, PortfolioStatus.ready);
-      expect(subject.state.portfolio, same(saved));
-    });
+        final Portfolio saved = repository.savedPortfolio!;
+        expect(repository.findCalls, 1);
+        expect(repository.saveCalls, 1);
+        expect(saved.id, 'primary');
+        expect(saved.name, 'My Portfolio');
+        expect(saved.assets, isEmpty);
+        expect(saved.liabilities, isEmpty);
+        expect(subject.state.status, PortfolioStatus.ready);
+        expect(subject.state.portfolio, same(saved));
+      },
+    );
 
     test('preserves the loaded Portfolio when a mutation save fails', () async {
       final Portfolio existing = portfolio();
@@ -86,7 +89,10 @@ void main() {
             message: 'Safe infrastructure message.',
           );
       final _RecordingPortfolioRepository repository =
-          _RecordingPortfolioRepository(portfolio: existing, saveError: failure);
+          _RecordingPortfolioRepository(
+            portfolio: existing,
+            saveError: failure,
+          );
       final PortfolioController subject = controller(repository);
       await subject.load();
 
@@ -121,23 +127,26 @@ void main() {
       expect(subject.state.status, PortfolioStatus.ready);
     });
 
-    test('prevents duplicate loads and ignores a late completion after dispose', () async {
-      final Completer<Portfolio?> pendingLoad = Completer<Portfolio?>();
-      final _RecordingPortfolioRepository repository =
-          _RecordingPortfolioRepository(findFuture: pendingLoad.future);
-      final PortfolioController subject = controller(repository);
+    test(
+      'prevents duplicate loads and ignores a late completion after dispose',
+      () async {
+        final Completer<Portfolio?> pendingLoad = Completer<Portfolio?>();
+        final _RecordingPortfolioRepository repository =
+            _RecordingPortfolioRepository(findFuture: pendingLoad.future);
+        final PortfolioController subject = controller(repository);
 
-      final Future<void> firstLoad = subject.load();
-      final Future<void> duplicateLoad = subject.load();
-      expect(repository.findCalls, 1);
+        final Future<void> firstLoad = subject.load();
+        final Future<void> duplicateLoad = subject.load();
+        expect(repository.findCalls, 1);
 
-      subject.dispose();
-      pendingLoad.complete(portfolio());
-      await firstLoad;
-      await duplicateLoad;
+        subject.dispose();
+        pendingLoad.complete(portfolio());
+        await firstLoad;
+        await duplicateLoad;
 
-      expect(subject.state.status, PortfolioStatus.loading);
-    });
+        expect(subject.state.status, PortfolioStatus.loading);
+      },
+    );
   });
 }
 

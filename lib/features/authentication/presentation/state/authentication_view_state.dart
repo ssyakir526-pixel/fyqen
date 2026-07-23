@@ -1,7 +1,12 @@
 import 'package:fyqen/features/authentication/application/errors/authentication_exception.dart';
 import 'package:fyqen/features/authentication/domain/entities/authenticated_user.dart';
 
-enum AuthenticationStatus { restoring, signedOut, authenticating, authenticated }
+enum AuthenticationStatus {
+  restoring,
+  signedOut,
+  authenticating,
+  authenticated,
+}
 
 /// Immutable presentation state for the authentication gate.
 final class AuthenticationViewState {
@@ -12,11 +17,7 @@ final class AuthenticationViewState {
   });
 
   const AuthenticationViewState.restoring()
-    : this._(
-        status: AuthenticationStatus.restoring,
-        user: null,
-        failure: null,
-      );
+    : this._(status: AuthenticationStatus.restoring, user: null, failure: null);
 
   const AuthenticationViewState.signedOut({AuthenticationException? failure})
     : this._(

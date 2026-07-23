@@ -62,8 +62,14 @@ void main() {
       expect(root.deletePortfolio, isA<DeletePortfolioUseCase>());
       expect(root.renamePortfolio, isA<RenamePortfolioUseCase>());
       expect(root.addAssetToPortfolio, isA<AddAssetToPortfolioUseCase>());
-      expect(root.replaceAssetInPortfolio, isA<ReplaceAssetInPortfolioUseCase>());
-      expect(root.removeAssetFromPortfolio, isA<RemoveAssetFromPortfolioUseCase>());
+      expect(
+        root.replaceAssetInPortfolio,
+        isA<ReplaceAssetInPortfolioUseCase>(),
+      );
+      expect(
+        root.removeAssetFromPortfolio,
+        isA<RemoveAssetFromPortfolioUseCase>(),
+      );
       expect(
         root.addLiabilityToPortfolio,
         isA<AddLiabilityToPortfolioUseCase>(),
@@ -89,40 +95,49 @@ void main() {
       expect(identical(root.portfolioRepository, repository), isTrue);
     });
 
-    test('uses a supplied repository without construction side effects', () async {
-      final _RecordingPortfolioRepository repository =
-          _RecordingPortfolioRepository();
-      final AppCompositionRoot root = createRoot(
-        portfolioRepository: repository,
-      );
-      final Portfolio portfolio = createPortfolio();
+    test(
+      'uses a supplied repository without construction side effects',
+      () async {
+        final _RecordingPortfolioRepository repository =
+            _RecordingPortfolioRepository();
+        final AppCompositionRoot root = createRoot(
+          portfolioRepository: repository,
+        );
+        final Portfolio portfolio = createPortfolio();
 
-      expect(identical(root.portfolioRepository, repository), isTrue);
-      expect(repository.findCalls, 0);
-      expect(repository.saveCalls, 0);
-      expect(repository.deleteCalls, 0);
+        expect(identical(root.portfolioRepository, repository), isTrue);
+        expect(repository.findCalls, 0);
+        expect(repository.saveCalls, 0);
+        expect(repository.deleteCalls, 0);
 
-      await root.savePortfolio(portfolio);
-      final Portfolio? loaded = await root.loadPortfolio(' portfolio-1 ');
-      await root.deletePortfolio('portfolio-1');
+        await root.savePortfolio(portfolio);
+        final Portfolio? loaded = await root.loadPortfolio(' portfolio-1 ');
+        await root.deletePortfolio('portfolio-1');
 
-      expect(repository.saveCalls, 1);
-      expect(identical(repository.savedPortfolio, portfolio), isTrue);
-      expect(repository.findCalls, 1);
-      expect(repository.findId, ' portfolio-1 ');
-      expect(identical(loaded, portfolio), isTrue);
-      expect(repository.deleteCalls, 1);
-      expect(repository.deleteId, 'portfolio-1');
-    });
+        expect(repository.saveCalls, 1);
+        expect(identical(repository.savedPortfolio, portfolio), isTrue);
+        expect(repository.findCalls, 1);
+        expect(repository.findId, ' portfolio-1 ');
+        expect(identical(loaded, portfolio), isTrue);
+        expect(repository.deleteCalls, 1);
+        expect(repository.deleteId, 'portfolio-1');
+      },
+    );
 
-    test('preserves repository exceptions through composed workflows', () async {
-      final ArgumentError error = ArgumentError('save failed');
-      final AppCompositionRoot root = createRoot(
-        portfolioRepository: _RecordingPortfolioRepository(saveError: error),
-      );
+    test(
+      'preserves repository exceptions through composed workflows',
+      () async {
+        final ArgumentError error = ArgumentError('save failed');
+        final AppCompositionRoot root = createRoot(
+          portfolioRepository: _RecordingPortfolioRepository(saveError: error),
+        );
 
-      await expectLater(root.savePortfolio(createPortfolio()), throwsA(same(error)));
-    });
+        await expectLater(
+          root.savePortfolio(createPortfolio()),
+          throwsA(same(error)),
+        );
+      },
+    );
 
     test('keeps aggregate operations synchronous and repository-free', () {
       final _RecordingPortfolioRepository repository =
@@ -145,70 +160,91 @@ void main() {
       expect(repository.deleteCalls, 0);
     });
 
-    test('shares default persistence within a root and isolates separate roots', () async {
-      final AppCompositionRoot firstRoot = createRoot();
-      final AppCompositionRoot secondRoot = createRoot();
-      final Portfolio portfolio = createPortfolio();
+    test(
+      'shares default persistence within a root and isolates separate roots',
+      () async {
+        final AppCompositionRoot firstRoot = createRoot();
+        final AppCompositionRoot secondRoot = createRoot();
+        final Portfolio portfolio = createPortfolio();
 
-      await firstRoot.savePortfolio(portfolio);
+        await firstRoot.savePortfolio(portfolio);
 
-      expect(
-        identical(firstRoot.portfolioRepository, secondRoot.portfolioRepository),
-        isFalse,
-      );
-      expect(identical(await firstRoot.loadPortfolio('portfolio-1'), portfolio), isTrue);
-      expect(await secondRoot.loadPortfolio('portfolio-1'), isNull);
-    });
+        expect(
+          identical(
+            firstRoot.portfolioRepository,
+            secondRoot.portfolioRepository,
+          ),
+          isFalse,
+        );
+        expect(
+          identical(await firstRoot.loadPortfolio('portfolio-1'), portfolio),
+          isTrue,
+        );
+        expect(await secondRoot.loadPortfolio('portfolio-1'), isNull);
+      },
+    );
 
-    test('composes supplied authentication dependencies without side effects', () async {
-      final AuthenticatedUser user = AuthenticatedUser(
-        id: 'user-1',
-        email: 'user@example.com',
-      );
-      final _RecordingAuthenticationRepository repository =
-          _RecordingAuthenticationRepository(
-            currentUser: user,
-            signInUser: user,
-            registrationUser: user,
-          );
-      final AppCompositionRoot root = createRoot(
-        authenticationRepository: repository,
-      );
+    test(
+      'composes supplied authentication dependencies without side effects',
+      () async {
+        final AuthenticatedUser user = AuthenticatedUser(
+          id: 'user-1',
+          email: 'user@example.com',
+        );
+        final _RecordingAuthenticationRepository repository =
+            _RecordingAuthenticationRepository(
+              currentUser: user,
+              signInUser: user,
+              registrationUser: user,
+            );
+        final AppCompositionRoot root = createRoot(
+          authenticationRepository: repository,
+        );
 
-      expect(identical(root.authenticationRepository, repository), isTrue);
-      expect(root.watchAuthenticationState, isA<WatchAuthenticationStateUseCase>());
-      expect(
-        root.getCurrentAuthenticatedUser,
-        isA<GetCurrentAuthenticatedUserUseCase>(),
-      );
-      expect(
-        root.signInWithEmailAndPassword,
-        isA<SignInWithEmailAndPasswordUseCase>(),
-      );
-      expect(
-        root.registerWithEmailAndPassword,
-        isA<RegisterWithEmailAndPasswordUseCase>(),
-      );
-      expect(root.signOut, isA<SignOutUseCase>());
-      expect(repository.totalCalls, 0);
+        expect(identical(root.authenticationRepository, repository), isTrue);
+        expect(
+          root.watchAuthenticationState,
+          isA<WatchAuthenticationStateUseCase>(),
+        );
+        expect(
+          root.getCurrentAuthenticatedUser,
+          isA<GetCurrentAuthenticatedUserUseCase>(),
+        );
+        expect(
+          root.signInWithEmailAndPassword,
+          isA<SignInWithEmailAndPasswordUseCase>(),
+        );
+        expect(
+          root.registerWithEmailAndPassword,
+          isA<RegisterWithEmailAndPasswordUseCase>(),
+        );
+        expect(root.signOut, isA<SignOutUseCase>());
+        expect(repository.totalCalls, 0);
 
-      expect(root.getCurrentAuthenticatedUser(), same(user));
-      expect(await root.signInWithEmailAndPassword(
-        email: 'user@example.com',
-        password: 'test-password',
-      ), same(user));
-      expect(await root.registerWithEmailAndPassword(
-        email: 'user@example.com',
-        password: 'test-password',
-      ), same(user));
-      await root.signOut();
+        expect(root.getCurrentAuthenticatedUser(), same(user));
+        expect(
+          await root.signInWithEmailAndPassword(
+            email: 'user@example.com',
+            password: 'test-password',
+          ),
+          same(user),
+        );
+        expect(
+          await root.registerWithEmailAndPassword(
+            email: 'user@example.com',
+            password: 'test-password',
+          ),
+          same(user),
+        );
+        await root.signOut();
 
-      expect(repository.currentUserCalls, 1);
-      expect(repository.signInCalls, 1);
-      expect(repository.registerCalls, 1);
-      expect(repository.signOutCalls, 1);
-      expect(repository.watchCalls, 0);
-    });
+        expect(repository.currentUserCalls, 1);
+        expect(repository.signInCalls, 1);
+        expect(repository.registerCalls, 1);
+        expect(repository.signOutCalls, 1);
+        expect(repository.watchCalls, 0);
+      },
+    );
 
     test('preserves an identity-provider override without reading it', () {
       final _RecordingAuthenticatedUserIdProvider provider =
@@ -222,32 +258,38 @@ void main() {
       expect(provider.currentUserIdReads, 0);
     });
 
-    test('keeps supplied authentication repositories isolated and propagates errors', () async {
-      final AuthenticationException error = const AuthenticationException(
-        code: AuthenticationFailureCode.unknown,
-        message: 'Sign-out failed.',
-      );
-      final _RecordingAuthenticationRepository firstRepository =
-          _RecordingAuthenticationRepository(signOutError: error);
-      final _RecordingAuthenticationRepository secondRepository =
-          _RecordingAuthenticationRepository();
-      final AppCompositionRoot firstRoot = createRoot(
-        authenticationRepository: firstRepository,
-      );
-      final AppCompositionRoot secondRoot = createRoot(
-        authenticationRepository: secondRepository,
-      );
+    test(
+      'keeps supplied authentication repositories isolated and propagates errors',
+      () async {
+        final AuthenticationException error = const AuthenticationException(
+          code: AuthenticationFailureCode.unknown,
+          message: 'Sign-out failed.',
+        );
+        final _RecordingAuthenticationRepository firstRepository =
+            _RecordingAuthenticationRepository(signOutError: error);
+        final _RecordingAuthenticationRepository secondRepository =
+            _RecordingAuthenticationRepository();
+        final AppCompositionRoot firstRoot = createRoot(
+          authenticationRepository: firstRepository,
+        );
+        final AppCompositionRoot secondRoot = createRoot(
+          authenticationRepository: secondRepository,
+        );
 
-      expect(
-        identical(firstRoot.authenticationRepository, secondRoot.authenticationRepository),
-        isFalse,
-      );
-      await expectLater(firstRoot.signOut(), throwsA(same(error)));
-      await secondRoot.signOut();
+        expect(
+          identical(
+            firstRoot.authenticationRepository,
+            secondRoot.authenticationRepository,
+          ),
+          isFalse,
+        );
+        await expectLater(firstRoot.signOut(), throwsA(same(error)));
+        await secondRoot.signOut();
 
-      expect(firstRepository.signOutCalls, 1);
-      expect(secondRepository.signOutCalls, 1);
-    });
+        expect(firstRepository.signOutCalls, 1);
+        expect(secondRepository.signOutCalls, 1);
+      },
+    );
   });
 }
 
@@ -323,7 +365,11 @@ final class _RecordingAuthenticationRepository
   int signOutCalls = 0;
 
   int get totalCalls {
-    return watchCalls + currentUserCalls + signInCalls + registerCalls + signOutCalls;
+    return watchCalls +
+        currentUserCalls +
+        signInCalls +
+        registerCalls +
+        signOutCalls;
   }
 
   @override

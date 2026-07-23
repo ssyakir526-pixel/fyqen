@@ -35,7 +35,10 @@ void main() {
       id: id,
       name: name,
       type: LiabilityType.personalLoan,
-      outstandingBalance: LiabilityAmount(amount: '1', currencyCode: currencyCode),
+      outstandingBalance: LiabilityAmount(
+        amount: '1',
+        currencyCode: currencyCode,
+      ),
       originalAmount: LiabilityAmount(amount: '1', currencyCode: currencyCode),
       createdAt: DateTime.utc(2026, 1, 1),
       updatedAt: DateTime.utc(2026, 1, 1),
@@ -93,44 +96,53 @@ void main() {
       );
 
       expect(portfolio.assets, <Asset>[firstAsset, secondAsset]);
-      expect(portfolio.liabilities, <Liability>[firstLiability, secondLiability]);
+      expect(portfolio.liabilities, <Liability>[
+        firstLiability,
+        secondLiability,
+      ]);
       expect(identical(portfolio.assets.first, firstAsset), isTrue);
       expect(identical(portfolio.liabilities.first, firstLiability), isTrue);
     });
 
-    test('rejects empty identifiers, names, duplicate assets, and liabilities', () {
-      expect(() => createPortfolio(id: ''), throwsArgumentError);
-      expect(() => createPortfolio(id: '  '), throwsArgumentError);
-      expect(() => createPortfolio(name: ''), throwsArgumentError);
-      expect(() => createPortfolio(name: '  '), throwsArgumentError);
-      expect(
-        () => createPortfolio(
-          assets: <Asset>[createAsset(), createAsset(name: 'Different')],
-        ),
-        throwsA(
-          isA<ArgumentError>().having(
-            (ArgumentError error) => error.message,
-            'message',
-            contains('asset-1'),
+    test(
+      'rejects empty identifiers, names, duplicate assets, and liabilities',
+      () {
+        expect(() => createPortfolio(id: ''), throwsArgumentError);
+        expect(() => createPortfolio(id: '  '), throwsArgumentError);
+        expect(() => createPortfolio(name: ''), throwsArgumentError);
+        expect(() => createPortfolio(name: '  '), throwsArgumentError);
+        expect(
+          () => createPortfolio(
+            assets: <Asset>[
+              createAsset(),
+              createAsset(name: 'Different'),
+            ],
           ),
-        ),
-      );
-      expect(
-        () => createPortfolio(
-          liabilities: <Liability>[
-            createLiability(),
-            createLiability(name: 'Different'),
-          ],
-        ),
-        throwsA(
-          isA<ArgumentError>().having(
-            (ArgumentError error) => error.message,
-            'message',
-            contains('liability-1'),
+          throwsA(
+            isA<ArgumentError>().having(
+              (ArgumentError error) => error.message,
+              'message',
+              contains('asset-1'),
+            ),
           ),
-        ),
-      );
-    });
+        );
+        expect(
+          () => createPortfolio(
+            liabilities: <Liability>[
+              createLiability(),
+              createLiability(name: 'Different'),
+            ],
+          ),
+          throwsA(
+            isA<ArgumentError>().having(
+              (ArgumentError error) => error.message,
+              'message',
+              contains('liability-1'),
+            ),
+          ),
+        );
+      },
+    );
 
     test('defensively copies and exposes unmodifiable collections', () {
       final List<Asset> sourceAssets = <Asset>[createAsset()];
@@ -145,7 +157,10 @@ void main() {
 
       expect(portfolio.assets, hasLength(1));
       expect(portfolio.liabilities, hasLength(1));
-      expect(() => portfolio.assets.add(createAsset(id: 'asset-3')), throwsUnsupportedError);
+      expect(
+        () => portfolio.assets.add(createAsset(id: 'asset-3')),
+        throwsUnsupportedError,
+      );
       expect(() => portfolio.assets.removeAt(0), throwsUnsupportedError);
       expect(() => portfolio.assets.clear(), throwsUnsupportedError);
       expect(
@@ -279,12 +294,15 @@ void main() {
       expect(updated.updatedAt, laterUpdateTime);
       expect(updated.updatedAt.isUtc, isTrue);
       expect(
-        () => original.addAsset(asset: existingAsset, updatedAt: laterUpdateTime),
-        throwsA(isA<ArgumentError>().having(
-          (ArgumentError error) => error.message,
-          'message',
-          contains('asset-1'),
-        )),
+        () =>
+            original.addAsset(asset: existingAsset, updatedAt: laterUpdateTime),
+        throwsA(
+          isA<ArgumentError>().having(
+            (ArgumentError error) => error.message,
+            'message',
+            contains('asset-1'),
+          ),
+        ),
       );
       expect(
         () => original.addAsset(
@@ -317,11 +335,13 @@ void main() {
           asset: createAsset(id: 'missing-asset'),
           updatedAt: laterUpdateTime,
         ),
-        throwsA(isA<ArgumentError>().having(
-          (ArgumentError error) => error.message,
-          'message',
-          contains('missing-asset'),
-        )),
+        throwsA(
+          isA<ArgumentError>().having(
+            (ArgumentError error) => error.message,
+            'message',
+            contains('missing-asset'),
+          ),
+        ),
       );
     });
 
@@ -340,7 +360,8 @@ void main() {
       expect(updated.assets, <Asset>[secondAsset]);
       expect(original.assets, <Asset>[firstAsset, secondAsset]);
       expect(
-        () => updated.removeAsset(assetId: 'asset-2', updatedAt: laterUpdateTime),
+        () =>
+            updated.removeAsset(assetId: 'asset-2', updatedAt: laterUpdateTime),
         returnsNormally,
       );
       expect(
@@ -348,45 +369,58 @@ void main() {
         throwsArgumentError,
       );
       expect(
-        () => original.removeAsset(assetId: 'asset-1', updatedAt: laterUpdateTime),
-        throwsA(isA<ArgumentError>().having(
-          (ArgumentError error) => error.message,
-          'message',
-          contains('asset-1'),
-        )),
-      );
-    });
-
-    test('adds liabilities by appending without changing the original snapshot', () {
-      final Liability existingLiability = createLiability();
-      final Asset asset = createAsset(id: 'shared-id');
-      final Liability addedLiability = createLiability(id: 'shared-id');
-      final Portfolio original = createPortfolio(
-        assets: <Asset>[asset],
-        liabilities: <Liability>[existingLiability],
-        updatedAt: equalUpdateTime,
-      );
-      final Portfolio updated = original.addLiability(
-        liability: addedLiability,
-        updatedAt: laterUpdateTime,
-      );
-
-      expect(updated.liabilities, <Liability>[existingLiability, addedLiability]);
-      expect(identical(updated.liabilities.last, addedLiability), isTrue);
-      expect(updated.assets, <Asset>[asset]);
-      expect(original.liabilities, <Liability>[existingLiability]);
-      expect(
-        () => original.addLiability(
-          liability: existingLiability,
+        () => original.removeAsset(
+          assetId: 'asset-1',
           updatedAt: laterUpdateTime,
         ),
-        throwsA(isA<ArgumentError>().having(
-          (ArgumentError error) => error.message,
-          'message',
-          contains('liability-1'),
-        )),
+        throwsA(
+          isA<ArgumentError>().having(
+            (ArgumentError error) => error.message,
+            'message',
+            contains('asset-1'),
+          ),
+        ),
       );
     });
+
+    test(
+      'adds liabilities by appending without changing the original snapshot',
+      () {
+        final Liability existingLiability = createLiability();
+        final Asset asset = createAsset(id: 'shared-id');
+        final Liability addedLiability = createLiability(id: 'shared-id');
+        final Portfolio original = createPortfolio(
+          assets: <Asset>[asset],
+          liabilities: <Liability>[existingLiability],
+          updatedAt: equalUpdateTime,
+        );
+        final Portfolio updated = original.addLiability(
+          liability: addedLiability,
+          updatedAt: laterUpdateTime,
+        );
+
+        expect(updated.liabilities, <Liability>[
+          existingLiability,
+          addedLiability,
+        ]);
+        expect(identical(updated.liabilities.last, addedLiability), isTrue);
+        expect(updated.assets, <Asset>[asset]);
+        expect(original.liabilities, <Liability>[existingLiability]);
+        expect(
+          () => original.addLiability(
+            liability: existingLiability,
+            updatedAt: laterUpdateTime,
+          ),
+          throwsA(
+            isA<ArgumentError>().having(
+              (ArgumentError error) => error.message,
+              'message',
+              contains('liability-1'),
+            ),
+          ),
+        );
+      },
+    );
 
     test('replaces liabilities in place and rejects missing IDs', () {
       final Liability firstLiability = createLiability(id: 'liability-1');
@@ -412,11 +446,13 @@ void main() {
           liability: createLiability(id: 'missing-liability'),
           updatedAt: laterUpdateTime,
         ),
-        throwsA(isA<ArgumentError>().having(
-          (ArgumentError error) => error.message,
-          'message',
-          contains('missing-liability'),
-        )),
+        throwsA(
+          isA<ArgumentError>().having(
+            (ArgumentError error) => error.message,
+            'message',
+            contains('missing-liability'),
+          ),
+        ),
       );
     });
 
@@ -433,7 +469,10 @@ void main() {
       );
 
       expect(updated.liabilities, <Liability>[secondLiability]);
-      expect(original.liabilities, <Liability>[firstLiability, secondLiability]);
+      expect(original.liabilities, <Liability>[
+        firstLiability,
+        secondLiability,
+      ]);
       expect(
         () => original.removeLiability(
           liabilityId: '   ',
@@ -446,27 +485,32 @@ void main() {
           liabilityId: 'liability-1',
           updatedAt: laterUpdateTime,
         ),
-        throwsA(isA<ArgumentError>().having(
-          (ArgumentError error) => error.message,
-          'message',
-          contains('liability-1'),
-        )),
+        throwsA(
+          isA<ArgumentError>().having(
+            (ArgumentError error) => error.message,
+            'message',
+            contains('liability-1'),
+          ),
+        ),
       );
     });
 
-    test('returns unmodifiable modified collections and keeps child times independent', () {
-      final Portfolio original = createPortfolio(updatedAt: equalUpdateTime);
-      final Portfolio updated = original.addAsset(
-        asset: createAsset(currencyCode: 'USD'),
-        updatedAt: laterUpdateTime,
-      );
+    test(
+      'returns unmodifiable modified collections and keeps child times independent',
+      () {
+        final Portfolio original = createPortfolio(updatedAt: equalUpdateTime);
+        final Portfolio updated = original.addAsset(
+          asset: createAsset(currencyCode: 'USD'),
+          updatedAt: laterUpdateTime,
+        );
 
-      expect(identical(original, updated), isFalse);
-      expect(updated, original);
-      expect(updated.hashCode, original.hashCode);
-      expect(updated.createdAt, original.createdAt);
-      expect(() => updated.assets.clear(), throwsUnsupportedError);
-      expect(() => updated.liabilities.clear(), throwsUnsupportedError);
-    });
+        expect(identical(original, updated), isFalse);
+        expect(updated, original);
+        expect(updated.hashCode, original.hashCode);
+        expect(updated.createdAt, original.createdAt);
+        expect(() => updated.assets.clear(), throwsUnsupportedError);
+        expect(() => updated.liabilities.clear(), throwsUnsupportedError);
+      },
+    );
   });
 }

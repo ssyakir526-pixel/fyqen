@@ -35,8 +35,7 @@ final class _FyqenAppState extends State<FyqenApp> {
       themeMode: ThemeMode.dark,
       home: AuthenticationGate(
         watchAuthenticationState: _compositionRoot.watchAuthenticationState,
-        signInWithEmailAndPassword:
-            _compositionRoot.signInWithEmailAndPassword,
+        signInWithEmailAndPassword: _compositionRoot.signInWithEmailAndPassword,
         registerWithEmailAndPassword:
             _compositionRoot.registerWithEmailAndPassword,
         signOut: _compositionRoot.signOut,
@@ -47,8 +46,7 @@ final class _FyqenAppState extends State<FyqenApp> {
             renamePortfolio: _compositionRoot.renamePortfolio,
             addAssetToPortfolio: _compositionRoot.addAssetToPortfolio,
             replaceAssetInPortfolio: _compositionRoot.replaceAssetInPortfolio,
-            removeAssetFromPortfolio:
-                _compositionRoot.removeAssetFromPortfolio,
+            removeAssetFromPortfolio: _compositionRoot.removeAssetFromPortfolio,
             addLiabilityToPortfolio: _compositionRoot.addLiabilityToPortfolio,
             replaceLiabilityInPortfolio:
                 _compositionRoot.replaceLiabilityInPortfolio,

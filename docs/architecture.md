@@ -513,6 +513,34 @@ share PortfolioViewState without local asset caches. No Asset widget imports
 Firebase, accesses a repository, or stores a UID. No realtime listener,
 market-data service, or currency conversion exists.
 
+## Liability Management Presentation
+
+The existing Portfolio destination contains separate Assets and Liabilities
+sections without adding a primary navigation destination. The Liability section
+receives an immutable `Portfolio` snapshot together with session-owned, typed
+callbacks.
+
+```text
+LiabilitiesPage
+-> LiabilityForm / delete confirmation
+-> PortfolioController callbacks
+-> Portfolio use cases
+-> PortfolioRepository
+-> FirestorePortfolioRepository
+```
+
+`LiabilityForm` validates presentation input before constructing an immutable
+`Liability`. Edits preserve the entity ID and `createdAt`, preserve the optional
+due date, and update `updatedAt` through the injected session clock. Liability
+IDs use the same session-owned timestamp-plus-sequence boundary as Asset IDs.
+Delete confirmation is wholly Presentation behavior and delegates only through
+the supplied removal callback.
+
+Dashboard, Assets, and Liabilities read the same `PortfolioViewState` snapshot.
+There is no local liability cache, Firebase type, repository, UID, realtime
+listener, optimistic state, loan service, automatic interest calculation,
+repayment schedule, debt advice, or currency conversion in Presentation.
+
 `lib/features/portfolio/application/repositories/portfolio_repository.dart`
 defines the persistence capability required by future Portfolio workflows. The
 application layer owns this contract, while future infrastructure adapters may

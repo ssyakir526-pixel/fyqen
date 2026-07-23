@@ -54,7 +54,9 @@ void main() {
     );
   }
 
-  testWidgets('shows an actionable empty Asset state', (WidgetTester tester) async {
+  testWidgets('shows an actionable empty Asset state', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(buildPage(currentPortfolio: portfolio()));
 
     expect(find.text('No assets yet'), findsOneWidget);
@@ -75,37 +77,38 @@ void main() {
     expect(find.byType(TextFormField), findsNWidgets(5));
   });
 
-  testWidgets('shows immutable Asset details and requires delete confirmation', (
-    WidgetTester tester,
-  ) async {
-    int deleteCalls = 0;
-    await tester.pumpWidget(
-      buildPage(
-        currentPortfolio: portfolio(assets: <Asset>[asset()]),
-        onRemoveAsset: (String assetId) async {
-          deleteCalls += 1;
-          return true;
-        },
-      ),
-    );
+  testWidgets(
+    'shows immutable Asset details and requires delete confirmation',
+    (WidgetTester tester) async {
+      int deleteCalls = 0;
+      await tester.pumpWidget(
+        buildPage(
+          currentPortfolio: portfolio(assets: <Asset>[asset()]),
+          onRemoveAsset: (String assetId) async {
+            deleteCalls += 1;
+            return true;
+          },
+        ),
+      );
 
-    expect(find.text('Savings account • SAVE'), findsOneWidget);
-    final Finder assetRow = find.byKey(const Key('asset-list-item-asset-1'));
-    expect(assetRow, findsOneWidget);
-    expect(
-      find.descendant(
-        of: assetRow,
-        matching: find.textContaining('Total: MYR 50'),
-      ),
-      findsOneWidget,
-    );
+      expect(find.text('Savings account • SAVE'), findsOneWidget);
+      final Finder assetRow = find.byKey(const Key('asset-list-item-asset-1'));
+      expect(assetRow, findsOneWidget);
+      expect(
+        find.descendant(
+          of: assetRow,
+          matching: find.textContaining('Total: MYR 50'),
+        ),
+        findsOneWidget,
+      );
 
-    await tester.tap(find.byTooltip('Delete asset'));
-    await tester.pumpAndSettle();
-    expect(find.text('Delete asset?'), findsOneWidget);
+      await tester.tap(find.byTooltip('Delete asset'));
+      await tester.pumpAndSettle();
+      expect(find.text('Delete asset?'), findsOneWidget);
 
-    await tester.tap(find.text('Cancel'));
-    await tester.pumpAndSettle();
-    expect(deleteCalls, 0);
-  });
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(deleteCalls, 0);
+    },
+  );
 }

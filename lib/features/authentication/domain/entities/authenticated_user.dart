@@ -3,7 +3,11 @@ final class AuthenticatedUser {
   factory AuthenticatedUser({required String id, required String? email}) {
     final String normalizedId = id.trim();
     if (normalizedId.isEmpty) {
-      throw ArgumentError.value(id, 'id', 'Authenticated user ID must not be empty.');
+      throw ArgumentError.value(
+        id,
+        'id',
+        'Authenticated user ID must not be empty.',
+      );
     }
 
     return AuthenticatedUser._(id: normalizedId, email: email);

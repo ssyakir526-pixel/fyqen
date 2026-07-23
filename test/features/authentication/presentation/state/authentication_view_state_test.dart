@@ -15,9 +15,11 @@ void main() {
       message: 'Invalid credential.',
     );
 
-    const AuthenticationViewState restoring = AuthenticationViewState.restoring();
-    final AuthenticationViewState signedOut =
-        AuthenticationViewState.signedOut(failure: failure);
+    const AuthenticationViewState restoring =
+        AuthenticationViewState.restoring();
+    final AuthenticationViewState signedOut = AuthenticationViewState.signedOut(
+      failure: failure,
+    );
     const AuthenticationViewState authenticating =
         AuthenticationViewState.authenticating();
     final AuthenticationViewState authenticated =

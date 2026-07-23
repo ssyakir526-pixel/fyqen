@@ -4,7 +4,8 @@ import 'package:fyqen/features/authentication/application/repositories/authentic
 import 'package:fyqen/features/authentication/domain/entities/authenticated_user.dart';
 
 /// Firebase-backed implementation of the application authentication contract.
-final class FirebaseAuthenticationRepository implements AuthenticationRepository {
+final class FirebaseAuthenticationRepository
+    implements AuthenticationRepository {
   const FirebaseAuthenticationRepository(this._firebaseAuth);
 
   final FirebaseAuth _firebaseAuth;
@@ -25,11 +26,8 @@ final class FirebaseAuthenticationRepository implements AuthenticationRepository
     required String password,
   }) async {
     try {
-      final UserCredential credential =
-          await _firebaseAuth.signInWithEmailAndPassword(
-            email: email,
-            password: password,
-          );
+      final UserCredential credential = await _firebaseAuth
+          .signInWithEmailAndPassword(email: email, password: password);
       return _requireAuthenticatedUser(credential.user);
     } on FirebaseAuthException catch (exception) {
       throw _translateException(exception);
@@ -42,11 +40,8 @@ final class FirebaseAuthenticationRepository implements AuthenticationRepository
     required String password,
   }) async {
     try {
-      final UserCredential credential =
-          await _firebaseAuth.createUserWithEmailAndPassword(
-            email: email,
-            password: password,
-          );
+      final UserCredential credential = await _firebaseAuth
+          .createUserWithEmailAndPassword(email: email, password: password);
       return _requireAuthenticatedUser(credential.user);
     } on FirebaseAuthException catch (exception) {
       throw _translateException(exception);

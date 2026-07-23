@@ -16,20 +16,26 @@ void main() {
   );
 
   group('authentication use cases', () {
-    test('watch delegates once and preserves stream events and identity', () async {
-      final Stream<AuthenticatedUser?> stream =
-          Stream<AuthenticatedUser?>.fromIterable(<AuthenticatedUser?>[user, null]);
-      final _FakeAuthenticationRepository repository =
-          _FakeAuthenticationRepository(authenticationState: stream);
-      final WatchAuthenticationStateUseCase useCase =
-          WatchAuthenticationStateUseCase(repository);
+    test(
+      'watch delegates once and preserves stream events and identity',
+      () async {
+        final Stream<AuthenticatedUser?> stream =
+            Stream<AuthenticatedUser?>.fromIterable(<AuthenticatedUser?>[
+              user,
+              null,
+            ]);
+        final _FakeAuthenticationRepository repository =
+            _FakeAuthenticationRepository(authenticationState: stream);
+        final WatchAuthenticationStateUseCase useCase =
+            WatchAuthenticationStateUseCase(repository);
 
-      final Stream<AuthenticatedUser?> result = useCase();
+        final Stream<AuthenticatedUser?> result = useCase();
 
-      expect(identical(result, stream), isTrue);
-      expect(repository.watchCalls, 1);
-      await expectLater(result, emitsInOrder(<Object?>[same(user), isNull]));
-    });
+        expect(identical(result, stream), isTrue);
+        expect(repository.watchCalls, 1);
+        await expectLater(result, emitsInOrder(<Object?>[same(user), isNull]));
+      },
+    );
 
     test('watch preserves repository stream errors', () async {
       final AuthenticationException error = const AuthenticationException(
@@ -50,14 +56,18 @@ void main() {
     test('gets the current user or null and preserves exceptions', () {
       final _FakeAuthenticationRepository signedIn =
           _FakeAuthenticationRepository(currentUser: user);
-      final _FakeAuthenticationRepository signedOut = _FakeAuthenticationRepository();
+      final _FakeAuthenticationRepository signedOut =
+          _FakeAuthenticationRepository();
       final ArgumentError error = ArgumentError('current user failed');
       final _FakeAuthenticationRepository failing =
           _FakeAuthenticationRepository(currentUserError: error);
 
       expect(GetCurrentAuthenticatedUserUseCase(signedIn)(), same(user));
       expect(GetCurrentAuthenticatedUserUseCase(signedOut)(), isNull);
-      expect(() => GetCurrentAuthenticatedUserUseCase(failing)(), throwsA(same(error)));
+      expect(
+        () => GetCurrentAuthenticatedUserUseCase(failing)(),
+        throwsA(same(error)),
+      );
       expect(signedIn.currentUserCalls, 1);
       expect(signedOut.currentUserCalls, 1);
       expect(failing.currentUserCalls, 1);
@@ -94,36 +104,39 @@ void main() {
       );
     });
 
-    test('registration forwards credentials exactly and preserves errors', () async {
-      final _FakeAuthenticationRepository repository =
-          _FakeAuthenticationRepository(registrationUser: user);
-      final RegisterWithEmailAndPasswordUseCase useCase =
-          RegisterWithEmailAndPasswordUseCase(repository);
+    test(
+      'registration forwards credentials exactly and preserves errors',
+      () async {
+        final _FakeAuthenticationRepository repository =
+            _FakeAuthenticationRepository(registrationUser: user);
+        final RegisterWithEmailAndPasswordUseCase useCase =
+            RegisterWithEmailAndPasswordUseCase(repository);
 
-      final AuthenticatedUser result = await useCase(
-        email: 'user@example.com',
-        password: 'test-password',
-      );
+        final AuthenticatedUser result = await useCase(
+          email: 'user@example.com',
+          password: 'test-password',
+        );
 
-      expect(result, same(user));
-      expect(repository.registerCalls, 1);
-      expect(repository.receivedRegistrationEmail, 'user@example.com');
-      expect(repository.receivedRegistrationPassword, 'test-password');
-      expect(repository.signInCalls, 0);
-      expect(repository.signOutCalls, 0);
-      expect(repository.watchCalls, 0);
+        expect(result, same(user));
+        expect(repository.registerCalls, 1);
+        expect(repository.receivedRegistrationEmail, 'user@example.com');
+        expect(repository.receivedRegistrationPassword, 'test-password');
+        expect(repository.signInCalls, 0);
+        expect(repository.signOutCalls, 0);
+        expect(repository.watchCalls, 0);
 
-      final AuthenticationException error = const AuthenticationException(
-        code: AuthenticationFailureCode.emailAlreadyInUse,
-        message: 'Email already in use.',
-      );
-      await expectLater(
-        RegisterWithEmailAndPasswordUseCase(
-          _FakeAuthenticationRepository(registrationError: error),
-        )(email: 'user@example.com', password: 'test-password'),
-        throwsA(same(error)),
-      );
-    });
+        final AuthenticationException error = const AuthenticationException(
+          code: AuthenticationFailureCode.emailAlreadyInUse,
+          message: 'Email already in use.',
+        );
+        await expectLater(
+          RegisterWithEmailAndPasswordUseCase(
+            _FakeAuthenticationRepository(registrationError: error),
+          )(email: 'user@example.com', password: 'test-password'),
+          throwsA(same(error)),
+        );
+      },
+    );
 
     test('sign-out delegates once and preserves errors', () async {
       final _FakeAuthenticationRepository repository =

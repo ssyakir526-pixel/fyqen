@@ -31,15 +31,18 @@ void main() {
       expect(loading.failure, isNull);
     });
 
-    test('ready and saving states preserve the supplied Portfolio reference', () {
-      final PortfolioViewState ready = PortfolioViewState.ready(portfolio);
-      final PortfolioViewState saving = PortfolioViewState.saving(portfolio);
+    test(
+      'ready and saving states preserve the supplied Portfolio reference',
+      () {
+        final PortfolioViewState ready = PortfolioViewState.ready(portfolio);
+        final PortfolioViewState saving = PortfolioViewState.saving(portfolio);
 
-      expect(identical(ready.portfolio, portfolio), isTrue);
-      expect(ready.failure, isNull);
-      expect(identical(saving.portfolio, portfolio), isTrue);
-      expect(saving.failure, isNull);
-    });
+        expect(identical(ready.portfolio, portfolio), isTrue);
+        expect(ready.failure, isNull);
+        expect(identical(saving.portfolio, portfolio), isTrue);
+        expect(saving.failure, isNull);
+      },
+    );
 
     test('failure may preserve the latest Portfolio', () {
       final PortfolioViewState loadFailure = PortfolioViewState.failure(

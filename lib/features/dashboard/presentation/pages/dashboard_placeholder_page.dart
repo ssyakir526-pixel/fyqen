@@ -55,9 +55,9 @@ class DashboardPlaceholderPage extends StatelessWidget {
                   subtitle: summary == null
                       ? null
                       : 'Assets: ${summary.totalAssetsLabel} • '
-                          'Liabilities: ${summary.totalLiabilitiesLabel} • '
-                          '${summary.assetCount} assets • '
-                          '${summary.liabilityCount} liabilities',
+                            'Liabilities: ${summary.totalLiabilitiesLabel} • '
+                            '${summary.assetCount} assets • '
+                            '${summary.liabilityCount} liabilities',
                 ),
               ],
             ),

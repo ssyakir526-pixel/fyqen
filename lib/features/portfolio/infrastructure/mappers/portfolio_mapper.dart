@@ -29,7 +29,8 @@ final class PortfolioMapper {
 
   Map<String, Object?> toMap(Portfolio portfolio) => toDto(portfolio).toMap();
 
-  Portfolio fromMap(Map<String, Object?> map) => toDomain(PortfolioDto.fromMap(map));
+  Portfolio fromMap(Map<String, Object?> map) =>
+      toDomain(PortfolioDto.fromMap(map));
 
   Portfolio toDomain(PortfolioDto dto) {
     final List<Asset> assets = List<Asset>.generate(
@@ -38,7 +39,8 @@ final class PortfolioMapper {
     );
     final List<Liability> liabilities = List<Liability>.generate(
       dto.liabilities.length,
-      (int index) => _liabilityFromMap(dto.liabilities[index], 'liabilities[$index]'),
+      (int index) =>
+          _liabilityFromMap(dto.liabilities[index], 'liabilities[$index]'),
     );
 
     try {
@@ -151,7 +153,10 @@ final class PortfolioMapper {
           '$path.updatedAt',
         ),
         lenderName: map['lenderName'] as String?,
-        dueDate: _optionalTimestampFromString(map['dueDate'] as String?, '$path.dueDate'),
+        dueDate: _optionalTimestampFromString(
+          map['dueDate'] as String?,
+          '$path.dueDate',
+        ),
       );
     } on PortfolioDataMappingException {
       rethrow;

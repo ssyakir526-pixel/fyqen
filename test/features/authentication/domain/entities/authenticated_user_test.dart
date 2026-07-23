@@ -24,7 +24,10 @@ void main() {
         email: null,
       );
 
-      expect(() => AuthenticatedUser(id: '  ', email: null), throwsArgumentError);
+      expect(
+        () => AuthenticatedUser(id: '  ', email: null),
+        throwsArgumentError,
+      );
       expect(first, sameId);
       expect(first.hashCode, sameId.hashCode);
     });

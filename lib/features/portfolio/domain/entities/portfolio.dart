@@ -133,7 +133,10 @@ final class Portfolio {
   }
 
   /// Returns a new snapshot without the asset identified by [assetId].
-  Portfolio removeAsset({required String assetId, required DateTime updatedAt}) {
+  Portfolio removeAsset({
+    required String assetId,
+    required DateTime updatedAt,
+  }) {
     final DateTime normalizedUpdatedAt = _validatedModificationTimestamp(
       updatedAt,
     );
@@ -200,9 +203,7 @@ final class Portfolio {
       throw ArgumentError('Liability ID not found: ${liability.id}');
     }
 
-    final List<Liability> updatedLiabilities = List<Liability>.of(
-      _liabilities,
-    );
+    final List<Liability> updatedLiabilities = List<Liability>.of(_liabilities);
     updatedLiabilities[liabilityIndex] = liability;
 
     return Portfolio(
@@ -235,9 +236,8 @@ final class Portfolio {
       throw ArgumentError('Liability ID not found: $normalizedLiabilityId');
     }
 
-    final List<Liability> updatedLiabilities = List<Liability>.of(
-      _liabilities,
-    )..removeAt(liabilityIndex);
+    final List<Liability> updatedLiabilities = List<Liability>.of(_liabilities)
+      ..removeAt(liabilityIndex);
 
     return Portfolio(
       id: _id,
@@ -296,7 +296,9 @@ final class Portfolio {
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        other.runtimeType == runtimeType && other is Portfolio && other._id == _id;
+        other.runtimeType == runtimeType &&
+            other is Portfolio &&
+            other._id == _id;
   }
 
   @override

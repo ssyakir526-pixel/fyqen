@@ -239,15 +239,27 @@ access—not public test rules.
 
 ## Portfolio Repository Contract
 
-## Asset Management UI
+## Asset and Liability Management UI
 
-The existing Portfolio destination now provides Asset Management. Authenticated
-users can view, add, edit, and delete immutable Assets through
-`PortfolioController` callbacks and existing Portfolio use cases. Forms validate
-input before Domain construction, deletion requires confirmation, and failed
-persistence retains entered form values and the current Portfolio. Dashboard
-and Assets use the same Portfolio snapshot. There is no market-data service,
-automatic price update, currency conversion, or Liability management UI.
+The existing Portfolio destination now provides Asset and Liability Management
+through two sections. Authenticated users can view, add, edit, and delete
+immutable Assets and Liabilities through `PortfolioController` callbacks and
+existing Portfolio use cases. Forms validate input before Domain construction,
+deletion requires confirmation, and failed persistence retains entered form
+values and the current Portfolio. Dashboard and both management sections use
+the same Portfolio snapshot. No widget accesses Firestore directly. There is
+no market-data service, automatic price update, automatic interest calculation,
+repayment schedule, debt-advice feature, or currency conversion.
+
+Liability forms collect the Domain-required name, category, outstanding
+balance, original amount, and currency, with lender name remaining optional.
+Edits preserve the Liability ID and `createdAt` while updating `updatedAt`
+through the session-owned clock. Liability IDs reuse the testable session
+timestamp-plus-sequence convention. Save failures retain form values and the
+existing Portfolio; no optimistic local-only state or realtime listener exists.
+
+Production persistence still requires a Firestore Database with secure rules
+deployed and Email/Password authentication enabled in Firebase Console.
 
 The Portfolio application layer now defines a persistence-neutral
 `PortfolioRepository` contract for finding one Portfolio by ID, saving a

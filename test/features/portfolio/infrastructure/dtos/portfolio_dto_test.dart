@@ -62,13 +62,17 @@ void main() {
     });
 
     test('rejects absent, wrong, and unsupported schema versions', () {
-      final Map<String, Object?> missing = completeMap()..remove('schemaVersion');
+      final Map<String, Object?> missing = completeMap()
+        ..remove('schemaVersion');
       final Map<String, Object?> wrongType = completeMap()
         ..['schemaVersion'] = '1';
       final Map<String, Object?> unsupported = completeMap()
         ..['schemaVersion'] = 2;
 
-      expect(() => PortfolioDto.fromMap(missing), throwsA(mappingErrorAt('schemaVersion')));
+      expect(
+        () => PortfolioDto.fromMap(missing),
+        throwsA(mappingErrorAt('schemaVersion')),
+      );
       expect(
         () => PortfolioDto.fromMap(wrongType),
         throwsA(mappingErrorAt('schemaVersion')),
@@ -79,48 +83,63 @@ void main() {
       );
     });
 
-    test('rejects missing and incorrectly typed root fields without defaults', () {
-      for (final String key in <String>[
-        'id',
-        'name',
-        'createdAt',
-        'updatedAt',
-        'assets',
-        'liabilities',
-      ]) {
-        final Map<String, Object?> missing = completeMap()..remove(key);
-        expect(() => PortfolioDto.fromMap(missing), throwsA(mappingErrorAt(key)));
-      }
+    test(
+      'rejects missing and incorrectly typed root fields without defaults',
+      () {
+        for (final String key in <String>[
+          'id',
+          'name',
+          'createdAt',
+          'updatedAt',
+          'assets',
+          'liabilities',
+        ]) {
+          final Map<String, Object?> missing = completeMap()..remove(key);
+          expect(
+            () => PortfolioDto.fromMap(missing),
+            throwsA(mappingErrorAt(key)),
+          );
+        }
 
-      for (final String key in <String>['id', 'name', 'createdAt', 'updatedAt']) {
-        final Map<String, Object?> invalid = completeMap()..[key] = 7;
-        expect(() => PortfolioDto.fromMap(invalid), throwsA(mappingErrorAt(key)));
-      }
-      final Map<String, Object?> nullAssets = completeMap()..['assets'] = null;
-      final Map<String, Object?> invalidAssets = completeMap()
-        ..['assets'] = 'not-a-list';
-      final Map<String, Object?> nullLiabilities = completeMap()
-        ..['liabilities'] = null;
-      final Map<String, Object?> invalidLiabilities = completeMap()
-        ..['liabilities'] = 'not-a-list';
+        for (final String key in <String>[
+          'id',
+          'name',
+          'createdAt',
+          'updatedAt',
+        ]) {
+          final Map<String, Object?> invalid = completeMap()..[key] = 7;
+          expect(
+            () => PortfolioDto.fromMap(invalid),
+            throwsA(mappingErrorAt(key)),
+          );
+        }
+        final Map<String, Object?> nullAssets = completeMap()
+          ..['assets'] = null;
+        final Map<String, Object?> invalidAssets = completeMap()
+          ..['assets'] = 'not-a-list';
+        final Map<String, Object?> nullLiabilities = completeMap()
+          ..['liabilities'] = null;
+        final Map<String, Object?> invalidLiabilities = completeMap()
+          ..['liabilities'] = 'not-a-list';
 
-      expect(
-        () => PortfolioDto.fromMap(invalidAssets),
-        throwsA(mappingErrorAt('assets')),
-      );
-      expect(
-        () => PortfolioDto.fromMap(nullAssets),
-        throwsA(mappingErrorAt('assets')),
-      );
-      expect(
-        () => PortfolioDto.fromMap(invalidLiabilities),
-        throwsA(mappingErrorAt('liabilities')),
-      );
-      expect(
-        () => PortfolioDto.fromMap(nullLiabilities),
-        throwsA(mappingErrorAt('liabilities')),
-      );
-    });
+        expect(
+          () => PortfolioDto.fromMap(invalidAssets),
+          throwsA(mappingErrorAt('assets')),
+        );
+        expect(
+          () => PortfolioDto.fromMap(nullAssets),
+          throwsA(mappingErrorAt('assets')),
+        );
+        expect(
+          () => PortfolioDto.fromMap(invalidLiabilities),
+          throwsA(mappingErrorAt('liabilities')),
+        );
+        expect(
+          () => PortfolioDto.fromMap(nullLiabilities),
+          throwsA(mappingErrorAt('liabilities')),
+        );
+      },
+    );
 
     test('rejects invalid asset structures and reports exact paths', () {
       final Map<String, Object?> itemNotMap = completeMap()
@@ -134,7 +153,10 @@ void main() {
           wrongDecimalType['assets']! as List<Object?>;
       (wrongDecimalAssets.single as Map<String, Object?>)['unitPrice'] = 1;
 
-      expect(() => PortfolioDto.fromMap(itemNotMap), throwsA(mappingErrorAt('assets[0]')));
+      expect(
+        () => PortfolioDto.fromMap(itemNotMap),
+        throwsA(mappingErrorAt('assets[0]')),
+      );
       expect(
         () => PortfolioDto.fromMap(missingField),
         throwsA(mappingErrorAt('assets[0].quantity')),
@@ -151,11 +173,14 @@ void main() {
       final Map<String, Object?> missingField = completeMap();
       final List<Object?> missingFieldLiabilities =
           missingField['liabilities']! as List<Object?>;
-      (missingFieldLiabilities.single as Map<String, Object?>).remove('dueDate');
+      (missingFieldLiabilities.single as Map<String, Object?>).remove(
+        'dueDate',
+      );
       final Map<String, Object?> wrongFieldType = completeMap();
       final List<Object?> wrongFieldLiabilities =
           wrongFieldType['liabilities']! as List<Object?>;
-      (wrongFieldLiabilities.single as Map<String, Object?>)['currencyCode'] = 1;
+      (wrongFieldLiabilities.single as Map<String, Object?>)['currencyCode'] =
+          1;
 
       expect(
         () => PortfolioDto.fromMap(itemNotMap),
@@ -186,7 +211,10 @@ void main() {
       outputAssets.clear();
 
       expect(dto.assets, hasLength(1));
-      expect(() => exposedAssets.add(<String, Object?>{}), throwsUnsupportedError);
+      expect(
+        () => exposedAssets.add(<String, Object?>{}),
+        throwsUnsupportedError,
+      );
       expect(dto.toMap()['assets'], hasLength(1));
     });
 
@@ -199,7 +227,10 @@ void main() {
       final Map<String, Object?> output = PortfolioDto.fromMap(map).toMap();
 
       expect(output.containsKey('futureField'), isFalse);
-      expect((output['assets']! as List<Object?>).single, isNot(contains('futureField')));
+      expect(
+        (output['assets']! as List<Object?>).single,
+        isNot(contains('futureField')),
+      );
     });
   });
 }

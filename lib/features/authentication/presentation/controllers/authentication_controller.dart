@@ -56,7 +56,8 @@ final class AuthenticationController extends ChangeNotifier {
   }
 
   Future<void> signOut() async {
-    if (_operationInProgress || _state.status != AuthenticationStatus.authenticated) {
+    if (_operationInProgress ||
+        _state.status != AuthenticationStatus.authenticated) {
       return;
     }
     _operationInProgress = true;
@@ -68,7 +69,8 @@ final class AuthenticationController extends ChangeNotifier {
   }
 
   void clearFailure() {
-    if (_state.status == AuthenticationStatus.signedOut && _state.failure != null) {
+    if (_state.status == AuthenticationStatus.signedOut &&
+        _state.failure != null) {
       _setState(const AuthenticationViewState.signedOut());
     }
   }

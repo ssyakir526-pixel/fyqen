@@ -12,18 +12,10 @@ final class PortfolioViewState {
   });
 
   const PortfolioViewState.initial()
-    : this._(
-        status: PortfolioStatus.initial,
-        portfolio: null,
-        failure: null,
-      );
+    : this._(status: PortfolioStatus.initial, portfolio: null, failure: null);
 
   const PortfolioViewState.loading()
-    : this._(
-        status: PortfolioStatus.loading,
-        portfolio: null,
-        failure: null,
-      );
+    : this._(status: PortfolioStatus.loading, portfolio: null, failure: null);
 
   const PortfolioViewState.ready(Portfolio portfolio)
     : this._(

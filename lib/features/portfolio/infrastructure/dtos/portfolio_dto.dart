@@ -50,9 +50,8 @@ final class PortfolioDto {
   final List<Map<String, Object?>> _assets;
   final List<Map<String, Object?>> _liabilities;
 
-  List<Map<String, Object?>> get assets => List<Map<String, Object?>>.unmodifiable(
-    _assets,
-  );
+  List<Map<String, Object?>> get assets =>
+      List<Map<String, Object?>>.unmodifiable(_assets);
 
   List<Map<String, Object?>> get liabilities =>
       List<Map<String, Object?>>.unmodifiable(_liabilities);
@@ -108,7 +107,11 @@ final class PortfolioDto {
       'type': _requiredString(map, 'type', '$path.type'),
       'quantity': _requiredString(map, 'quantity', '$path.quantity'),
       'unitPrice': _requiredString(map, 'unitPrice', '$path.unitPrice'),
-      'currencyCode': _requiredString(map, 'currencyCode', '$path.currencyCode'),
+      'currencyCode': _requiredString(
+        map,
+        'currencyCode',
+        '$path.currencyCode',
+      ),
       'createdAt': _requiredString(map, 'createdAt', '$path.createdAt'),
       'updatedAt': _requiredString(map, 'updatedAt', '$path.updatedAt'),
       'symbol': _requiredNullableString(map, 'symbol', '$path.symbol'),
@@ -132,7 +135,11 @@ final class PortfolioDto {
         'originalAmount',
         '$path.originalAmount',
       ),
-      'currencyCode': _requiredString(map, 'currencyCode', '$path.currencyCode'),
+      'currencyCode': _requiredString(
+        map,
+        'currencyCode',
+        '$path.currencyCode',
+      ),
       'createdAt': _requiredString(map, 'createdAt', '$path.createdAt'),
       'updatedAt': _requiredString(map, 'updatedAt', '$path.updatedAt'),
       'lenderName': _requiredNullableString(
@@ -146,7 +153,10 @@ final class PortfolioDto {
 
   static Map<String, Object?> _decodeMap(Object? value, String path) {
     if (value is! Map) {
-      throw PortfolioDataMappingException(path: path, message: 'Expected a Map.');
+      throw PortfolioDataMappingException(
+        path: path,
+        message: 'Expected a Map.',
+      );
     }
 
     final Map<String, Object?> result = <String, Object?>{};
@@ -179,7 +189,10 @@ final class PortfolioDto {
   static int _requiredInt(Map<String, Object?> map, String key, String path) {
     final Object? value = _requiredValue(map, key, path);
     if (value is! int) {
-      throw PortfolioDataMappingException(path: path, message: 'Expected an int.');
+      throw PortfolioDataMappingException(
+        path: path,
+        message: 'Expected an int.',
+      );
     }
     if (value != supportedSchemaVersion) {
       throw PortfolioDataMappingException(

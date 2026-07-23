@@ -53,7 +53,7 @@ final class PortfolioSession extends StatefulWidget {
 
 final class _PortfolioSessionState extends State<PortfolioSession> {
   late final PortfolioController _controller;
-  int _assetIdSequence = 0;
+  int _portfolioItemIdSequence = 0;
 
   @override
   void initState() {
@@ -106,7 +106,11 @@ final class _PortfolioSessionState extends State<PortfolioSession> {
           onAddAsset: _controller.addAsset,
           onReplaceAsset: _controller.replaceAsset,
           onRemoveAsset: _controller.removeAsset,
+          onAddLiability: _controller.addLiability,
+          onReplaceLiability: _controller.replaceLiability,
+          onRemoveLiability: _controller.removeLiability,
           createAssetId: _createAssetId,
+          createLiabilityId: _createLiabilityId,
           currentTime: widget.currentTime,
         );
       },
@@ -114,9 +118,17 @@ final class _PortfolioSessionState extends State<PortfolioSession> {
   }
 
   String _createAssetId() {
+    return _createPortfolioItemId('asset');
+  }
+
+  String _createLiabilityId() {
+    return _createPortfolioItemId('liability');
+  }
+
+  String _createPortfolioItemId(String prefix) {
     final int timestamp = widget.currentTime().toUtc().microsecondsSinceEpoch;
-    final String assetId = 'asset-$timestamp-$_assetIdSequence';
-    _assetIdSequence += 1;
-    return assetId;
+    final String itemId = '$prefix-$timestamp-$_portfolioItemIdSequence';
+    _portfolioItemIdSequence += 1;
+    return itemId;
   }
 }

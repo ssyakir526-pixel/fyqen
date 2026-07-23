@@ -7,17 +7,26 @@ import 'package:fyqen/features/portfolio/domain/entities/portfolio.dart';
 void main() {
   test('forwards IDs unchanged and returns the repository reference', () async {
     final Portfolio portfolio = Portfolio(
-      id: 'portfolio-1', name: 'Main', assets: const [], liabilities: const [],
-      createdAt: DateTime.utc(2026), updatedAt: DateTime.utc(2026),
+      id: 'portfolio-1',
+      name: 'Main',
+      assets: const [],
+      liabilities: const [],
+      createdAt: DateTime.utc(2026),
+      updatedAt: DateTime.utc(2026),
     );
-    final _RecordingRepository repository = _RecordingRepository(result: portfolio);
+    final _RecordingRepository repository = _RecordingRepository(
+      result: portfolio,
+    );
     final LoadPortfolioUseCase useCase = LoadPortfolioUseCase(repository);
 
     final Portfolio? loaded = await useCase(' portfolio-1 ');
 
     expect(repository.receivedFindId, ' portfolio-1 ');
     expect(identical(loaded, portfolio), isTrue);
-    expect(await LoadPortfolioUseCase(_RecordingRepository())('missing'), isNull);
+    expect(
+      await LoadPortfolioUseCase(_RecordingRepository())('missing'),
+      isNull,
+    );
   });
 
   test('propagates repository exceptions unchanged', () async {
@@ -40,7 +49,9 @@ class _RecordingRepository implements PortfolioRepository {
   @override
   Future<Portfolio?> findById(String portfolioId) {
     receivedFindId = portfolioId;
-    return error == null ? Future<Portfolio?>.value(result) : Future<Portfolio?>.error(error!);
+    return error == null
+        ? Future<Portfolio?>.value(result)
+        : Future<Portfolio?>.error(error!);
   }
 
   @override

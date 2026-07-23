@@ -132,6 +132,19 @@ submissions must be single-flight; forms close only after success and retain
 input on failure. Asset deletion requires confirmation. Do not seed sample
 financial data or add market-price fetching without explicit architecture.
 
+Liability forms must validate required Domain input before constructing a
+Liability. Edits preserve Liability ID and `createdAt`, preserve optional
+values that the form does not edit, and update `updatedAt` through the injected
+project clock.
+Financial input uses the Domain exact numeric representation; widgets do not
+calculate authoritative liability totals or access PortfolioRepository or
+Firestore. Add, edit, and delete actions must be single-flight, forms close
+only after successful persistence, and failed persistence retains both input
+and the existing Portfolio state. Liability deletion requires confirmation.
+Do not seed sample liabilities or introduce debt advice, automatic interest,
+repayment calculations, or currency conversion without explicit architecture.
+Use distinct stable keys for page-level and empty-state actions.
+
 ## Null Safety and Types
 
 Avoid `dynamic`; prefer `Object?` for unknown values. Do not use `!` unless it

@@ -26,7 +26,10 @@ void main() {
     id: id,
     name: id,
     type: LiabilityType.personalLoan,
-    outstandingBalance: LiabilityAmount(amount: '1', currencyCode: currencyCode),
+    outstandingBalance: LiabilityAmount(
+      amount: '1',
+      currencyCode: currencyCode,
+    ),
     originalAmount: LiabilityAmount(amount: '1', currencyCode: currencyCode),
     createdAt: DateTime.utc(2026),
     updatedAt: DateTime.utc(2026),
@@ -59,7 +62,8 @@ void main() {
     });
 
     test('finds exact references with trimmed case-sensitive IDs', () async {
-      final InMemoryPortfolioRepository repository = InMemoryPortfolioRepository();
+      final InMemoryPortfolioRepository repository =
+          InMemoryPortfolioRepository();
       final Portfolio portfolio = createPortfolio(
         assets: <Asset>[createAsset('asset-1', 'USD')],
         liabilities: <Liability>[createLiability('liability-1', 'MYR')],
@@ -78,7 +82,8 @@ void main() {
     });
 
     test('saves new IDs and replaces existing IDs without merging', () async {
-      final InMemoryPortfolioRepository repository = InMemoryPortfolioRepository();
+      final InMemoryPortfolioRepository repository =
+          InMemoryPortfolioRepository();
       final Portfolio first = createPortfolio(
         assets: <Asset>[createAsset('asset-1', 'MYR')],
       );
@@ -96,11 +101,15 @@ void main() {
       expect(identical(stored, replacement), isTrue);
       expect(stored!.assets, isEmpty);
       expect(stored.liabilities, <Liability>[replacement.liabilities.single]);
-      expect(identical(await repository.findById('portfolio-2'), unrelated), isTrue);
+      expect(
+        identical(await repository.findById('portfolio-2'), unrelated),
+        isTrue,
+      );
     });
 
     test('deletes by trimmed ID and treats absence as idempotent', () async {
-      final InMemoryPortfolioRepository repository = InMemoryPortfolioRepository();
+      final InMemoryPortfolioRepository repository =
+          InMemoryPortfolioRepository();
       final Portfolio first = createPortfolio();
       final Portfolio unrelated = createPortfolio(id: 'portfolio-2');
 
@@ -109,7 +118,10 @@ void main() {
       await repository.deleteById(' portfolio-1 ');
 
       expect(await repository.findById('portfolio-1'), isNull);
-      expect(identical(await repository.findById('portfolio-2'), unrelated), isTrue);
+      expect(
+        identical(await repository.findById('portfolio-2'), unrelated),
+        isTrue,
+      );
       await repository.deleteById('portfolio-1');
       await expectLater(repository.deleteById(''), throwsArgumentError);
       await expectLater(repository.deleteById('   '), throwsArgumentError);

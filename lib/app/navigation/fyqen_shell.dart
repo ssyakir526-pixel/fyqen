@@ -5,8 +5,9 @@ import '../../features/battle/presentation/pages/battle_placeholder_page.dart';
 import '../../features/dashboard/presentation/pages/dashboard_placeholder_page.dart';
 import '../../features/history/presentation/pages/history_placeholder_page.dart';
 import '../../features/journey/presentation/pages/journey_placeholder_page.dart';
+import '../../features/liabilities/domain/entities/liability.dart';
 import '../../features/portfolio/domain/entities/portfolio.dart';
-import '../../features/portfolio/presentation/pages/assets_page.dart';
+import '../../features/portfolio/presentation/pages/portfolio_management_page.dart';
 import '../../features/portfolio/presentation/pages/portfolio_placeholder_page.dart';
 import '../../features/settings/presentation/pages/settings_placeholder_page.dart';
 import 'fyqen_destination.dart';
@@ -21,7 +22,11 @@ final class FyqenShell extends StatefulWidget {
     this.onAddAsset,
     this.onReplaceAsset,
     this.onRemoveAsset,
+    this.onAddLiability,
+    this.onReplaceLiability,
+    this.onRemoveLiability,
     this.createAssetId,
+    this.createLiabilityId,
     this.currentTime,
   });
 
@@ -31,7 +36,11 @@ final class FyqenShell extends StatefulWidget {
   final Future<bool> Function(Asset asset)? onAddAsset;
   final Future<bool> Function(Asset asset)? onReplaceAsset;
   final Future<bool> Function(String assetId)? onRemoveAsset;
+  final Future<bool> Function(Liability liability)? onAddLiability;
+  final Future<bool> Function(Liability liability)? onReplaceLiability;
+  final Future<bool> Function(String liabilityId)? onRemoveLiability;
   final String Function()? createAssetId;
+  final String Function()? createLiabilityId;
   final DateTime Function()? currentTime;
 
   @override
@@ -42,6 +51,7 @@ final class _FyqenShellState extends State<FyqenShell> {
   late List<Widget> _pages;
 
   int _selectedIndex = 0;
+  int _portfolioSectionIndex = 0;
 
   @override
   void initState() {
@@ -60,12 +70,16 @@ final class _FyqenShellState extends State<FyqenShell> {
 
   List<Widget> _buildPages() {
     final Portfolio? portfolio = widget.portfolio;
-    final bool canManageAssets =
+    final bool canManagePortfolio =
         portfolio != null &&
         widget.onAddAsset != null &&
         widget.onReplaceAsset != null &&
         widget.onRemoveAsset != null &&
+        widget.onAddLiability != null &&
+        widget.onReplaceLiability != null &&
+        widget.onRemoveLiability != null &&
         widget.createAssetId != null &&
+        widget.createLiabilityId != null &&
         widget.currentTime != null;
 
     return <Widget>[
@@ -73,15 +87,21 @@ final class _FyqenShellState extends State<FyqenShell> {
         portfolio: portfolio,
         isPortfolioSaving: widget.isPortfolioSaving,
       ),
-      canManageAssets
-          ? AssetsPage(
+      canManagePortfolio
+          ? PortfolioManagementPage(
               portfolio: portfolio,
+              isSaving: widget.isPortfolioSaving,
               onAddAsset: widget.onAddAsset!,
               onReplaceAsset: widget.onReplaceAsset!,
               onRemoveAsset: widget.onRemoveAsset!,
+              onAddLiability: widget.onAddLiability!,
+              onReplaceLiability: widget.onReplaceLiability!,
+              onRemoveLiability: widget.onRemoveLiability!,
               createAssetId: widget.createAssetId!,
+              createLiabilityId: widget.createLiabilityId!,
               currentTime: widget.currentTime!,
-              isSaving: widget.isPortfolioSaving,
+              initialSectionIndex: _portfolioSectionIndex,
+              onSectionSelected: _onPortfolioSectionSelected,
             )
           : const PortfolioPlaceholderPage(),
       const JourneyPlaceholderPage(),
@@ -94,6 +114,12 @@ final class _FyqenShellState extends State<FyqenShell> {
   void _onDestinationSelected(int index) {
     setState(() {
       _selectedIndex = index;
+    });
+  }
+
+  void _onPortfolioSectionSelected(int index) {
+    setState(() {
+      _portfolioSectionIndex = index;
     });
   }
 

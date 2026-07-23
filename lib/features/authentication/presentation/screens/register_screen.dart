@@ -35,7 +35,8 @@ final class _RegisterScreenState extends State<RegisterScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmation = true;
 
@@ -83,7 +84,9 @@ final class _RegisterScreenState extends State<RegisterScreen> {
                   if (failure != null) ...<Widget>[
                     const SizedBox(height: AppSpacing.md),
                     Text(
-                      AuthenticationFailureMessageMapper.forRegistration(failure),
+                      AuthenticationFailureMessageMapper.forRegistration(
+                        failure,
+                      ),
                       key: const Key('register_failure_message'),
                     ),
                   ],

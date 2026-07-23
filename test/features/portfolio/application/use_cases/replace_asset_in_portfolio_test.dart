@@ -23,11 +23,17 @@ void main() {
     final Asset second = createAsset('asset-2', 'Second');
     final Asset replacement = createAsset('asset-1', 'Replacement');
     final Portfolio original = Portfolio(
-      id: 'portfolio-1', name: 'Main', assets: <Asset>[first, second],
-      liabilities: const [], createdAt: DateTime.utc(2026), updatedAt: DateTime.utc(2026),
+      id: 'portfolio-1',
+      name: 'Main',
+      assets: <Asset>[first, second],
+      liabilities: const [],
+      createdAt: DateTime.utc(2026),
+      updatedAt: DateTime.utc(2026),
     );
     final Portfolio updated = const ReplaceAssetInPortfolioUseCase()(
-      portfolio: original, asset: replacement, updatedAt: DateTime.utc(2026),
+      portfolio: original,
+      asset: replacement,
+      updatedAt: DateTime.utc(2026),
     );
 
     expect(updated.assets, <Asset>[replacement, second]);
@@ -35,8 +41,11 @@ void main() {
     expect(original.assets, <Asset>[first, second]);
     expect(
       () => const ReplaceAssetInPortfolioUseCase()(
-        portfolio: original, asset: createAsset('missing', 'Missing'), updatedAt: DateTime.utc(2026),
-      ), throwsArgumentError,
+        portfolio: original,
+        asset: createAsset('missing', 'Missing'),
+        updatedAt: DateTime.utc(2026),
+      ),
+      throwsArgumentError,
     );
   });
 }

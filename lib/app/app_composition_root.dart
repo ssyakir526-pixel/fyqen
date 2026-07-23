@@ -30,10 +30,13 @@ final class AppCompositionRoot {
     AuthenticationRepository? authenticationRepository,
     FirebaseAuth? firebaseAuth,
     this.authenticatedUserIdProvider,
-  }) : portfolioRepository = portfolioRepository ?? InMemoryPortfolioRepository(),
+  }) : portfolioRepository =
+           portfolioRepository ?? InMemoryPortfolioRepository(),
        authenticationRepository =
            authenticationRepository ??
-           FirebaseAuthenticationRepository(firebaseAuth ?? FirebaseAuth.instance) {
+           FirebaseAuthenticationRepository(
+             firebaseAuth ?? FirebaseAuth.instance,
+           ) {
     loadPortfolio = LoadPortfolioUseCase(this.portfolioRepository);
     savePortfolio = SavePortfolioUseCase(this.portfolioRepository);
     deletePortfolio = DeletePortfolioUseCase(this.portfolioRepository);

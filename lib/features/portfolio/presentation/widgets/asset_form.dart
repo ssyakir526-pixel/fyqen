@@ -68,7 +68,9 @@ final class _AssetFormState extends State<AssetForm> {
   }
 
   Future<void> _submit() async {
-    if (_isSubmitting || widget.isSaving || !_formKey.currentState!.validate()) {
+    if (_isSubmitting ||
+        widget.isSaving ||
+        !_formKey.currentState!.validate()) {
       return;
     }
 
@@ -201,7 +203,9 @@ final class _AssetFormState extends State<AssetForm> {
                   const SizedBox(height: AppSpacing.md),
                   Text(
                     'We could not save this asset. Please check the details and try again.',
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                   ),
                 ],
                 const SizedBox(height: AppSpacing.lg),
@@ -219,9 +223,8 @@ final class _AssetFormState extends State<AssetForm> {
   }
 
   static String? Function(String?) _requiredTextValidator(String message) {
-    return (String? value) => value == null || value.trim().isEmpty
-        ? message
-        : null;
+    return (String? value) =>
+        value == null || value.trim().isEmpty ? message : null;
   }
 
   static String? _positiveDecimalValidator(String? value) {

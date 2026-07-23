@@ -150,12 +150,11 @@ final class PortfolioController extends ChangeNotifier {
 
   Future<bool> replaceLiability(Liability liability) {
     return _saveMutation(
-      (Portfolio portfolio, DateTime timestamp) =>
-          _replaceLiabilityInPortfolio(
-            portfolio: portfolio,
-            liability: liability,
-            updatedAt: timestamp,
-          ),
+      (Portfolio portfolio, DateTime timestamp) => _replaceLiabilityInPortfolio(
+        portfolio: portfolio,
+        liability: liability,
+        updatedAt: timestamp,
+      ),
     );
   }
 

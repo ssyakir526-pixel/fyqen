@@ -6,11 +6,13 @@ abstract final class AuthenticationFailureMessageMapper {
   static String forSignIn(AuthenticationException failure) {
     return switch (failure.code) {
       AuthenticationFailureCode.invalidEmail => 'Enter a valid email address.',
-      AuthenticationFailureCode.userNotFound => 'No account was found for this email.',
+      AuthenticationFailureCode.userNotFound =>
+        'No account was found for this email.',
       AuthenticationFailureCode.wrongPassword ||
       AuthenticationFailureCode.invalidCredential =>
         'The email or password is incorrect.',
-      AuthenticationFailureCode.userDisabled => 'This account is currently disabled.',
+      AuthenticationFailureCode.userDisabled =>
+        'This account is currently disabled.',
       AuthenticationFailureCode.networkRequestFailed =>
         'Check your internet connection and try again.',
       AuthenticationFailureCode.tooManyRequests =>

@@ -29,8 +29,8 @@ final class FirestorePortfolioRepository implements PortfolioRepository {
     final DocumentReference<Map<String, dynamic>> reference =
         _documentReference();
     try {
-      final DocumentSnapshot<Map<String, dynamic>> snapshot =
-          await reference.get();
+      final DocumentSnapshot<Map<String, dynamic>> snapshot = await reference
+          .get();
       if (!snapshot.exists) {
         return null;
       }
@@ -122,11 +122,12 @@ final class FirestorePortfolioRepository implements PortfolioRepository {
         code: PortfolioPersistenceFailureCode.unauthenticated,
         message: 'An authenticated user is required to access a portfolio.',
       ),
-      'invalid-argument' || 'failed-precondition' || 'data-loss' =>
-        const PortfolioPersistenceException(
-          code: PortfolioPersistenceFailureCode.invalidData,
-          message: 'Portfolio persistence data is invalid.',
-        ),
+      'invalid-argument' ||
+      'failed-precondition' ||
+      'data-loss' => const PortfolioPersistenceException(
+        code: PortfolioPersistenceFailureCode.invalidData,
+        message: 'Portfolio persistence data is invalid.',
+      ),
       _ => const PortfolioPersistenceException(
         code: PortfolioPersistenceFailureCode.unknown,
         message: 'Portfolio persistence could not be completed.',

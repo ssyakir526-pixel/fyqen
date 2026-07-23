@@ -12,72 +12,80 @@ import 'package:fyqen/features/authentication/presentation/controllers/authentic
 import 'package:fyqen/features/authentication/presentation/state/authentication_view_state.dart';
 
 void main() {
-  test('uses auth-state events as the source of truth and cancels on dispose', () async {
-    final StreamController<AuthenticatedUser?> stream =
-        StreamController<AuthenticatedUser?>();
-    final _AuthenticationFake repository = _AuthenticationFake(stream.stream);
-    final AuthenticationController controller = _controller(repository);
-    final AuthenticatedUser user = AuthenticatedUser(
-      id: 'user-1',
-      email: 'user@example.com',
-    );
+  test(
+    'uses auth-state events as the source of truth and cancels on dispose',
+    () async {
+      final StreamController<AuthenticatedUser?> stream =
+          StreamController<AuthenticatedUser?>();
+      final _AuthenticationFake repository = _AuthenticationFake(stream.stream);
+      final AuthenticationController controller = _controller(repository);
+      final AuthenticatedUser user = AuthenticatedUser(
+        id: 'user-1',
+        email: 'user@example.com',
+      );
 
-    expect(controller.state.status, AuthenticationStatus.restoring);
-    controller.start();
-    controller.start();
-    expect(repository.watchCalls, 1);
+      expect(controller.state.status, AuthenticationStatus.restoring);
+      controller.start();
+      controller.start();
+      expect(repository.watchCalls, 1);
 
-    stream.add(user);
-    await pumpEventQueue();
-    expect(controller.state.status, AuthenticationStatus.authenticated);
-    expect(controller.state.user, same(user));
+      stream.add(user);
+      await pumpEventQueue();
+      expect(controller.state.status, AuthenticationStatus.authenticated);
+      expect(controller.state.user, same(user));
 
-    stream.add(null);
-    await pumpEventQueue();
-    expect(controller.state.status, AuthenticationStatus.signedOut);
+      stream.add(null);
+      await pumpEventQueue();
+      expect(controller.state.status, AuthenticationStatus.signedOut);
 
-    controller.dispose();
-    await stream.close();
-  });
+      controller.dispose();
+      await stream.close();
+    },
+  );
 
-  test('forwards credentials and exposes authentication failures safely', () async {
-    final StreamController<AuthenticatedUser?> stream =
-        StreamController<AuthenticatedUser?>();
-    final AuthenticationException failure = const AuthenticationException(
-      code: AuthenticationFailureCode.invalidCredential,
-      message: 'Invalid credential.',
-    );
-    final _AuthenticationFake repository = _AuthenticationFake(
-      stream.stream,
-      signInError: failure,
-    );
-    final AuthenticationController controller = _controller(repository);
-    controller.start();
+  test(
+    'forwards credentials and exposes authentication failures safely',
+    () async {
+      final StreamController<AuthenticatedUser?> stream =
+          StreamController<AuthenticatedUser?>();
+      final AuthenticationException failure = const AuthenticationException(
+        code: AuthenticationFailureCode.invalidCredential,
+        message: 'Invalid credential.',
+      );
+      final _AuthenticationFake repository = _AuthenticationFake(
+        stream.stream,
+        signInError: failure,
+      );
+      final AuthenticationController controller = _controller(repository);
+      controller.start();
 
-    final bool succeeded = await controller.signIn(
-      email: 'user@example.com',
-      password: 'test-password',
-    );
+      final bool succeeded = await controller.signIn(
+        email: 'user@example.com',
+        password: 'test-password',
+      );
 
-    expect(succeeded, isFalse);
-    expect(repository.signInCalls, 1);
-    expect(repository.email, 'user@example.com');
-    expect(repository.password, 'test-password');
-    expect(controller.state.status, AuthenticationStatus.signedOut);
-    expect(controller.state.failure, same(failure));
-    expect(repository.registerCalls, 0);
-    expect(repository.signOutCalls, 0);
+      expect(succeeded, isFalse);
+      expect(repository.signInCalls, 1);
+      expect(repository.email, 'user@example.com');
+      expect(repository.password, 'test-password');
+      expect(controller.state.status, AuthenticationStatus.signedOut);
+      expect(controller.state.failure, same(failure));
+      expect(repository.registerCalls, 0);
+      expect(repository.signOutCalls, 0);
 
-    controller.dispose();
-    await stream.close();
-  });
+      controller.dispose();
+      await stream.close();
+    },
+  );
 }
 
 AuthenticationController _controller(_AuthenticationFake repository) {
   return AuthenticationController(
     watchAuthenticationState: WatchAuthenticationStateUseCase(repository),
     signInWithEmailAndPassword: SignInWithEmailAndPasswordUseCase(repository),
-    registerWithEmailAndPassword: RegisterWithEmailAndPasswordUseCase(repository),
+    registerWithEmailAndPassword: RegisterWithEmailAndPasswordUseCase(
+      repository,
+    ),
     signOut: SignOutUseCase(repository),
   );
 }
@@ -122,7 +130,9 @@ final class _AuthenticationFake implements AuthenticationRepository {
     required String password,
   }) {
     registerCalls += 1;
-    return Future<AuthenticatedUser>.error(StateError('Unexpected registration.'));
+    return Future<AuthenticatedUser>.error(
+      StateError('Unexpected registration.'),
+    );
   }
 
   @override

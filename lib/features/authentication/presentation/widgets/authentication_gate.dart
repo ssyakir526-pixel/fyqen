@@ -82,15 +82,18 @@ final class _AuthenticationGateState extends State<AuthenticationGate> {
             key: const Key('authenticated_app_shell'),
             child: widget.authenticatedBuilder(context, _signOut),
           ),
-          AuthenticationStatus.signedOut || AuthenticationStatus.authenticating =>
-            _buildAuthenticationScreen(state),
+          AuthenticationStatus.signedOut ||
+          AuthenticationStatus.authenticating => _buildAuthenticationScreen(
+            state,
+          ),
         };
       },
     );
   }
 
   Widget _buildAuthenticationScreen(AuthenticationViewState state) {
-    final bool isSubmitting = state.status == AuthenticationStatus.authenticating;
+    final bool isSubmitting =
+        state.status == AuthenticationStatus.authenticating;
     return _showRegistration
         ? RegisterScreen(
             key: const Key('register_screen'),
