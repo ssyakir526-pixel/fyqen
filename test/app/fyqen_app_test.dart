@@ -13,6 +13,8 @@ import 'package:fyqen/features/dashboard/presentation/widgets/financial_independ
 import 'package:fyqen/features/dashboard/presentation/widgets/journey_overview_card.dart';
 import 'package:fyqen/features/dashboard/presentation/widgets/net_worth_hero_card.dart';
 import 'package:fyqen/features/dashboard/presentation/widgets/quick_actions_card.dart';
+import 'package:fyqen/features/portfolio/application/repositories/portfolio_repository.dart';
+import 'package:fyqen/features/portfolio/domain/entities/portfolio.dart';
 import 'package:fyqen/shared/widgets/section_title.dart';
 
 void main() {
@@ -81,6 +83,50 @@ void main() {
     expect(theme.scaffoldBackgroundColor, AppColors.background);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('preserves an injected root through widget rebuilds', (
+    WidgetTester tester,
+  ) async {
+    final _RecordingPortfolioRepository portfolioRepository =
+        _RecordingPortfolioRepository();
+    final _AuthenticatedRepository authenticationRepository =
+        _AuthenticatedRepository();
+    final AppCompositionRoot root = AppCompositionRoot(
+      portfolioRepository: portfolioRepository,
+      authenticationRepository: authenticationRepository,
+    );
+
+    await tester.pumpWidget(FyqenApp(compositionRoot: root));
+    await tester.pump();
+    await tester.pumpWidget(FyqenApp(compositionRoot: root));
+    await tester.pump();
+
+    expect(identical(root.portfolioRepository, portfolioRepository), isTrue);
+    expect(authenticationRepository.watchCalls, 1);
+    expect(portfolioRepository.totalCalls, 0);
+    expect(find.byType(FyqenShell), findsOneWidget);
+  });
+
+  testWidgets('keeps signed-out users outside the authenticated shell', (
+    WidgetTester tester,
+  ) async {
+    final _RecordingPortfolioRepository portfolioRepository =
+        _RecordingPortfolioRepository();
+
+    await tester.pumpWidget(
+      FyqenApp(
+        compositionRoot: AppCompositionRoot(
+          portfolioRepository: portfolioRepository,
+          authenticationRepository: _SignedOutRepository(),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byKey(const Key('login_screen')), findsOneWidget);
+    expect(find.byType(FyqenShell), findsNothing);
+    expect(portfolioRepository.totalCalls, 0);
+  });
 }
 
 final class _AuthenticatedRepository implements AuthenticationRepository {
@@ -89,8 +135,11 @@ final class _AuthenticatedRepository implements AuthenticationRepository {
     email: 'user@example.com',
   );
 
+  int watchCalls = 0;
+
   @override
   Stream<AuthenticatedUser?> watchAuthenticationState() {
+    watchCalls += 1;
     return Stream<AuthenticatedUser?>.value(_user);
   }
 
@@ -115,4 +164,59 @@ final class _AuthenticatedRepository implements AuthenticationRepository {
 
   @override
   Future<void> signOut() => Future<void>.value();
+}
+
+final class _SignedOutRepository implements AuthenticationRepository {
+  @override
+  Stream<AuthenticatedUser?> watchAuthenticationState() {
+    return Stream<AuthenticatedUser?>.value(null);
+  }
+
+  @override
+  AuthenticatedUser? getCurrentUser() => null;
+
+  @override
+  Future<AuthenticatedUser> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) {
+    return Future<AuthenticatedUser>.error(UnimplementedError());
+  }
+
+  @override
+  Future<AuthenticatedUser> registerWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) {
+    return Future<AuthenticatedUser>.error(UnimplementedError());
+  }
+
+  @override
+  Future<void> signOut() => Future<void>.value();
+}
+
+final class _RecordingPortfolioRepository implements PortfolioRepository {
+  int findCalls = 0;
+  int saveCalls = 0;
+  int deleteCalls = 0;
+
+  int get totalCalls => findCalls + saveCalls + deleteCalls;
+
+  @override
+  Future<Portfolio?> findById(String portfolioId) {
+    findCalls += 1;
+    return Future<Portfolio?>.value();
+  }
+
+  @override
+  Future<void> save(Portfolio portfolio) {
+    saveCalls += 1;
+    return Future<void>.value();
+  }
+
+  @override
+  Future<void> deleteById(String portfolioId) {
+    deleteCalls += 1;
+    return Future<void>.value();
+  }
 }

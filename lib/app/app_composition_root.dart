@@ -63,8 +63,8 @@ final class AppCompositionRoot {
 
   /// Explicitly composes the Firestore-backed Portfolio infrastructure.
   ///
-  /// The default constructor intentionally continues to select in-memory
-  /// Portfolio persistence until a later activation decision.
+  /// The base constructor intentionally continues to select in-memory
+  /// Portfolio persistence for explicit test and development composition.
   factory AppCompositionRoot.firestore({
     required FirebaseAuth firebaseAuth,
     required FirebaseFirestore firebaseFirestore,
@@ -83,6 +83,22 @@ final class AppCompositionRoot {
       authenticationRepository: authenticationRepository,
       firebaseAuth: firebaseAuth,
       authenticatedUserIdProvider: userIdProvider,
+    );
+  }
+
+  /// Creates the Firebase-backed dependency graph for the production app.
+  factory AppCompositionRoot.production({
+    FirebaseAuth? firebaseAuth,
+    FirebaseFirestore? firebaseFirestore,
+  }) {
+    final FirebaseAuth selectedFirebaseAuth =
+        firebaseAuth ?? FirebaseAuth.instance;
+    final FirebaseFirestore selectedFirebaseFirestore =
+        firebaseFirestore ?? FirebaseFirestore.instance;
+
+    return AppCompositionRoot.firestore(
+      firebaseAuth: selectedFirebaseAuth,
+      firebaseFirestore: selectedFirebaseFirestore,
     );
   }
 

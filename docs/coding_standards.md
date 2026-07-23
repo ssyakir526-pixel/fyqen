@@ -105,6 +105,15 @@ than leave stale nested data. Never use public Firestore test rules or log user
 IDs, credentials, tokens, or full Portfolio payloads. Firestore tests must not
 access the real Firebase project.
 
+Production Firebase composition must be explicit. Firebase-independent tests
+must inject a root with fake or in-memory dependencies, and widgets must never
+choose repositories. Authentication state must not mutate dependency graphs.
+App construction must not trigger Portfolio persistence; registration must not
+create Portfolio documents and sign-out must not delete them. In-memory
+repositories are test/development dependencies, not silent production
+fallbacks. Firebase plugin instances must not be accessed by
+Firebase-independent widget tests.
+
 ## Null Safety and Types
 
 Avoid `dynamic`; prefer `Object?` for unknown values. Do not use `!` unless it

@@ -98,10 +98,10 @@ Firebase imports do not enter Domain, application use cases,
 `PortfolioRepository`, or presentation code. Firebase-backed authentication and
 Firestore adapters are isolated in Infrastructure. The composition root may
 construct those adapters with injected SDK dependencies, but it must not expose
-SDK types to feature code. InMemoryPortfolioRepository remains the active
-default. Cloud Firestore has a persistence foundation and local security rules,
-but its production UI activation, repository switching, synchronization, and
-realtime subscriptions are deferred.
+SDK types to feature code. `FyqenApp` selects the Firebase-backed production
+composition once per lifecycle, while the base root constructor retains
+InMemoryPortfolioRepository for explicit test and development injection. There
+is no repository switching, synchronization, or realtime subscription.
 
 ## Firebase Authentication Foundation
 
@@ -331,18 +331,24 @@ existing Portfolio and return a new snapshot without I/O, while persistence
 workflows coordinate repository I/O. Future state management may compose load,
 an aggregate operation, and save; that composition is not implemented here.
 `InMemoryPortfolioRepository` can satisfy the workflows for development and
-tests, while `FirestorePortfolioRepository` can satisfy them through the same
-contract without changing the use cases. Firestore remains inactive in
-presentation.
+tests, while `FirestorePortfolioRepository` satisfies them in production
+through the same contract without changing the use cases. Presentation receives
+use cases from the stable root and does not choose a repository.
 
 ## Application Composition Root
 
 `lib/app/app_composition_root.dart` is the explicit application composition
-root. It uses manual constructor-based dependency injection: it exposes a
-`PortfolioRepository`, selects `InMemoryPortfolioRepository` by default, and
-accepts another `PortfolioRepository` through its constructor. The selected
-repository instance is shared by `LoadPortfolioUseCase`, `SavePortfolioUseCase`,
-and `DeletePortfolioUseCase`.
+root. Its base constructor uses manual dependency injection and selects
+`InMemoryPortfolioRepository` unless an explicit repository is supplied. This
+keeps tests and development previews Firebase-independent.
+
+`AppCompositionRoot.production` is the production composition path. It selects
+one `FirebaseAuth`, one `FirebaseFirestore`, one
+`FirebaseAuthenticationRepository`, one `FirebaseAuthenticatedUserIdProvider`,
+and one `FirestorePortfolioRepository`. The selected Portfolio repository is
+shared by `LoadPortfolioUseCase`, `SavePortfolioUseCase`, and
+`DeletePortfolioUseCase`. Construction performs no authentication, identity,
+or Firestore operation.
 
 The root explicitly constructs those persistence workflows and all seven
 synchronous aggregate-operation use cases. It performs composition only: it
@@ -351,10 +357,18 @@ initialization, automatic persistence, or UI integration. Aggregate operations
 and persistence workflows remain separate.
 
 ```text
-App bootstrap
--> AppCompositionRoot
--> PortfolioRepository
--> InMemoryPortfolioRepository
+main
+-> Firebase.initializeApp
+-> FyqenApp
+-> AppCompositionRoot.production
+   -> FirebaseAuthenticationRepository
+   -> FirebaseAuthenticatedUserIdProvider
+   -> FirestorePortfolioRepository
+-> AuthenticationGate
+   -> signed out: authentication screens
+   -> authenticated: FyqenShell
+      -> Portfolio use cases
+      -> FirestorePortfolioRepository
 
 AppCompositionRoot
 -> LoadPortfolioUseCase
@@ -369,9 +383,10 @@ There is no global service location, static singleton state, or
 dependency-injection package. `AppCompositionRoot` must not become a service
 locator, business-logic class, state-management object, repository wrapper, or
 UI controller. `FirestorePortfolioRepository` can be supplied through the same
-constructor parameter, or composed explicitly through
-`AppCompositionRoot.firestore`. The default remains in-memory until a later
-presentation activation decision.
+constructor parameter, through injectable `AppCompositionRoot.firestore`, or
+through `AppCompositionRoot.production`. Production and test composition are
+intentionally separate, and authentication events never mutate repository
+instances.
 
 ## Portfolio Persistence Data Mapping
 
@@ -442,10 +457,12 @@ Future Portfolio Presentation
    -> FirebaseFirestore
 ```
 
-The default composition remains `InMemoryPortfolioRepository`; no production UI
-is connected to Firestore, repository switching, synchronization, migration,
-and Firestore subscriptions are deferred. `AppCompositionRoot.firestore` is an
-explicit opt-in composition route; its default constructor remains in-memory.
+Production `FyqenApp` uses `AppCompositionRoot.production` to select the
+Firestore repository once. The base root constructor remains in-memory for
+tests and explicit development injection. AuthenticationGate prevents
+signed-out users from accessing the authenticated shell. There is no repository
+switching, automatic in-memory fallback, automatic Firestore operation on
+authentication events, synchronization, migration, or Firestore subscription.
 
 `firestore.rules` locally restricts the `users/{uid}/portfolio/primary` schema
 to the matching authenticated UID. The rules are not deployed. Before runtime
@@ -464,8 +481,10 @@ There is no implementation or I/O in the current project.
 
 ## Firebase Boundary
 
-Firebase will be introduced later through data-layer implementations and
-abstractions. Widgets must not call Firebase directly.
+Firebase-backed adapters are composed only at the app boundary. Widgets must
+not call Firebase directly or choose repositories. Firestore resolves the
+current authenticated identity per operation; it does not capture a UID during
+root or widget construction.
 
 ## State Management Boundary
 

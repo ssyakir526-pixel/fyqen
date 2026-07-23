@@ -22,7 +22,8 @@ final class _FyqenAppState extends State<FyqenApp> {
   @override
   void initState() {
     super.initState();
-    _compositionRoot = widget.compositionRoot ?? AppCompositionRoot();
+    _compositionRoot =
+        widget.compositionRoot ?? AppCompositionRoot.production();
   }
 
   @override

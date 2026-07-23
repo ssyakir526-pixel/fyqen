@@ -78,6 +78,17 @@ void main() {
       );
     });
 
+    test('preserves an explicitly supplied in-memory repository', () {
+      final InMemoryPortfolioRepository repository =
+          InMemoryPortfolioRepository();
+
+      final AppCompositionRoot root = createRoot(
+        portfolioRepository: repository,
+      );
+
+      expect(identical(root.portfolioRepository, repository), isTrue);
+    });
+
     test('uses a supplied repository without construction side effects', () async {
       final _RecordingPortfolioRepository repository =
           _RecordingPortfolioRepository();
