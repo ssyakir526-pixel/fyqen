@@ -211,6 +211,25 @@ this appropriate for development and tests rather than production persistence.
 Future Firestore infrastructure must implement the same application contract
 without changing domain behavior.
 
+## Portfolio Persistence Workflows
+
+`load_portfolio.dart`, `save_portfolio.dart`, and `delete_portfolio.dart` are
+repository-dependent application workflows. They receive `PortfolioRepository`
+through constructor injection, use the established `call` convention, and
+forward inputs directly without ID normalization, aggregate reconstruction,
+timestamp generation, or exception translation. Load returns a nullable
+Portfolio asynchronously, save forwards a complete aggregate, and delete
+forwards an ID. They depend on the contract rather than a concrete repository.
+
+These workflows are intentionally separate from the seven synchronous,
+repository-free aggregate-operation use cases: aggregate operations modify an
+existing Portfolio and return a new snapshot without I/O, while persistence
+workflows coordinate repository I/O. Future state management may compose load,
+an aggregate operation, and save; that composition is not implemented here.
+`InMemoryPortfolioRepository` can satisfy the workflows for development and
+tests, while a future Firestore implementation can do so without changing the
+use cases. No Firebase integration exists today.
+
 ## Portfolio Repository Contract
 
 `lib/features/portfolio/application/repositories/portfolio_repository.dart`

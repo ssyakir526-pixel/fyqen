@@ -102,6 +102,18 @@ not durable: data is lost when its repository instance is discarded. No
 Firebase, database, local storage, authentication, UI integration, or financial
 calculations exist.
 
+## Portfolio Persistence Workflows
+
+The Portfolio application layer now includes `LoadPortfolioUseCase`,
+`SavePortfolioUseCase`, and `DeletePortfolioUseCase`. Each receives a
+`PortfolioRepository` through constructor injection and delegates directly to
+it. Load returns `Future<Portfolio?>`; save and delete return `Future<void>`.
+These asynchronous workflows do not depend on a concrete repository, generate
+no IDs or timestamps, and allow repository exceptions to propagate unchanged.
+The existing seven aggregate-operation use cases remain synchronous and
+repository-free. No Firebase, Firestore, authentication, UI integration, or
+financial calculations are implemented.
+
 ## Portfolio Repository Contract
 
 The Portfolio application layer now defines a persistence-neutral
