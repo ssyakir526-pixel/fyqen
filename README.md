@@ -66,6 +66,17 @@ exposed as unmodifiable collections. Portfolio timestamps are normalized to
 UTC. No financial calculation, currency aggregation, persistence, repository,
 state management, or Portfolio UI exists yet.
 
+Portfolio also supports explicit immutable snapshot operations: `rename`,
+`addAsset`, `replaceAsset`, `removeAsset`, `addLiability`, `replaceLiability`,
+and `removeLiability`. Every successful operation returns a new Portfolio while
+leaving the original unchanged, preserving its ID and `createdAt`. Callers must
+supply `updatedAt`; modification timestamps cannot move backwards, although an
+equal timestamp is allowed. Add operations append, replacements preserve list
+position, removals preserve remaining order, and duplicate or missing targets
+are rejected. Asset and Liability ID namespaces remain independent. There is
+still no persistence, repository, state management, Portfolio UI, or financial
+calculation.
+
 ## Technology
 
 - Flutter

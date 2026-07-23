@@ -165,6 +165,21 @@ designed. Future application-layer operations must produce a new validated
 Portfolio snapshot, and future persistence models must map into the domain
 entity rather than adding JSON or Firestore concerns directly to it.
 
+Portfolio remains the aggregate root and models changes as new immutable
+snapshots. It exposes explicit intention-revealing operations for renaming and
+adding, replacing, or removing Assets and Liabilities; generic `copyWith` is
+intentionally absent. Operations reuse the validating factory, preserve
+Portfolio ID and `createdAt`, and receive an explicit `updatedAt` that must not
+precede the current snapshot timestamp. Child timestamps remain independent.
+Adds append, replacements preserve list index, removals preserve relative
+order, duplicate additions fail, and missing replacements or removals fail.
+Asset and Liability namespaces remain independent. Future application-layer
+use cases may call these aggregate operations, while future repositories may
+persist the resulting snapshot without placing persistence concerns in the
+entity. Explicit operations communicate domain intent, preserve aggregate
+invariants, reject invalid operations, and avoid arbitrary field replacement.
+They perform no financial arithmetic.
+
 ## Firebase Boundary
 
 Firebase will be introduced later through data-layer implementations and

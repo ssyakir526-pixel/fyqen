@@ -70,11 +70,204 @@ final class Portfolio {
 
   DateTime get updatedAt => _updatedAt;
 
+  /// Returns a new snapshot with the supplied name.
+  Portfolio rename({required String name, required DateTime updatedAt}) {
+    final DateTime normalizedUpdatedAt = _validatedModificationTimestamp(
+      updatedAt,
+    );
+
+    return Portfolio(
+      id: _id,
+      name: name,
+      assets: _assets,
+      liabilities: _liabilities,
+      createdAt: _createdAt,
+      updatedAt: normalizedUpdatedAt,
+    );
+  }
+
+  /// Returns a new snapshot with an appended asset.
+  Portfolio addAsset({required Asset asset, required DateTime updatedAt}) {
+    final DateTime normalizedUpdatedAt = _validatedModificationTimestamp(
+      updatedAt,
+    );
+
+    if (_assets.any((Asset existingAsset) => existingAsset.id == asset.id)) {
+      throw ArgumentError('Duplicate asset ID: ${asset.id}');
+    }
+
+    return Portfolio(
+      id: _id,
+      name: _name,
+      assets: <Asset>[..._assets, asset],
+      liabilities: _liabilities,
+      createdAt: _createdAt,
+      updatedAt: normalizedUpdatedAt,
+    );
+  }
+
+  /// Returns a new snapshot with the matching asset replaced in place.
+  Portfolio replaceAsset({required Asset asset, required DateTime updatedAt}) {
+    final DateTime normalizedUpdatedAt = _validatedModificationTimestamp(
+      updatedAt,
+    );
+    final int assetIndex = _assets.indexWhere(
+      (Asset existingAsset) => existingAsset.id == asset.id,
+    );
+
+    if (assetIndex == -1) {
+      throw ArgumentError('Asset ID not found: ${asset.id}');
+    }
+
+    final List<Asset> updatedAssets = List<Asset>.of(_assets);
+    updatedAssets[assetIndex] = asset;
+
+    return Portfolio(
+      id: _id,
+      name: _name,
+      assets: updatedAssets,
+      liabilities: _liabilities,
+      createdAt: _createdAt,
+      updatedAt: normalizedUpdatedAt,
+    );
+  }
+
+  /// Returns a new snapshot without the asset identified by [assetId].
+  Portfolio removeAsset({required String assetId, required DateTime updatedAt}) {
+    final DateTime normalizedUpdatedAt = _validatedModificationTimestamp(
+      updatedAt,
+    );
+    final String normalizedAssetId = _requireText(assetId, 'assetId');
+    final int assetIndex = _assets.indexWhere(
+      (Asset asset) => asset.id == normalizedAssetId,
+    );
+
+    if (assetIndex == -1) {
+      throw ArgumentError('Asset ID not found: $normalizedAssetId');
+    }
+
+    final List<Asset> updatedAssets = List<Asset>.of(_assets)
+      ..removeAt(assetIndex);
+
+    return Portfolio(
+      id: _id,
+      name: _name,
+      assets: updatedAssets,
+      liabilities: _liabilities,
+      createdAt: _createdAt,
+      updatedAt: normalizedUpdatedAt,
+    );
+  }
+
+  /// Returns a new snapshot with an appended liability.
+  Portfolio addLiability({
+    required Liability liability,
+    required DateTime updatedAt,
+  }) {
+    final DateTime normalizedUpdatedAt = _validatedModificationTimestamp(
+      updatedAt,
+    );
+
+    if (_liabilities.any(
+      (Liability existingLiability) => existingLiability.id == liability.id,
+    )) {
+      throw ArgumentError('Duplicate liability ID: ${liability.id}');
+    }
+
+    return Portfolio(
+      id: _id,
+      name: _name,
+      assets: _assets,
+      liabilities: <Liability>[..._liabilities, liability],
+      createdAt: _createdAt,
+      updatedAt: normalizedUpdatedAt,
+    );
+  }
+
+  /// Returns a new snapshot with the matching liability replaced in place.
+  Portfolio replaceLiability({
+    required Liability liability,
+    required DateTime updatedAt,
+  }) {
+    final DateTime normalizedUpdatedAt = _validatedModificationTimestamp(
+      updatedAt,
+    );
+    final int liabilityIndex = _liabilities.indexWhere(
+      (Liability existingLiability) => existingLiability.id == liability.id,
+    );
+
+    if (liabilityIndex == -1) {
+      throw ArgumentError('Liability ID not found: ${liability.id}');
+    }
+
+    final List<Liability> updatedLiabilities = List<Liability>.of(
+      _liabilities,
+    );
+    updatedLiabilities[liabilityIndex] = liability;
+
+    return Portfolio(
+      id: _id,
+      name: _name,
+      assets: _assets,
+      liabilities: updatedLiabilities,
+      createdAt: _createdAt,
+      updatedAt: normalizedUpdatedAt,
+    );
+  }
+
+  /// Returns a new snapshot without the liability identified by [liabilityId].
+  Portfolio removeLiability({
+    required String liabilityId,
+    required DateTime updatedAt,
+  }) {
+    final DateTime normalizedUpdatedAt = _validatedModificationTimestamp(
+      updatedAt,
+    );
+    final String normalizedLiabilityId = _requireText(
+      liabilityId,
+      'liabilityId',
+    );
+    final int liabilityIndex = _liabilities.indexWhere(
+      (Liability liability) => liability.id == normalizedLiabilityId,
+    );
+
+    if (liabilityIndex == -1) {
+      throw ArgumentError('Liability ID not found: $normalizedLiabilityId');
+    }
+
+    final List<Liability> updatedLiabilities = List<Liability>.of(
+      _liabilities,
+    )..removeAt(liabilityIndex);
+
+    return Portfolio(
+      id: _id,
+      name: _name,
+      assets: _assets,
+      liabilities: updatedLiabilities,
+      createdAt: _createdAt,
+      updatedAt: normalizedUpdatedAt,
+    );
+  }
+
   static String _requireText(String value, String name) {
     final String normalizedValue = value.trim();
 
     if (normalizedValue.isEmpty) {
       throw ArgumentError.value(value, name, 'must not be empty');
+    }
+
+    return normalizedValue;
+  }
+
+  DateTime _validatedModificationTimestamp(DateTime value) {
+    final DateTime normalizedValue = value.toUtc();
+
+    if (normalizedValue.isBefore(_updatedAt)) {
+      throw ArgumentError.value(
+        value,
+        'updatedAt',
+        'Modification timestamp must not be earlier than current updatedAt.',
+      );
     }
 
     return normalizedValue;
