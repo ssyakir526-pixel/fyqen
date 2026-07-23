@@ -11,7 +11,9 @@ import '../../../../shared/widgets/app_page.dart';
 import '../../../../shared/widgets/app_section.dart';
 import '../../../../shared/widgets/section_title.dart';
 import '../models/dashboard_portfolio_summary.dart';
+import '../models/financial_freedom_level_summary.dart';
 import '../widgets/dashboard_quick_action.dart';
+import '../widgets/financial_freedom_level_card.dart';
 import '../widgets/financial_independence_progress_card.dart';
 import '../widgets/journey_overview_card.dart';
 import '../widgets/net_worth_hero_card.dart';
@@ -37,6 +39,9 @@ class DashboardPlaceholderPage extends StatelessWidget {
     final DashboardPortfolioSummary? summary = currentPortfolio == null
         ? null
         : DashboardPortfolioSummary.fromPortfolio(currentPortfolio);
+    final FinancialFreedomLevelSummary? levelSummary = summary == null
+        ? null
+        : FinancialFreedomLevelSummary.fromDashboardSummary(summary);
 
     return Scaffold(
       appBar: AppBar(title: const Text(AppConstants.appName)),
@@ -105,6 +110,17 @@ class DashboardPlaceholderPage extends StatelessWidget {
               ],
             ),
           ),
+          if (levelSummary != null &&
+              summary?.hasFinancialIndependenceTarget == true)
+            AppSection(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const SectionTitle(title: 'Financial Freedom Level'),
+                  FinancialFreedomLevelCard(summary: levelSummary),
+                ],
+              ),
+            ),
           AppSection(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

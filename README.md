@@ -275,6 +275,17 @@ currency mismatch; Fyqen performs no currency conversion. The target form and
 Dashboard do not provide projections, deadlines, withdrawal calculations, or
 financial advice.
 
+## Financial Freedom Level
+
+Fyqen derives a Financial Freedom Level from the same comparable net worth and
+FI target values used for Dashboard progress. Levels range from 1 to 100 and
+are not persisted. Level 100 represents reaching or exceeding the target;
+negative and zero comparable net worth remain Level 1. Mixed currencies make
+the level unavailable because Fyqen performs no currency conversion. The level
+uses no XP, artificial points, streaks, Journey implementation, or
+achievements. Because it is derived from the current Portfolio snapshot, it
+updates automatically when comparable net worth or the FI target changes.
+
 The Portfolio application layer now defines a persistence-neutral
 `PortfolioRepository` contract for finding one Portfolio by ID, saving a
 complete Portfolio snapshot, and deleting by ID. It has no implementation,

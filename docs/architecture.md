@@ -566,6 +566,31 @@ Portfolio snapshot used by Assets and Liabilities. Mixed currencies and target
 currency mismatches leave progress unavailable; no conversion, projection, or
 financial advice is added.
 
+## Financial Freedom Level
+
+`FinancialFreedomLevelSummary` is an immutable Dashboard presentation model.
+It derives Level 1 through Level 100 from the exact net-worth and FI-target
+values already exposed by `DashboardPortfolioSummary`; it does not add a
+Portfolio field, Firebase value, controller, repository, or persistence flow.
+It automatically reflects each replacement Portfolio snapshot, including
+changes to comparable net worth or the FI target.
+
+```text
+Portfolio snapshot
+-> DashboardPortfolioSummary
+-> FinancialFreedomLevelSummary
+-> FinancialFreedomLevelCard
+```
+
+Level boundaries use scaled integer decimal arithmetic, so values immediately
+below a percentage boundary do not advance early. Negative and zero comparable
+net worth resolve to Level 1; reaching or exceeding the target resolves to
+Level 100. For positive progress below the target, the current level is
+`max(1, floor((netWorth / fiTarget) * 100))`; the first Level 1 band spans
+0% through below 2% for progress toward Level 2. Mixed-currency or otherwise
+unavailable financial comparisons make the level unavailable. No XP, Journey,
+Achievement, or currency conversion is implemented.
+
 `lib/features/portfolio/application/repositories/portfolio_repository.dart`
 defines the persistence capability required by future Portfolio workflows. The
 application layer owns this contract, while future infrastructure adapters may

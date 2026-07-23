@@ -16,6 +16,8 @@ final class DashboardPortfolioSummary {
     required this.isFinancialIndependenceProgressAvailable,
     required this.financialIndependenceProgress,
     required this.financialIndependenceProgressLabel,
+    required this.netWorthAmount,
+    required this.financialIndependenceTargetAmount,
   });
 
   factory DashboardPortfolioSummary.fromPortfolio(Portfolio portfolio) {
@@ -76,6 +78,8 @@ final class DashboardPortfolioSummary {
       isFinancialIndependenceProgressAvailable: progress != null,
       financialIndependenceProgress: progress?.indicatorValue,
       financialIndependenceProgressLabel: progress?.label,
+      netWorthAmount: hasMixedCurrencies ? null : netWorth.toDisplayString(),
+      financialIndependenceTargetAmount: target?.amount,
     );
   }
 
@@ -89,6 +93,8 @@ final class DashboardPortfolioSummary {
   final bool isFinancialIndependenceProgressAvailable;
   final double? financialIndependenceProgress;
   final String? financialIndependenceProgressLabel;
+  final String? netWorthAmount;
+  final String? financialIndependenceTargetAmount;
 
   static String assetValueLabel(Asset asset) {
     final _ExactDecimal value =

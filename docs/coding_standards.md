@@ -153,6 +153,17 @@ duplicate it in widgets, convert currencies, add projections, or give financial
 advice. Missing persisted target fields must remain backward-compatible as an
 unconfigured target.
 
+Financial Freedom Levels are Dashboard-only derived presentation state.
+These levels
+update only by deriving again from the current Portfolio snapshot when
+comparable net worth or the FI target changes; never add artificial points.
+They
+must use the centralized exact financial summary inputs, remain in the 1–100
+range, and must never be persisted, manually edited, or represented as XP.
+Boundary decisions must not depend on rounded display strings or binary
+floating-point rounding. Mixed-currency values leave Level unavailable; do not
+add currency conversion, Journey, or Achievement behavior to the Level system.
+
 ## Null Safety and Types
 
 Avoid `dynamic`; prefer `Object?` for unknown values. Do not use `!` unless it
