@@ -89,6 +89,13 @@ from the caller, and allow domain exceptions to propagate unchanged. No
 persistence, repository, Firebase, state management, Portfolio UI, or
 financial calculations are implemented.
 
+## Portfolio Repository Contract
+
+The Portfolio application layer now defines a persistence-neutral
+`PortfolioRepository` contract for finding one Portfolio by ID, saving a
+complete Portfolio snapshot, and deleting by ID. It has no implementation,
+database, Firebase integration, authentication dependency, or financial logic.
+
 ## Technology
 
 - Flutter

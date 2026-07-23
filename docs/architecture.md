@@ -194,6 +194,16 @@ domain. Separate classes provide intention-revealing entry points, preserve the
 boundary between orchestration and domain invariants, and avoid switch-based
 generic behavior.
 
+## Portfolio Repository Contract
+
+`lib/features/portfolio/application/repositories/portfolio_repository.dart`
+defines the persistence capability required by future Portfolio workflows. The
+application layer owns this contract, while future infrastructure adapters may
+implement it. The Portfolio domain remains unaware of persistence. The
+contract finds a Portfolio by ID, saves a complete snapshot, and deletes by ID
+without exposing Firebase, database, authentication, JSON, or UI details.
+There is no implementation or I/O in the current project.
+
 ## Firebase Boundary
 
 Firebase will be introduced later through data-layer implementations and
