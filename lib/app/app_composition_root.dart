@@ -23,16 +23,25 @@ import 'package:fyqen/features/portfolio/application/use_cases/save_portfolio.da
 import 'package:fyqen/features/portfolio/application/use_cases/set_financial_independence_target.dart';
 import 'package:fyqen/features/portfolio/infrastructure/repositories/firestore_portfolio_repository.dart';
 import 'package:fyqen/features/portfolio/infrastructure/repositories/in_memory_portfolio_repository.dart';
+import 'package:fyqen/features/streak/application/app_clock.dart';
+import 'package:fyqen/features/streak/domain/repositories/daily_streak_repository.dart';
+import 'package:fyqen/features/streak/infrastructure/repositories/firestore_daily_streak_repository.dart';
+import 'package:fyqen/features/streak/infrastructure/repositories/in_memory_daily_streak_repository.dart';
 
 /// Explicitly composes the current application dependency graph.
 final class AppCompositionRoot {
   AppCompositionRoot({
     PortfolioRepository? portfolioRepository,
+    DailyStreakRepository? dailyStreakRepository,
+    AppClock? appClock,
     AuthenticationRepository? authenticationRepository,
     FirebaseAuth? firebaseAuth,
     this.authenticatedUserIdProvider,
   }) : portfolioRepository =
            portfolioRepository ?? InMemoryPortfolioRepository(),
+       dailyStreakRepository =
+           dailyStreakRepository ?? InMemoryDailyStreakRepository(),
+       appClock = appClock ?? const SystemAppClock(),
        authenticationRepository =
            authenticationRepository ??
            FirebaseAuthenticationRepository(
@@ -86,6 +95,10 @@ final class AppCompositionRoot {
         firestore: firebaseFirestore,
         authenticatedUserIdProvider: userIdProvider,
       ),
+      dailyStreakRepository: FirestoreDailyStreakRepository(
+        firestore: firebaseFirestore,
+        authenticatedUserIdProvider: userIdProvider,
+      ),
       authenticationRepository: authenticationRepository,
       firebaseAuth: firebaseAuth,
       authenticatedUserIdProvider: userIdProvider,
@@ -109,6 +122,8 @@ final class AppCompositionRoot {
   }
 
   final PortfolioRepository portfolioRepository;
+  final DailyStreakRepository dailyStreakRepository;
+  final AppClock appClock;
   final AuthenticatedUserIdProvider? authenticatedUserIdProvider;
   final AuthenticationRepository authenticationRepository;
 

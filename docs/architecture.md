@@ -646,8 +646,29 @@ due date, remote rule, user-authored rule, AI rule, or financial advice.
 PortfolioSession continues to own loading and failure UI. Without an FI target,
 setup and asset-count rules remain available while financial rules are safely
 unavailable. Mixed currencies keep target-configuration and asset-count rules
-available, but never create financial progress or currency conversion. Streaks
-remain unimplemented.
+available, but never create financial progress or currency conversion.
+
+## Daily Streak System
+
+Daily Streak is a separate authenticated engagement feature, not a Portfolio
+derivation. Its immutable `DailyStreak` aggregate is updated by the pure
+`DailyStreakCalculator` using normalized local calendar dates and an injected
+`AppClock`. The transaction-backed repository persists only current streak,
+longest streak, and last-open date at `users/{uid}/engagement/dailyStreak`.
+
+```text
+AuthenticationGate -> DailyStreakSession -> DailyStreakController
+-> DailyStreakRepository -> FirestoreDailyStreakDataSource
+-> Dashboard DailyStreakCard
+```
+
+The session records once during authenticated-session initialization and owns
+card-level loading and failure state; PortfolioSession remains the owner of
+financial loading and failure state. Same-day writes are idempotent and use a
+Firestore transaction. There is no streak history, reward, XP, coin, grace
+period, freeze, restoration, notification, lifecycle timer, celebration,
+sharing, Premium, AI, or financial-system input. If the app stays open over
+midnight, the next day is recorded on a later supported session initialization.
 
 ## Achievement Rule Engine
 

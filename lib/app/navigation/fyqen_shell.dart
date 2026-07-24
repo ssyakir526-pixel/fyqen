@@ -11,6 +11,7 @@ import '../../features/portfolio/domain/value_objects/financial_independence_tar
 import '../../features/portfolio/presentation/pages/portfolio_management_page.dart';
 import '../../features/portfolio/presentation/pages/portfolio_placeholder_page.dart';
 import '../../features/settings/presentation/pages/settings_placeholder_page.dart';
+import '../../features/streak/presentation/state/daily_streak_view_state.dart';
 import 'fyqen_destination.dart';
 
 /// Owns selection for Fyqen's persistent primary navigation destinations.
@@ -30,6 +31,8 @@ final class FyqenShell extends StatefulWidget {
     this.createAssetId,
     this.createLiabilityId,
     this.currentTime,
+    this.dailyStreakState = const DailyStreakViewState.loading(),
+    this.onRetryDailyStreak,
   });
 
   final VoidCallback? onSignOut;
@@ -46,6 +49,8 @@ final class FyqenShell extends StatefulWidget {
   final String Function()? createAssetId;
   final String Function()? createLiabilityId;
   final DateTime Function()? currentTime;
+  final DailyStreakViewState dailyStreakState;
+  final Future<void> Function()? onRetryDailyStreak;
 
   @override
   State<FyqenShell> createState() => _FyqenShellState();
@@ -67,7 +72,8 @@ final class _FyqenShellState extends State<FyqenShell> {
   void didUpdateWidget(covariant FyqenShell oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!identical(oldWidget.portfolio, widget.portfolio) ||
-        oldWidget.isPortfolioSaving != widget.isPortfolioSaving) {
+        oldWidget.isPortfolioSaving != widget.isPortfolioSaving ||
+        oldWidget.dailyStreakState != widget.dailyStreakState) {
       _pages = _buildPages();
     }
   }
@@ -92,6 +98,8 @@ final class _FyqenShellState extends State<FyqenShell> {
         isPortfolioSaving: widget.isPortfolioSaving,
         onSetFinancialIndependenceTarget:
             widget.onSetFinancialIndependenceTarget,
+        dailyStreakState: widget.dailyStreakState,
+        onRetryDailyStreak: widget.onRetryDailyStreak,
       ),
       canManagePortfolio
           ? PortfolioManagementPage(

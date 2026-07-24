@@ -10,6 +10,8 @@ import '../../../../shared/widgets/app_card.dart';
 import '../../../../shared/widgets/app_page.dart';
 import '../../../../shared/widgets/app_section.dart';
 import '../../../../shared/widgets/section_title.dart';
+import '../../../streak/presentation/state/daily_streak_view_state.dart';
+import '../../../streak/presentation/widgets/daily_streak_card.dart';
 import '../models/dashboard_portfolio_summary.dart';
 import '../models/financial_freedom_level_summary.dart';
 import '../widgets/dashboard_quick_action.dart';
@@ -26,12 +28,16 @@ class DashboardPlaceholderPage extends StatelessWidget {
     this.portfolio,
     this.isPortfolioSaving = false,
     this.onSetFinancialIndependenceTarget,
+    this.dailyStreakState = const DailyStreakViewState.loading(),
+    this.onRetryDailyStreak,
   });
 
   final Portfolio? portfolio;
   final bool isPortfolioSaving;
   final Future<bool> Function(FinancialIndependenceTarget target)?
   onSetFinancialIndependenceTarget;
+  final DailyStreakViewState dailyStreakState;
+  final Future<void> Function()? onRetryDailyStreak;
 
   @override
   Widget build(BuildContext context) {
@@ -121,6 +127,12 @@ class DashboardPlaceholderPage extends StatelessWidget {
                 ],
               ),
             ),
+          AppSection(
+            child: DailyStreakCard(
+              state: dailyStreakState,
+              onRetry: onRetryDailyStreak,
+            ),
+          ),
           AppSection(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

@@ -80,7 +80,10 @@ final class _AuthenticationGateState extends State<AuthenticationGate> {
           AuthenticationStatus.restoring => const AuthenticationLoadingView(),
           AuthenticationStatus.authenticated => KeyedSubtree(
             key: const Key('authenticated_app_shell'),
-            child: widget.authenticatedBuilder(context, _signOut),
+            child: KeyedSubtree(
+              key: ValueKey<String>(state.user!.id),
+              child: widget.authenticatedBuilder(context, _signOut),
+            ),
           ),
           AuthenticationStatus.signedOut ||
           AuthenticationStatus.authenticating => _buildAuthenticationScreen(

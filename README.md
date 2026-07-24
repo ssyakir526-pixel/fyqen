@@ -323,7 +323,26 @@ There is no Challenge persistence, controller, repository, Firestore schema,
 history, claimed status, reward, XP, points, notifications, due dates,
 remote-configured Challenge, user-created Challenge, AI-generated Challenge,
 or financial advice. PortfolioSession remains the owner of Portfolio loading
-and failure states. Daily streaks remain unimplemented.
+and failure states.
+
+## Daily Streak
+
+Daily Streak records one qualifying authenticated app-session open per local
+calendar day. Same-day opens are idempotent, a consecutive local date increments
+the current streak, and one or more missed dates reset the current streak to
+one while preserving the longest streak. Clock rollback does not decrement or
+move the stored date backward. The streak is engagement-only and has no effect
+on financial data, FI progress, Level, Journey, Achievements, or Challenges.
+
+The authenticated user's state is persisted at
+`users/{uid}/engagement/dailyStreak` with current streak, longest streak, and a
+normalized last-open date. A transaction protects same-day concurrent writes.
+The Dashboard shows current and longest streaks plus derived milestones at 7,
+30, 100, 365, and 1000 days. Milestone history, rewards, XP, coins, grace
+periods, freezes, restoration, notifications, celebrations, sharing, Premium,
+and AI logic are not implemented. The MVP records an open when the
+authenticated app session initializes; an app left open over midnight is not
+recorded again until a supported new session initialization.
 
 ## Achievements
 

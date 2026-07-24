@@ -187,6 +187,18 @@ AI-generated directions, currency conversion, or financial advice. Reuse
 PortfolioSession loading and failure ownership, and keep daily streaks
 unimplemented.
 
+Daily Streak business logic belongs to the Streak domain service, never a
+Dashboard widget or financial feature. Inject an `AppClock`; do not call
+`DateTime.now()` in calculation, repository, controller, or test logic. Compare
+normalized local calendar dates, never 24-hour durations. Same-day opens must
+be idempotent, a next local date increments, and missed dates reset current
+streak to one without reducing longest streak. Protect clock rollback by
+preserving state. Persist only the user-scoped current streak, longest streak,
+and normalized last-open date through the repository transaction. Do not add
+grace periods, freezes, restoration, milestone history, rewards, XP, points,
+coins, notifications, timers, celebrations, sharing, Premium, AI, or any
+financial calculation dependency.
+
 Achievement rules are typed, immutable Presentation code that evaluates only
 the centralized Achievement evaluation context. Keep the fixed catalog ordered
 and application-defined; do not add expression strings, JSON interpreters,

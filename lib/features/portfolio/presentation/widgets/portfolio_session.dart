@@ -15,6 +15,7 @@ import 'package:fyqen/features/portfolio/application/use_cases/set_financial_ind
 import 'package:fyqen/features/portfolio/domain/entities/portfolio.dart';
 import 'package:fyqen/features/portfolio/presentation/controllers/portfolio_controller.dart';
 import 'package:fyqen/features/portfolio/presentation/state/portfolio_view_state.dart';
+import 'package:fyqen/features/streak/presentation/state/daily_streak_view_state.dart';
 
 import 'portfolio_failure_view.dart';
 import 'portfolio_loading_view.dart';
@@ -35,6 +36,8 @@ final class PortfolioSession extends StatefulWidget {
     required this.onSignOut,
     super.key,
     this.currentTime = DateTime.now,
+    this.dailyStreakState = const DailyStreakViewState.loading(),
+    this.onRetryDailyStreak,
   });
 
   final LoadPortfolioUseCase loadPortfolio;
@@ -49,6 +52,8 @@ final class PortfolioSession extends StatefulWidget {
   final SetFinancialIndependenceTargetUseCase setFinancialIndependenceTarget;
   final VoidCallback onSignOut;
   final DateTime Function() currentTime;
+  final DailyStreakViewState dailyStreakState;
+  final Future<void> Function()? onRetryDailyStreak;
 
   @override
   State<PortfolioSession> createState() => _PortfolioSessionState();
@@ -118,6 +123,8 @@ final class _PortfolioSessionState extends State<PortfolioSession> {
           createAssetId: _createAssetId,
           createLiabilityId: _createLiabilityId,
           currentTime: widget.currentTime,
+          dailyStreakState: widget.dailyStreakState,
+          onRetryDailyStreak: widget.onRetryDailyStreak,
         );
       },
     );
